@@ -1,0 +1,195 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;}PARSER_BEGIN(MINIGrammar)package grammar;
+
+public class MINIGrammar {  public static void main(String args []) throws ParseException {    MINIGrammar parser = new MINIGrammar(System.in);
+    MINIGrammar.file();  }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN :{
+  < MINUS : "-" >
+| < NEGATION: "!" >| < PLUS : "+" >| < MULTIPLY : "*" >| < DIVIDE : "/" >
+| < REMAINDER : "%" >
+| < EQUAL : "==" >
+| < NOTEQUAL : "!=" >
+| < LESS_THAN_EQUAL : "<=" >
+| < GREATER_THAN_EQUAL : ">=" >
+| < LESS_THAN : "<" >
+| < GREATER_THAN : ">" >
+| < AND : "&&" >
+| < OR : "||" >
+| < TRUE : "true" >
+| < FALSE : "false" >
+| < ID : ([ "a"-"z","A"-"Z" ])+ >
+| < INT: ([ "0"-"9" ])+ >
+| < BOOL: ("true"|"false") >
+| < STRING: ("\u0020"|"\u0021"|["\u0023"-"\u007E"])*>
+}
+
+
+void file() :
+{ }
+{
+	(mini_class()) *
+}
+
+void mini_class() :
+{ }
+{
+	"class" < ID > "{" classMember() "}" { }
+}
+void classMember() :
+{ }
+{
+	field() | method()
+}
+
+void field() :
+{ }
+{
+	type() < ID > ";"
+}
+
+void method() :
+{ }
+{
+  type() < ID > signature() blockStatement()
+}
+
+void type() :
+{ }
+{
+	< ID > ("[]")*
+}
+
+void signature() :
+{ }
+{
+	"(" ( type() < ID > ("," type() < ID >)*)? ")"
+}
+
+void statement() :
+{ }
+{
+  blockStatement()
+| ifStatement()
+| whileStatement()
+| assignmentStatement()
+| expressionStatement()
+| returnStatement()
+}
+
+void blockStatement() :
+{ }
+{
+  "{" (statement())* "}"
+}
+
+void ifStatement() :
+{ }
+{
+  "if" "(" expression() ")" blockStatement()
+| "if" "(" expression() ")" blockStatement() "else" blockStatement()
+}
+
+void whileStatement() :
+{ }
+{
+  "while" "(" expression() ")" blockStatement()
+}
+
+void assignmentStatement() :
+{ }
+{
+  expression() ":=" expression() ";"
+| "var" < ID > ":=" expression() ";"
+}
+
+
+void expressionStatement() :
+{}
+{
+  expression() ";"
+}
+
+void returnStatement():
+{ }
+{
+  "return" expression() ";"
+}
+
+void expression() :
+{ }
+{
+  application()
+| memberSelection()
+| atomicExpression()
+}
+
+void application() :
+{ }
+{
+  unaryOperator() expression()
+| expression() binaryOperator() expression()
+| expression() "." < ID > argumentList()
+}
+
+void unaryOperator() :
+{ }
+{
+  < MINUS >
+| < NEGATION >
+}
+
+void binaryOperator() :
+{ }
+{
+  < PLUS >
+| < MINUS >
+| < MULTIPLY >
+| < DIVIDE >
+| < REMAINDER >
+| < EQUAL >
+| < NOTEQUAL >
+| < LESS_THAN_EQUAL >
+| < GREATER_THAN_EQUAL >
+| < LESS_THAN >
+| < GREATER_THAN >
+| < AND >
+| < OR >
+}
+
+void argumentList() :
+{ }
+{
+  "(" (expression() ("," expression())*)? ")"
+}
+
+void memberSelection() :
+{ }
+{
+  expression() "." < ID >
+}
+
+void atomicExpression() :
+{ }
+{
+  < ID >
+| "this"
+| < STRING >
+| < INT >
+| < BOOL >
+| nullExpression()
+| newExpression()
+| < ID > argumentList()
+| "(" expression() ")"
+}
+
+void nullExpression() :
+{ }
+{
+  "null" "(" type() ")"
+}
+
+void newExpression() :
+{ }
+{
+  "new" "(" type() ("," (< INT >|< ID >))* ")"
+}
