@@ -126,9 +126,20 @@ void expression() :
 void application() :
 { }
 {
-  unaryOperator() expression()
-| expression() binaryOperator() expression()
-| expression() "." < ID > argumentList()
+  unaryOperator() expression() application_()
+| atomicExpression() "." < ID > memberSelection_() binaryOperator() expression() application_()
+| atomicExpression() binaryOperator() expression() application_()
+| atomicExpression() "." < ID > memberSelection_() "." < ID > argumentList() application_()
+| atomicExpression() "." < ID > argumentList() application_()
+}
+
+void application_():
+{ }
+{
+  binaryOperator() expression() (application_())?
+| "." < ID > argumentList() (application_())?
+| "." < ID > memberSelection_() "." < ID > argumentList() (application_())?
+| "." < ID > memberSelection_() binaryOperator() expression() (application_())?
 }
 
 void unaryOperator() :
@@ -162,10 +173,17 @@ void argumentList() :
   "(" (expression() ("," expression())*)? ")"
 }
 
-void memberSelection() :
+void memberSelection () :
 { }
 {
-  expression() "." < ID >
+  application() "." < ID > memberSelection_()
+| atomicExpression() "." < ID > memberSelection_()
+}
+
+void memberSelection_() :
+{ }
+{
+  "." < ID > (memberSelection_())?
 }
 
 void atomicExpression() :
