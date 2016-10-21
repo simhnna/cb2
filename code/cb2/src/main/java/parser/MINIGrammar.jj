@@ -5,11 +5,13 @@
 
 import java.io.FileInputStream;
 import components.ClassNode;
+import java.util.ArrayList;
+
 
 public class MINIGrammar {  public static void main(String args []) throws ParseException {    MINIGrammar parser = new MINIGrammar(System.in);
     parser.file();  }
 
-  public static ClassNode parse(FileInputStream in) throws ParseException {
+  public static ArrayList<ClassNode> parse(FileInputStream in) throws ParseException {
     MINIGrammar parser = new MINIGrammar(in);
     return parser.file();
   }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
@@ -80,10 +82,12 @@ MORE :
 }
 
 
-ClassNode file() :
-{ ClassNode cls = new ClassNode();}
+ArrayList<ClassNode> file() :
 {
-	(cls=mini_class())* < EOF > { cls.id = 1; return cls; }
+  ArrayList<ClassNode> classes = new ArrayList<ClassNode>();
+  ClassNode cls = new ClassNode();}
+{
+	(cls=mini_class() { classes.add(cls); })* < EOF > { return classes; }
 }
 
 ClassNode mini_class() :
@@ -94,6 +98,7 @@ ClassNode mini_class() :
 {
 	< CLASS > clsName=< ID > <BRACE_OPEN > (classMember())* < BRACE_CLOSE > { cls.name = clsName.image; return cls; }
 }
+
 void classMember() :
 { }
 {

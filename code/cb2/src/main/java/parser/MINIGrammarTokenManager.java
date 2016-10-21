@@ -2,6 +2,7 @@
 package parser;
 import java.io.FileInputStream;
 import components.ClassNode;
+import java.util.ArrayList;
 
 /** Token Manager. */
 public class MINIGrammarTokenManager implements MINIGrammarConstants

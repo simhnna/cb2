@@ -3,24 +3,25 @@ package main;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 
 import components.ClassNode;
 import parser.MINIGrammar;
 import parser.ParseException;
 
 public class Main {
-	
-    public boolean someLibraryMethod() {
-        return true;
-    }
-    
-    public static void main(String... args) {
-    	System.out.println("Hello World!");
-    	ClassNode n;
-    	try {
-			n = MINIGrammar.parse(new FileInputStream(new File("/tmp/meh.m")));
-			System.out.println(n.name);
-			System.out.println(n.id);
+
+	public boolean someLibraryMethod() {
+		return true;
+	}
+
+	public static void main(String... args) {
+		ArrayList<ClassNode> classes;
+		try {
+			classes = MINIGrammar.parse(new FileInputStream(new File("res/example_code/valid/testing_file.m")));
+			for (ClassNode cls: classes) {
+				System.out.println(cls.name);
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -28,5 +29,5 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
+	}
 }
