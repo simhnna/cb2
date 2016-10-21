@@ -1,0 +1,272 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;
+  lookahead = 4;}PARSER_BEGIN(MINIGrammar)package parser;
+
+import java.io.FileInputStream;
+import components.ClassNode;
+
+public class MINIGrammar {  public static void main(String args []) throws ParseException {    MINIGrammar parser = new MINIGrammar(System.in);
+    MINIGrammar.file();  }
+
+  public static ClassNode parse(FileInputStream in) throws ParseException {
+    MINIGrammar parser = new MINIGrammar(in);
+    return MINIGrammar.file();
+  }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//": IN_SINGLE_LINE_COMMENT
+|
+	"/*" : IN_MULTI_LINE_COMMENT
+}
+
+< IN_SINGLE_LINE_COMMENT >
+SPECIAL_TOKEN :
+{
+  < SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+< IN_MULTI_LINE_COMMENT >
+SPECIAL_TOKEN :
+{
+  < MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+< IN_SINGLE_LINE_COMMENT, IN_MULTI_LINE_COMMENT >
+MORE :
+{
+  < ~[] >
+}
+
+< DEFAULT > TOKEN : /* Reserved keywords and such */
+{  < CLASS : "class" >
+| < BRACE_OPEN : "{" >
+| < BRACE_CLOSE : "}" >
+| < PARAN_OPEN : "(" >
+| < PARAN_CLOSE : ")" >
+| < ARRAY_DEF : "[]" >
+| < THIS : "this" >
+| < DOT : "." >
+| < COMMA : "," >
+| < SEMICOLON : ";" >
+| < NULL : "null" >
+| < NEW : "new" >
+| < RETURN : "return" >
+| < VAR : "var" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < WHILE : "while" >
+| < ASSIGNMENT : ":=" >
+| < MINUS : "-" >
+| < NEGATION: "!" >| < PLUS : "+" >| < MULTIPLY : "*" >| < DIVIDE : "/" >
+| < REMAINDER : "%" >
+| < EQUAL : "==" >
+| < NOTEQUAL : "!=" >
+| < LESS_THAN_EQUAL : "<=" >
+| < GREATER_THAN_EQUAL : ">=" >
+| < LESS_THAN : "<" >
+| < GREATER_THAN : ">" >
+| < AND : "&&" >
+| < OR : "||" >
+| < TRUE : "true" >
+| < FALSE : "false" >
+| < ID : ([ "a"-"z","A"-"Z" ])+ >
+| < INT: ([ "0"-"9" ])+ >
+| < BOOL: ("true"|"false") >
+| < STRING: "\"" ("\u0020"|"\u0021"|["\u0023"-"\u007E"])* "\"" > 
+}
+
+
+ClassNode file() :
+{ ClassNode cls = new ClassNode();}
+{
+	(cls=mini_class())* < EOF > { cls.id = 1; return cls; }
+}
+
+ClassNode mini_class() :
+{
+  ClassNode cls = new ClassNode();
+  Token clsName;
+ }
+{
+	< CLASS > clsName=< ID > <BRACE_OPEN > (classMember())* < BRACE_CLOSE > { cls.name = clsName.image; return cls; }
+}
+void classMember() :
+{ }
+{
+	field() | method()
+}
+
+void field() :
+{ }
+{
+	type() < ID > < SEMICOLON >
+}
+
+void method() :
+{ }
+{
+  type() < ID > signature() blockStatement()
+}
+
+void type() :
+{ }
+{
+	< ID > (< ARRAY_DEF >)*
+}
+
+void signature() :
+{ }
+{
+	< PARAN_OPEN > ( type() < ID > (< COMMA > type() < ID >)*)? < PARAN_CLOSE >
+}
+
+void statement() :
+{ }
+{
+  blockStatement()
+| ifStatement()
+| whileStatement()
+| assignmentStatement()
+| expressionStatement()
+| returnStatement()
+}
+
+void blockStatement() :
+{ }
+{
+  < BRACE_OPEN > (statement())* < BRACE_CLOSE >
+}
+
+void ifStatement() :
+{ }
+{
+  < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+| < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement() < ELSE > blockStatement()
+}
+
+void whileStatement() :
+{ }
+{
+  < WHILE > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+}
+
+void assignmentStatement() :
+{ }
+{
+  expression() < ASSIGNMENT > expression() < SEMICOLON >
+| < VAR > < ID > <ASSIGNMENT > expression() < SEMICOLON >
+}
+
+
+void expressionStatement() :
+{}
+{
+  expression() < SEMICOLON >
+}
+
+void returnStatement():
+{ }
+{
+  < RETURN > expression() < SEMICOLON >
+}
+
+void expression() :
+{ }
+{
+  application()
+| memberSelection()
+| atomicExpression()
+}
+
+void application() :
+{ }
+{
+  unaryOperator() expression() application_()
+| atomicExpression() < DOT > < ID > memberSelection_() binaryOperator() expression() application_()
+| atomicExpression() binaryOperator() expression() application_()
+| atomicExpression() < DOT > < ID > memberSelection_() < DOT > < ID > argumentList() application_()
+| atomicExpression() < DOT > < ID > argumentList() application_()
+}
+
+void application_():
+{ }
+{
+  binaryOperator() expression() (application_())?
+| < DOT > < ID > argumentList() (application_())?
+| < DOT > < ID > memberSelection_() < DOT > < ID > argumentList() (application_())?
+| < DOT > < ID > memberSelection_() binaryOperator() expression() (application_())?
+}
+
+void unaryOperator() :
+{ }
+{
+  < MINUS >
+| < NEGATION >
+}
+
+void binaryOperator() :
+{ }
+{
+  < PLUS >
+| < MINUS >
+| < MULTIPLY >
+| < DIVIDE >
+| < REMAINDER >
+| < EQUAL >
+| < NOTEQUAL >
+| < LESS_THAN_EQUAL >
+| < GREATER_THAN_EQUAL >
+| < LESS_THAN >
+| < GREATER_THAN >
+| < AND >
+| < OR >
+}
+
+void argumentList() :
+{ }
+{
+  < PARAN_OPEN > (expression() (< COMMA > expression())*)? < PARAN_CLOSE >
+}
+
+void memberSelection () :
+{ }
+{
+  application() < DOT > < ID > memberSelection_()
+| atomicExpression() < DOT > < ID > memberSelection_()
+}
+
+void memberSelection_() :
+{ }
+{
+  < DOT > < ID > (memberSelection_())?
+}
+
+void atomicExpression() :
+{ }
+{
+  < ID >
+| < THIS >
+| < STRING >
+| < INT >
+| < BOOL >
+| nullExpression()
+| newExpression()
+| < ID > argumentList()
+| < PARAN_OPEN > expression() < PARAN_CLOSE >
+}
+
+void nullExpression() :
+{ }
+{
+  < NULL > < PARAN_OPEN > type() < PARAN_CLOSE >
+}
+
+void newExpression() :
+{ }
+{
+  < NEW > <PARAN_OPEN > type() (< COMMA > (< INT >|< ID >))* < PARAN_CLOSE >
+}
