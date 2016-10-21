@@ -4,7 +4,7 @@
   lookahead = 4;}PARSER_BEGIN(MINIGrammar)package parser;
 
 import java.io.FileInputStream;
-import components.ClassNode;
+import components.*;
 import java.util.ArrayList;
 
 
@@ -94,21 +94,29 @@ ClassNode mini_class() :
 {
   ClassNode cls = new ClassNode();
   Token clsName;
+  Node classMember;
  }
 {
-	< CLASS > clsName=< ID > <BRACE_OPEN > (classMember())* < BRACE_CLOSE > { cls.name = clsName.image; return cls; }
+	< CLASS > clsName=< ID > <BRACE_OPEN > (classMember=classMember() { cls.children.add(classMember);})* < BRACE_CLOSE > { cls.name = clsName.image; return cls; }
 }
 
-void classMember() :
-{ }
+Node classMember() :
 {
-	field() | method()
+  Node n;
+  }
+{
+	n=field() { return n; }
+| method() { n = new MethodNode(); return n; }
 }
 
-void field() :
-{ }
+FieldNode field() :
 {
-	type() < ID > < SEMICOLON >
+  FieldNode field = new FieldNode();
+	Token fieldName;
+	Type fieldType;
+}
+{
+	fieldType=type() fieldName=< ID > < SEMICOLON > { field.name = fieldName.image; field.type = fieldType; return field;}
 }
 
 void method() :
@@ -117,10 +125,23 @@ void method() :
   type() < ID > signature() blockStatement()
 }
 
-void type() :
-{ }
+Type type() :
 {
-	< ID > (< ARRAY_DEF >)*
+  Token typeIdentifier;
+  }
+{
+	typeIdentifier=< ID > (< ARRAY_DEF >)* {
+	  switch(typeIdentifier.image) { 
+	  		case "int":
+	  				return Type.INTEGER;
+	  		case "string":
+	  				return Type.STRING;
+	  		case "boolean":
+	  				return Type.BOOLEAN;
+	  		default:
+	  				return Type.INVALID;
+		}
+	}
 }
 
 void signature() :

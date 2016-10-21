@@ -6,6 +6,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import components.ClassNode;
+import components.FieldNode;
+import components.MethodNode;
+import components.Node;
 import parser.MINIGrammar;
 import parser.ParseException;
 
@@ -21,6 +24,15 @@ public class Main {
 			classes = MINIGrammar.parse(new FileInputStream(new File("res/example_code/valid/testing_file.m")));
 			for (ClassNode cls: classes) {
 				System.out.println(cls.name);
+				for (Node child : cls.children) {
+					if (child instanceof FieldNode) {
+						FieldNode field = (FieldNode) child;
+						System.out.println("name: " + field.name + ", type: " + field.type);
+					} else if (child instanceof MethodNode) {
+						MethodNode method = (MethodNode) child;
+						System.out.println(method.name);
+					}
+				}
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

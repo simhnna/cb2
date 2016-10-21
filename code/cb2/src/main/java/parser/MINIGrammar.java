@@ -2,7 +2,7 @@
 package parser;
 
 import java.io.FileInputStream;
-import components.ClassNode;
+import components.*;
 import java.util.ArrayList;
 
 
@@ -38,6 +38,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ClassNode mini_class() throws ParseException {
   ClassNode cls = new ClassNode();
   Token clsName;
+  Node classMember;
     jj_consume_token(CLASS);
     clsName = jj_consume_token(ID);
     jj_consume_token(BRACE_OPEN);
@@ -48,28 +49,38 @@ public class MINIGrammar implements MINIGrammarConstants {
       } else {
         break label_2;
       }
-      classMember();
+      classMember = classMember();
+                                                                            cls.children.add(classMember);
     }
     jj_consume_token(BRACE_CLOSE);
-                                                                                  cls.name = clsName.image; {if (true) return cls;}
+                                                                                                                                cls.name = clsName.image; {if (true) return cls;}
     throw new Error("Missing return statement in function");
   }
 
-  final public void classMember() throws ParseException {
+  final public Node classMember() throws ParseException {
+  Node n;
     if (jj_2_3(4)) {
-      field();
+      n = field();
+                    {if (true) return n;}
     } else if (jj_2_4(4)) {
       method();
+             n = new MethodNode(); {if (true) return n;}
     } else {
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void field() throws ParseException {
-    type();
-    jj_consume_token(ID);
+  final public FieldNode field() throws ParseException {
+  FieldNode field = new FieldNode();
+        Token fieldName;
+        Type fieldType;
+    fieldType = type();
+    fieldName = jj_consume_token(ID);
     jj_consume_token(SEMICOLON);
+                                                          field.name = fieldName.image; field.type = fieldType; {if (true) return field;}
+    throw new Error("Missing return statement in function");
   }
 
   final public void method() throws ParseException {
@@ -79,8 +90,9 @@ public class MINIGrammar implements MINIGrammarConstants {
     blockStatement();
   }
 
-  final public void type() throws ParseException {
-    jj_consume_token(ID);
+  final public Type type() throws ParseException {
+  Token typeIdentifier;
+    typeIdentifier = jj_consume_token(ID);
     label_3:
     while (true) {
       if (jj_2_5(4)) {
@@ -90,6 +102,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       jj_consume_token(ARRAY_DEF);
     }
+          switch(typeIdentifier.image) {
+                        case "int":
+                                        {if (true) return Type.INTEGER;}
+                        case "string":
+                                        {if (true) return Type.STRING;}
+                        case "boolean":
+                                        {if (true) return Type.BOOLEAN;}
+                        default:
+                                        {if (true) return Type.INVALID;}
+                }
+    throw new Error("Missing return statement in function");
   }
 
   final public void signature() throws ParseException {
@@ -916,69 +939,8 @@ public class MINIGrammar implements MINIGrammarConstants {
     finally { jj_save(65, xla); }
   }
 
-  private boolean jj_3_14() {
-    if (jj_3R_19()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_15() {
-    if (jj_scan_token(WHILE)) return true;
-    if (jj_scan_token(PARAN_OPEN)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_scan_token(PARAN_CLOSE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_16() {
-    if (jj_scan_token(IF)) return true;
-    if (jj_scan_token(PARAN_OPEN)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_scan_token(PARAN_CLOSE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_14() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_15()) {
-    jj_scanpos = xsp;
-    if (jj_3_16()) return true;
-    }
-    return false;
-  }
-
-  private boolean jj_3_7() {
-    if (jj_3R_12()) return true;
-    if (jj_scan_token(ID)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_6()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3_15() {
-    if (jj_scan_token(IF)) return true;
-    if (jj_scan_token(PARAN_OPEN)) return true;
-    if (jj_3R_20()) return true;
-    if (jj_scan_token(PARAN_CLOSE)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_13() {
-    if (jj_scan_token(BRACE_OPEN)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_14()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(BRACE_CLOSE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2() {
-    if (jj_3R_9()) return true;
+  private boolean jj_3_5() {
+    if (jj_scan_token(ARRAY_DEF)) return true;
     return false;
   }
 
@@ -994,11 +956,6 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   private boolean jj_3_11() {
     if (jj_3R_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3_5() {
-    if (jj_scan_token(ARRAY_DEF)) return true;
     return false;
   }
 
@@ -1053,6 +1010,16 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
+  private boolean jj_3_65() {
+    if (jj_scan_token(INT)) return true;
+    return false;
+  }
+
+  private boolean jj_3_2() {
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
   private boolean jj_3R_12() {
     if (jj_scan_token(ID)) return true;
     Token xsp;
@@ -1063,13 +1030,14 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  private boolean jj_3_65() {
-    if (jj_scan_token(INT)) return true;
-    return false;
-  }
-
-  private boolean jj_3_4() {
-    if (jj_3R_11()) return true;
+  private boolean jj_3_64() {
+    if (jj_scan_token(COMMA)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_65()) {
+    jj_scanpos = xsp;
+    if (jj_3_66()) return true;
+    }
     return false;
   }
 
@@ -1084,17 +1052,6 @@ public class MINIGrammar implements MINIGrammarConstants {
     if (jj_3R_12()) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_3R_31()) return true;
-    return false;
-  }
-
-  private boolean jj_3_64() {
-    if (jj_scan_token(COMMA)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_65()) {
-    jj_scanpos = xsp;
-    if (jj_3_66()) return true;
-    }
     return false;
   }
 
@@ -1113,21 +1070,8 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  private boolean jj_3R_8() {
-    if (jj_scan_token(CLASS)) return true;
-    if (jj_scan_token(ID)) return true;
-    if (jj_scan_token(BRACE_OPEN)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_2()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(BRACE_CLOSE)) return true;
-    return false;
-  }
-
-  private boolean jj_3_1() {
-    if (jj_3R_8()) return true;
+  private boolean jj_3_4() {
+    if (jj_3R_11()) return true;
     return false;
   }
 
@@ -1141,6 +1085,19 @@ public class MINIGrammar implements MINIGrammarConstants {
       if (jj_3_64()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(PARAN_CLOSE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_8() {
+    if (jj_scan_token(CLASS)) return true;
+    if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(BRACE_OPEN)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_2()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(BRACE_CLOSE)) return true;
     return false;
   }
 
@@ -1159,6 +1116,11 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   private boolean jj_3_29() {
     if (jj_3R_25()) return true;
+    return false;
+  }
+
+  private boolean jj_3_1() {
+    if (jj_3R_8()) return true;
     return false;
   }
 
@@ -1616,6 +1578,67 @@ public class MINIGrammar implements MINIGrammarConstants {
     if (jj_scan_token(ASSIGNMENT)) return true;
     if (jj_3R_20()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  private boolean jj_3_14() {
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_15() {
+    if (jj_scan_token(WHILE)) return true;
+    if (jj_scan_token(PARAN_OPEN)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_scan_token(PARAN_CLOSE)) return true;
+    return false;
+  }
+
+  private boolean jj_3_16() {
+    if (jj_scan_token(IF)) return true;
+    if (jj_scan_token(PARAN_OPEN)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_scan_token(PARAN_CLOSE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_14() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_15()) {
+    jj_scanpos = xsp;
+    if (jj_3_16()) return true;
+    }
+    return false;
+  }
+
+  private boolean jj_3_7() {
+    if (jj_3R_12()) return true;
+    if (jj_scan_token(ID)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_6()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3_15() {
+    if (jj_scan_token(IF)) return true;
+    if (jj_scan_token(PARAN_OPEN)) return true;
+    if (jj_3R_20()) return true;
+    if (jj_scan_token(PARAN_CLOSE)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_13() {
+    if (jj_scan_token(BRACE_OPEN)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_14()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(BRACE_CLOSE)) return true;
     return false;
   }
 
