@@ -1,17 +1,17 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;
+ */options{  static = false;
   lookahead = 4;}PARSER_BEGIN(MINIGrammar)package parser;
 
 import java.io.FileInputStream;
 import components.ClassNode;
 
 public class MINIGrammar {  public static void main(String args []) throws ParseException {    MINIGrammar parser = new MINIGrammar(System.in);
-    MINIGrammar.file();  }
+    parser.file();  }
 
   public static ClassNode parse(FileInputStream in) throws ParseException {
     MINIGrammar parser = new MINIGrammar(in);
-    return MINIGrammar.file();
+    return parser.file();
   }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
 
 /* COMMENTS */

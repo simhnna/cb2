@@ -7,15 +7,15 @@ import components.ClassNode;
 public class MINIGrammar implements MINIGrammarConstants {
   public static void main(String args []) throws ParseException {
     MINIGrammar parser = new MINIGrammar(System.in);
-    MINIGrammar.file();
+    parser.file();
   }
 
   public static ClassNode parse(FileInputStream in) throws ParseException {
     MINIGrammar parser = new MINIGrammar(in);
-    return MINIGrammar.file();
+    return parser.file();
   }
 
-  static final public ClassNode file() throws ParseException {
+  final public ClassNode file() throws ParseException {
   ClassNode cls = new ClassNode();
     label_1:
     while (true) {
@@ -31,7 +31,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  static final public ClassNode mini_class() throws ParseException {
+  final public ClassNode mini_class() throws ParseException {
   ClassNode cls = new ClassNode();
   Token clsName;
     jj_consume_token(CLASS);
@@ -51,7 +51,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  static final public void classMember() throws ParseException {
+  final public void classMember() throws ParseException {
     if (jj_2_3(4)) {
       field();
     } else if (jj_2_4(4)) {
@@ -62,20 +62,20 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void field() throws ParseException {
+  final public void field() throws ParseException {
     type();
     jj_consume_token(ID);
     jj_consume_token(SEMICOLON);
   }
 
-  static final public void method() throws ParseException {
+  final public void method() throws ParseException {
     type();
     jj_consume_token(ID);
     signature();
     blockStatement();
   }
 
-  static final public void type() throws ParseException {
+  final public void type() throws ParseException {
     jj_consume_token(ID);
     label_3:
     while (true) {
@@ -88,7 +88,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void signature() throws ParseException {
+  final public void signature() throws ParseException {
     jj_consume_token(PARAN_OPEN);
     if (jj_2_7(4)) {
       type();
@@ -110,7 +110,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     jj_consume_token(PARAN_CLOSE);
   }
 
-  static final public void statement() throws ParseException {
+  final public void statement() throws ParseException {
     if (jj_2_8(4)) {
       blockStatement();
     } else if (jj_2_9(4)) {
@@ -129,7 +129,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void blockStatement() throws ParseException {
+  final public void blockStatement() throws ParseException {
     jj_consume_token(BRACE_OPEN);
     label_5:
     while (true) {
@@ -143,7 +143,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     jj_consume_token(BRACE_CLOSE);
   }
 
-  static final public void ifStatement() throws ParseException {
+  final public void ifStatement() throws ParseException {
     if (jj_2_15(4)) {
       jj_consume_token(IF);
       jj_consume_token(PARAN_OPEN);
@@ -164,7 +164,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void whileStatement() throws ParseException {
+  final public void whileStatement() throws ParseException {
     jj_consume_token(WHILE);
     jj_consume_token(PARAN_OPEN);
     expression();
@@ -172,7 +172,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     blockStatement();
   }
 
-  static final public void assignmentStatement() throws ParseException {
+  final public void assignmentStatement() throws ParseException {
     if (jj_2_17(4)) {
       expression();
       jj_consume_token(ASSIGNMENT);
@@ -190,18 +190,18 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void expressionStatement() throws ParseException {
+  final public void expressionStatement() throws ParseException {
     expression();
     jj_consume_token(SEMICOLON);
   }
 
-  static final public void returnStatement() throws ParseException {
+  final public void returnStatement() throws ParseException {
     jj_consume_token(RETURN);
     expression();
     jj_consume_token(SEMICOLON);
   }
 
-  static final public void expression() throws ParseException {
+  final public void expression() throws ParseException {
     if (jj_2_19(4)) {
       application();
     } else if (jj_2_20(4)) {
@@ -214,7 +214,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void application() throws ParseException {
+  final public void application() throws ParseException {
     if (jj_2_22(4)) {
       unaryOperator();
       expression();
@@ -253,7 +253,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void application_() throws ParseException {
+  final public void application_() throws ParseException {
     if (jj_2_31(4)) {
       binaryOperator();
       expression();
@@ -300,7 +300,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void unaryOperator() throws ParseException {
+  final public void unaryOperator() throws ParseException {
     if (jj_2_35(4)) {
       jj_consume_token(MINUS);
     } else if (jj_2_36(4)) {
@@ -311,7 +311,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void binaryOperator() throws ParseException {
+  final public void binaryOperator() throws ParseException {
     if (jj_2_37(4)) {
       jj_consume_token(PLUS);
     } else if (jj_2_38(4)) {
@@ -344,7 +344,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void argumentList() throws ParseException {
+  final public void argumentList() throws ParseException {
     jj_consume_token(PARAN_OPEN);
     if (jj_2_51(4)) {
       expression();
@@ -364,7 +364,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     jj_consume_token(PARAN_CLOSE);
   }
 
-  static final public void memberSelection() throws ParseException {
+  final public void memberSelection() throws ParseException {
     if (jj_2_52(4)) {
       application();
       jj_consume_token(DOT);
@@ -381,7 +381,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void memberSelection_() throws ParseException {
+  final public void memberSelection_() throws ParseException {
     jj_consume_token(DOT);
     jj_consume_token(ID);
     if (jj_2_54(4)) {
@@ -391,7 +391,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void atomicExpression() throws ParseException {
+  final public void atomicExpression() throws ParseException {
     if (jj_2_55(4)) {
       jj_consume_token(ID);
     } else if (jj_2_56(4)) {
@@ -419,14 +419,14 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  static final public void nullExpression() throws ParseException {
+  final public void nullExpression() throws ParseException {
     jj_consume_token(NULL);
     jj_consume_token(PARAN_OPEN);
     type();
     jj_consume_token(PARAN_CLOSE);
   }
 
-  static final public void newExpression() throws ParseException {
+  final public void newExpression() throws ParseException {
     jj_consume_token(NEW);
     jj_consume_token(PARAN_OPEN);
     type();
@@ -450,476 +450,476 @@ public class MINIGrammar implements MINIGrammarConstants {
     jj_consume_token(PARAN_CLOSE);
   }
 
-  static private boolean jj_2_1(int xla) {
+  private boolean jj_2_1(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_1(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(0, xla); }
   }
 
-  static private boolean jj_2_2(int xla) {
+  private boolean jj_2_2(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_2_3(int xla) {
+  private boolean jj_2_3(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_3(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(2, xla); }
   }
 
-  static private boolean jj_2_4(int xla) {
+  private boolean jj_2_4(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_4(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(3, xla); }
   }
 
-  static private boolean jj_2_5(int xla) {
+  private boolean jj_2_5(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_5(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(4, xla); }
   }
 
-  static private boolean jj_2_6(int xla) {
+  private boolean jj_2_6(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_6(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(5, xla); }
   }
 
-  static private boolean jj_2_7(int xla) {
+  private boolean jj_2_7(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_7(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(6, xla); }
   }
 
-  static private boolean jj_2_8(int xla) {
+  private boolean jj_2_8(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_8(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(7, xla); }
   }
 
-  static private boolean jj_2_9(int xla) {
+  private boolean jj_2_9(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_9(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(8, xla); }
   }
 
-  static private boolean jj_2_10(int xla) {
+  private boolean jj_2_10(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_10(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(9, xla); }
   }
 
-  static private boolean jj_2_11(int xla) {
+  private boolean jj_2_11(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_11(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(10, xla); }
   }
 
-  static private boolean jj_2_12(int xla) {
+  private boolean jj_2_12(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_12(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(11, xla); }
   }
 
-  static private boolean jj_2_13(int xla) {
+  private boolean jj_2_13(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_13(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(12, xla); }
   }
 
-  static private boolean jj_2_14(int xla) {
+  private boolean jj_2_14(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_14(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(13, xla); }
   }
 
-  static private boolean jj_2_15(int xla) {
+  private boolean jj_2_15(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_15(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(14, xla); }
   }
 
-  static private boolean jj_2_16(int xla) {
+  private boolean jj_2_16(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_16(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(15, xla); }
   }
 
-  static private boolean jj_2_17(int xla) {
+  private boolean jj_2_17(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_17(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(16, xla); }
   }
 
-  static private boolean jj_2_18(int xla) {
+  private boolean jj_2_18(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_18(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(17, xla); }
   }
 
-  static private boolean jj_2_19(int xla) {
+  private boolean jj_2_19(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_19(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(18, xla); }
   }
 
-  static private boolean jj_2_20(int xla) {
+  private boolean jj_2_20(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_20(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(19, xla); }
   }
 
-  static private boolean jj_2_21(int xla) {
+  private boolean jj_2_21(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_21(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(20, xla); }
   }
 
-  static private boolean jj_2_22(int xla) {
+  private boolean jj_2_22(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_22(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(21, xla); }
   }
 
-  static private boolean jj_2_23(int xla) {
+  private boolean jj_2_23(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_23(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(22, xla); }
   }
 
-  static private boolean jj_2_24(int xla) {
+  private boolean jj_2_24(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_24(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(23, xla); }
   }
 
-  static private boolean jj_2_25(int xla) {
+  private boolean jj_2_25(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_25(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(24, xla); }
   }
 
-  static private boolean jj_2_26(int xla) {
+  private boolean jj_2_26(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_26(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(25, xla); }
   }
 
-  static private boolean jj_2_27(int xla) {
+  private boolean jj_2_27(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_27(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(26, xla); }
   }
 
-  static private boolean jj_2_28(int xla) {
+  private boolean jj_2_28(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_28(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(27, xla); }
   }
 
-  static private boolean jj_2_29(int xla) {
+  private boolean jj_2_29(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_29(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(28, xla); }
   }
 
-  static private boolean jj_2_30(int xla) {
+  private boolean jj_2_30(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_30(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(29, xla); }
   }
 
-  static private boolean jj_2_31(int xla) {
+  private boolean jj_2_31(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_31(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(30, xla); }
   }
 
-  static private boolean jj_2_32(int xla) {
+  private boolean jj_2_32(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_32(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(31, xla); }
   }
 
-  static private boolean jj_2_33(int xla) {
+  private boolean jj_2_33(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_33(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(32, xla); }
   }
 
-  static private boolean jj_2_34(int xla) {
+  private boolean jj_2_34(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_34(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(33, xla); }
   }
 
-  static private boolean jj_2_35(int xla) {
+  private boolean jj_2_35(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_35(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(34, xla); }
   }
 
-  static private boolean jj_2_36(int xla) {
+  private boolean jj_2_36(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_36(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(35, xla); }
   }
 
-  static private boolean jj_2_37(int xla) {
+  private boolean jj_2_37(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_37(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(36, xla); }
   }
 
-  static private boolean jj_2_38(int xla) {
+  private boolean jj_2_38(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_38(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(37, xla); }
   }
 
-  static private boolean jj_2_39(int xla) {
+  private boolean jj_2_39(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_39(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(38, xla); }
   }
 
-  static private boolean jj_2_40(int xla) {
+  private boolean jj_2_40(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_40(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(39, xla); }
   }
 
-  static private boolean jj_2_41(int xla) {
+  private boolean jj_2_41(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_41(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(40, xla); }
   }
 
-  static private boolean jj_2_42(int xla) {
+  private boolean jj_2_42(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_42(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(41, xla); }
   }
 
-  static private boolean jj_2_43(int xla) {
+  private boolean jj_2_43(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_43(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(42, xla); }
   }
 
-  static private boolean jj_2_44(int xla) {
+  private boolean jj_2_44(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_44(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(43, xla); }
   }
 
-  static private boolean jj_2_45(int xla) {
+  private boolean jj_2_45(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_45(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(44, xla); }
   }
 
-  static private boolean jj_2_46(int xla) {
+  private boolean jj_2_46(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_46(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(45, xla); }
   }
 
-  static private boolean jj_2_47(int xla) {
+  private boolean jj_2_47(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_47(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(46, xla); }
   }
 
-  static private boolean jj_2_48(int xla) {
+  private boolean jj_2_48(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_48(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(47, xla); }
   }
 
-  static private boolean jj_2_49(int xla) {
+  private boolean jj_2_49(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_49(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(48, xla); }
   }
 
-  static private boolean jj_2_50(int xla) {
+  private boolean jj_2_50(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_50(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(49, xla); }
   }
 
-  static private boolean jj_2_51(int xla) {
+  private boolean jj_2_51(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_51(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(50, xla); }
   }
 
-  static private boolean jj_2_52(int xla) {
+  private boolean jj_2_52(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_52(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(51, xla); }
   }
 
-  static private boolean jj_2_53(int xla) {
+  private boolean jj_2_53(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_53(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(52, xla); }
   }
 
-  static private boolean jj_2_54(int xla) {
+  private boolean jj_2_54(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_54(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(53, xla); }
   }
 
-  static private boolean jj_2_55(int xla) {
+  private boolean jj_2_55(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_55(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(54, xla); }
   }
 
-  static private boolean jj_2_56(int xla) {
+  private boolean jj_2_56(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_56(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(55, xla); }
   }
 
-  static private boolean jj_2_57(int xla) {
+  private boolean jj_2_57(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_57(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(56, xla); }
   }
 
-  static private boolean jj_2_58(int xla) {
+  private boolean jj_2_58(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_58(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(57, xla); }
   }
 
-  static private boolean jj_2_59(int xla) {
+  private boolean jj_2_59(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_59(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(58, xla); }
   }
 
-  static private boolean jj_2_60(int xla) {
+  private boolean jj_2_60(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_60(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(59, xla); }
   }
 
-  static private boolean jj_2_61(int xla) {
+  private boolean jj_2_61(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_61(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(60, xla); }
   }
 
-  static private boolean jj_2_62(int xla) {
+  private boolean jj_2_62(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_62(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(61, xla); }
   }
 
-  static private boolean jj_2_63(int xla) {
+  private boolean jj_2_63(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_63(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(62, xla); }
   }
 
-  static private boolean jj_2_64(int xla) {
+  private boolean jj_2_64(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_64(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(63, xla); }
   }
 
-  static private boolean jj_2_65(int xla) {
+  private boolean jj_2_65(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_65(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(64, xla); }
   }
 
-  static private boolean jj_2_66(int xla) {
+  private boolean jj_2_66(int xla) {
     jj_la = xla; jj_lastpos = jj_scanpos = token;
     try { return !jj_3_66(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(65, xla); }
   }
 
-  static private boolean jj_3_6() {
+  private boolean jj_3_6() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_12()) return true;
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  static private boolean jj_3_18() {
+  private boolean jj_3_18() {
     if (jj_scan_token(VAR)) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(ASSIGNMENT)) return true;
@@ -927,7 +927,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_16() {
+  private boolean jj_3R_16() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_17()) {
@@ -937,7 +937,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_17() {
+  private boolean jj_3_17() {
     if (jj_3R_20()) return true;
     if (jj_scan_token(ASSIGNMENT)) return true;
     if (jj_3R_20()) return true;
@@ -945,12 +945,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_14() {
+  private boolean jj_3_14() {
     if (jj_3R_19()) return true;
     return false;
   }
 
-  static private boolean jj_3R_15() {
+  private boolean jj_3R_15() {
     if (jj_scan_token(WHILE)) return true;
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_20()) return true;
@@ -958,7 +958,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_16() {
+  private boolean jj_3_16() {
     if (jj_scan_token(IF)) return true;
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_20()) return true;
@@ -966,7 +966,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_14() {
+  private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_15()) {
@@ -976,7 +976,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_7() {
+  private boolean jj_3_7() {
     if (jj_3R_12()) return true;
     if (jj_scan_token(ID)) return true;
     Token xsp;
@@ -987,7 +987,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_15() {
+  private boolean jj_3_15() {
     if (jj_scan_token(IF)) return true;
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_20()) return true;
@@ -995,7 +995,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_13() {
+  private boolean jj_3R_13() {
     if (jj_scan_token(BRACE_OPEN)) return true;
     Token xsp;
     while (true) {
@@ -1006,42 +1006,42 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_2() {
+  private boolean jj_3_2() {
     if (jj_3R_9()) return true;
     return false;
   }
 
-  static private boolean jj_3_13() {
+  private boolean jj_3_13() {
     if (jj_3R_18()) return true;
     return false;
   }
 
-  static private boolean jj_3_12() {
+  private boolean jj_3_12() {
     if (jj_3R_17()) return true;
     return false;
   }
 
-  static private boolean jj_3_11() {
+  private boolean jj_3_11() {
     if (jj_3R_16()) return true;
     return false;
   }
 
-  static private boolean jj_3_5() {
+  private boolean jj_3_5() {
     if (jj_scan_token(ARRAY_DEF)) return true;
     return false;
   }
 
-  static private boolean jj_3_10() {
+  private boolean jj_3_10() {
     if (jj_3R_15()) return true;
     return false;
   }
 
-  static private boolean jj_3_9() {
+  private boolean jj_3_9() {
     if (jj_3R_14()) return true;
     return false;
   }
 
-  static private boolean jj_3R_31() {
+  private boolean jj_3R_31() {
     if (jj_scan_token(PARAN_OPEN)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -1050,7 +1050,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_19() {
+  private boolean jj_3R_19() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_8()) {
@@ -1072,17 +1072,17 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_8() {
+  private boolean jj_3_8() {
     if (jj_3R_13()) return true;
     return false;
   }
 
-  static private boolean jj_3_66() {
+  private boolean jj_3_66() {
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  static private boolean jj_3R_12() {
+  private boolean jj_3R_12() {
     if (jj_scan_token(ID)) return true;
     Token xsp;
     while (true) {
@@ -1092,31 +1092,31 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_65() {
+  private boolean jj_3_65() {
     if (jj_scan_token(INT)) return true;
     return false;
   }
 
-  static private boolean jj_3_4() {
+  private boolean jj_3_4() {
     if (jj_3R_11()) return true;
     return false;
   }
 
-  static private boolean jj_3R_10() {
+  private boolean jj_3R_10() {
     if (jj_3R_12()) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  static private boolean jj_3R_11() {
+  private boolean jj_3R_11() {
     if (jj_3R_12()) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_3R_31()) return true;
     return false;
   }
 
-  static private boolean jj_3_64() {
+  private boolean jj_3_64() {
     if (jj_scan_token(COMMA)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -1127,12 +1127,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_3() {
+  private boolean jj_3_3() {
     if (jj_3R_10()) return true;
     return false;
   }
 
-  static private boolean jj_3R_9() {
+  private boolean jj_3R_9() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_3()) {
@@ -1142,7 +1142,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_8() {
+  private boolean jj_3R_8() {
     if (jj_scan_token(CLASS)) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(BRACE_OPEN)) return true;
@@ -1155,12 +1155,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_1() {
+  private boolean jj_3_1() {
     if (jj_3R_8()) return true;
     return false;
   }
 
-  static private boolean jj_3R_30() {
+  private boolean jj_3R_30() {
     if (jj_scan_token(NEW)) return true;
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_12()) return true;
@@ -1173,12 +1173,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_30() {
+  private boolean jj_3_30() {
     if (jj_3R_25()) return true;
     return false;
   }
 
-  static private boolean jj_3R_29() {
+  private boolean jj_3R_29() {
     if (jj_scan_token(NULL)) return true;
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_12()) return true;
@@ -1186,66 +1186,66 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_29() {
+  private boolean jj_3_29() {
     if (jj_3R_25()) return true;
     return false;
   }
 
-  static private boolean jj_3_50() {
+  private boolean jj_3_50() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_20()) return true;
     return false;
   }
 
-  static private boolean jj_3_54() {
+  private boolean jj_3_54() {
     if (jj_3R_26()) return true;
     return false;
   }
 
-  static private boolean jj_3_63() {
+  private boolean jj_3_63() {
     if (jj_scan_token(PARAN_OPEN)) return true;
     if (jj_3R_20()) return true;
     if (jj_scan_token(PARAN_CLOSE)) return true;
     return false;
   }
 
-  static private boolean jj_3_62() {
+  private boolean jj_3_62() {
     if (jj_scan_token(ID)) return true;
     if (jj_3R_28()) return true;
     return false;
   }
 
-  static private boolean jj_3_61() {
+  private boolean jj_3_61() {
     if (jj_3R_30()) return true;
     return false;
   }
 
-  static private boolean jj_3_60() {
+  private boolean jj_3_60() {
     if (jj_3R_29()) return true;
     return false;
   }
 
-  static private boolean jj_3_59() {
+  private boolean jj_3_59() {
     if (jj_scan_token(BOOL)) return true;
     return false;
   }
 
-  static private boolean jj_3_58() {
+  private boolean jj_3_58() {
     if (jj_scan_token(INT)) return true;
     return false;
   }
 
-  static private boolean jj_3_57() {
+  private boolean jj_3_57() {
     if (jj_scan_token(STRING)) return true;
     return false;
   }
 
-  static private boolean jj_3_56() {
+  private boolean jj_3_56() {
     if (jj_scan_token(THIS)) return true;
     return false;
   }
 
-  static private boolean jj_3R_23() {
+  private boolean jj_3R_23() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_55()) {
@@ -1276,12 +1276,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_55() {
+  private boolean jj_3_55() {
     if (jj_scan_token(ID)) return true;
     return false;
   }
 
-  static private boolean jj_3_51() {
+  private boolean jj_3_51() {
     if (jj_3R_20()) return true;
     Token xsp;
     while (true) {
@@ -1291,7 +1291,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_26() {
+  private boolean jj_3R_26() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
     Token xsp;
@@ -1300,7 +1300,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_53() {
+  private boolean jj_3_53() {
     if (jj_3R_23()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
@@ -1308,7 +1308,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_22() {
+  private boolean jj_3R_22() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_52()) {
@@ -1318,12 +1318,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_52() {
+  private boolean jj_3_52() {
     if (jj_3R_21()) return true;
     return false;
   }
 
-  static private boolean jj_3R_28() {
+  private boolean jj_3R_28() {
     if (jj_scan_token(PARAN_OPEN)) return true;
     Token xsp;
     xsp = jj_scanpos;
@@ -1332,77 +1332,77 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_28() {
+  private boolean jj_3_28() {
     if (jj_3R_25()) return true;
     return false;
   }
 
-  static private boolean jj_3_27() {
+  private boolean jj_3_27() {
     if (jj_3R_25()) return true;
     return false;
   }
 
-  static private boolean jj_3_49() {
+  private boolean jj_3_49() {
     if (jj_scan_token(OR)) return true;
     return false;
   }
 
-  static private boolean jj_3_48() {
+  private boolean jj_3_48() {
     if (jj_scan_token(AND)) return true;
     return false;
   }
 
-  static private boolean jj_3_47() {
+  private boolean jj_3_47() {
     if (jj_scan_token(GREATER_THAN)) return true;
     return false;
   }
 
-  static private boolean jj_3_46() {
+  private boolean jj_3_46() {
     if (jj_scan_token(LESS_THAN)) return true;
     return false;
   }
 
-  static private boolean jj_3_45() {
+  private boolean jj_3_45() {
     if (jj_scan_token(GREATER_THAN_EQUAL)) return true;
     return false;
   }
 
-  static private boolean jj_3_44() {
+  private boolean jj_3_44() {
     if (jj_scan_token(LESS_THAN_EQUAL)) return true;
     return false;
   }
 
-  static private boolean jj_3_43() {
+  private boolean jj_3_43() {
     if (jj_scan_token(NOTEQUAL)) return true;
     return false;
   }
 
-  static private boolean jj_3_42() {
+  private boolean jj_3_42() {
     if (jj_scan_token(EQUAL)) return true;
     return false;
   }
 
-  static private boolean jj_3_41() {
+  private boolean jj_3_41() {
     if (jj_scan_token(REMAINDER)) return true;
     return false;
   }
 
-  static private boolean jj_3_40() {
+  private boolean jj_3_40() {
     if (jj_scan_token(DIVIDE)) return true;
     return false;
   }
 
-  static private boolean jj_3_39() {
+  private boolean jj_3_39() {
     if (jj_scan_token(MULTIPLY)) return true;
     return false;
   }
 
-  static private boolean jj_3_38() {
+  private boolean jj_3_38() {
     if (jj_scan_token(MINUS)) return true;
     return false;
   }
 
-  static private boolean jj_3R_27() {
+  private boolean jj_3R_27() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_37()) {
@@ -1445,17 +1445,17 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_37() {
+  private boolean jj_3_37() {
     if (jj_scan_token(PLUS)) return true;
     return false;
   }
 
-  static private boolean jj_3_36() {
+  private boolean jj_3_36() {
     if (jj_scan_token(NEGATION)) return true;
     return false;
   }
 
-  static private boolean jj_3R_24() {
+  private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_35()) {
@@ -1465,33 +1465,33 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_35() {
+  private boolean jj_3_35() {
     if (jj_scan_token(MINUS)) return true;
     return false;
   }
 
-  static private boolean jj_3_34() {
+  private boolean jj_3_34() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_3R_26()) return true;
     return false;
   }
 
-  static private boolean jj_3_33() {
+  private boolean jj_3_33() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_3R_26()) return true;
     return false;
   }
 
-  static private boolean jj_3_32() {
+  private boolean jj_3_32() {
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
     if (jj_3R_28()) return true;
     return false;
   }
 
-  static private boolean jj_3R_25() {
+  private boolean jj_3R_25() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_31()) {
@@ -1507,7 +1507,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_31() {
+  private boolean jj_3_31() {
     if (jj_3R_27()) return true;
     if (jj_3R_20()) return true;
     Token xsp;
@@ -1516,7 +1516,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_26() {
+  private boolean jj_3_26() {
     if (jj_3R_23()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
@@ -1524,7 +1524,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_25() {
+  private boolean jj_3_25() {
     if (jj_3R_23()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
@@ -1532,7 +1532,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_24() {
+  private boolean jj_3_24() {
     if (jj_3R_23()) return true;
     if (jj_3R_27()) return true;
     if (jj_3R_20()) return true;
@@ -1540,7 +1540,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_23() {
+  private boolean jj_3_23() {
     if (jj_3R_23()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ID)) return true;
@@ -1548,7 +1548,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3R_21() {
+  private boolean jj_3R_21() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_22()) {
@@ -1567,24 +1567,24 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_22() {
+  private boolean jj_3_22() {
     if (jj_3R_24()) return true;
     if (jj_3R_20()) return true;
     if (jj_3R_25()) return true;
     return false;
   }
 
-  static private boolean jj_3_21() {
+  private boolean jj_3_21() {
     if (jj_3R_23()) return true;
     return false;
   }
 
-  static private boolean jj_3_20() {
+  private boolean jj_3_20() {
     if (jj_3R_22()) return true;
     return false;
   }
 
-  static private boolean jj_3R_20() {
+  private boolean jj_3R_20() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_19()) {
@@ -1597,37 +1597,36 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  static private boolean jj_3_19() {
+  private boolean jj_3_19() {
     if (jj_3R_21()) return true;
     return false;
   }
 
-  static private boolean jj_3R_18() {
+  private boolean jj_3R_18() {
     if (jj_scan_token(RETURN)) return true;
     if (jj_3R_20()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  static private boolean jj_3R_17() {
+  private boolean jj_3R_17() {
     if (jj_3R_20()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  static private boolean jj_initialized_once = false;
   /** Generated Token Manager. */
-  static public MINIGrammarTokenManager token_source;
-  static SimpleCharStream jj_input_stream;
+  public MINIGrammarTokenManager token_source;
+  SimpleCharStream jj_input_stream;
   /** Current token. */
-  static public Token token;
+  public Token token;
   /** Next token. */
-  static public Token jj_nt;
-  static private int jj_ntk;
-  static private Token jj_scanpos, jj_lastpos;
-  static private int jj_la;
-  static private int jj_gen;
-  static final private int[] jj_la1 = new int[0];
+  public Token jj_nt;
+  private int jj_ntk;
+  private Token jj_scanpos, jj_lastpos;
+  private int jj_la;
+  private int jj_gen;
+  final private int[] jj_la1 = new int[0];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1640,9 +1639,9 @@ public class MINIGrammar implements MINIGrammarConstants {
    private static void jj_la1_init_1() {
       jj_la1_1 = new int[] {};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[66];
-  static private boolean jj_rescan = false;
-  static private int jj_gc = 0;
+  final private JJCalls[] jj_2_rtns = new JJCalls[66];
+  private boolean jj_rescan = false;
+  private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public MINIGrammar(java.io.InputStream stream) {
@@ -1650,13 +1649,6 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
   /** Constructor with InputStream and supplied encoding */
   public MINIGrammar(java.io.InputStream stream, String encoding) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser.  ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     try { jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source = new MINIGrammarTokenManager(jj_input_stream);
     token = new Token();
@@ -1667,11 +1659,11 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   /** Reinitialise. */
-  static public void ReInit(java.io.InputStream stream) {
+  public void ReInit(java.io.InputStream stream) {
      ReInit(stream, null);
   }
   /** Reinitialise. */
-  static public void ReInit(java.io.InputStream stream, String encoding) {
+  public void ReInit(java.io.InputStream stream, String encoding) {
     try { jj_input_stream.ReInit(stream, encoding, 1, 1); } catch(java.io.UnsupportedEncodingException e) { throw new RuntimeException(e); }
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -1683,13 +1675,6 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   /** Constructor. */
   public MINIGrammar(java.io.Reader stream) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     jj_input_stream = new SimpleCharStream(stream, 1, 1);
     token_source = new MINIGrammarTokenManager(jj_input_stream);
     token = new Token();
@@ -1700,7 +1685,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   /** Reinitialise. */
-  static public void ReInit(java.io.Reader stream) {
+  public void ReInit(java.io.Reader stream) {
     jj_input_stream.ReInit(stream, 1, 1);
     token_source.ReInit(jj_input_stream);
     token = new Token();
@@ -1712,13 +1697,6 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   /** Constructor with generated Token Manager. */
   public MINIGrammar(MINIGrammarTokenManager tm) {
-    if (jj_initialized_once) {
-      System.out.println("ERROR: Second call to constructor of static parser. ");
-      System.out.println("       You must either use ReInit() or set the JavaCC option STATIC to false");
-      System.out.println("       during parser generation.");
-      throw new Error();
-    }
-    jj_initialized_once = true;
     token_source = tm;
     token = new Token();
     jj_ntk = -1;
@@ -1737,7 +1715,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
-  static private Token jj_consume_token(int kind) throws ParseException {
+  private Token jj_consume_token(int kind) throws ParseException {
     Token oldToken;
     if ((oldToken = token).next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
@@ -1762,8 +1740,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   static private final class LookaheadSuccess extends java.lang.Error { }
-  static final private LookaheadSuccess jj_ls = new LookaheadSuccess();
-  static private boolean jj_scan_token(int kind) {
+  final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
       jj_la--;
       if (jj_scanpos.next == null) {
@@ -1786,7 +1764,7 @@ public class MINIGrammar implements MINIGrammarConstants {
 
 
 /** Get the next Token. */
-  static final public Token getNextToken() {
+  final public Token getNextToken() {
     if (token.next != null) token = token.next;
     else token = token.next = token_source.getNextToken();
     jj_ntk = -1;
@@ -1795,7 +1773,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
 /** Get the specific Token. */
-  static final public Token getToken(int index) {
+  final public Token getToken(int index) {
     Token t = token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
@@ -1804,20 +1782,20 @@ public class MINIGrammar implements MINIGrammarConstants {
     return t;
   }
 
-  static private int jj_ntk() {
+  private int jj_ntk() {
     if ((jj_nt=token.next) == null)
       return (jj_ntk = (token.next=token_source.getNextToken()).kind);
     else
       return (jj_ntk = jj_nt.kind);
   }
 
-  static private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
-  static private int[] jj_expentry;
-  static private int jj_kind = -1;
-  static private int[] jj_lasttokens = new int[100];
-  static private int jj_endpos;
+  private java.util.List<int[]> jj_expentries = new java.util.ArrayList<int[]>();
+  private int[] jj_expentry;
+  private int jj_kind = -1;
+  private int[] jj_lasttokens = new int[100];
+  private int jj_endpos;
 
-  static private void jj_add_error_token(int kind, int pos) {
+  private void jj_add_error_token(int kind, int pos) {
     if (pos >= 100) return;
     if (pos == jj_endpos + 1) {
       jj_lasttokens[jj_endpos++] = kind;
@@ -1843,7 +1821,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   /** Generate ParseException. */
-  static public ParseException generateParseException() {
+  public ParseException generateParseException() {
     jj_expentries.clear();
     boolean[] la1tokens = new boolean[48];
     if (jj_kind >= 0) {
@@ -1880,14 +1858,14 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   /** Enable tracing. */
-  static final public void enable_tracing() {
+  final public void enable_tracing() {
   }
 
   /** Disable tracing. */
-  static final public void disable_tracing() {
+  final public void disable_tracing() {
   }
 
-  static private void jj_rescan_token() {
+  private void jj_rescan_token() {
     jj_rescan = true;
     for (int i = 0; i < 66; i++) {
     try {
@@ -1971,7 +1949,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     jj_rescan = false;
   }
 
-  static private void jj_save(int index, int xla) {
+  private void jj_save(int index, int xla) {
     JJCalls p = jj_2_rtns[index];
     while (p.gen > jj_gen) {
       if (p.next == null) { p = p.next = new JJCalls(); break; }
