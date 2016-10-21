@@ -27,10 +27,10 @@ public class Main {
 				for (Node child : cls.children) {
 					if (child instanceof FieldNode) {
 						FieldNode field = (FieldNode) child;
-						System.out.println("name: " + field.name + ", type: " + field.type);
+						System.out.println(field);
 					} else if (child instanceof MethodNode) {
 						MethodNode method = (MethodNode) child;
-						System.out.println(method.name);
+						System.out.println(method);
 					}
 				}
 			}

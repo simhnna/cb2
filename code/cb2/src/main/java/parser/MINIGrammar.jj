@@ -106,7 +106,7 @@ Node classMember() :
   }
 {
 	n=field() { return n; }
-| method() { n = new MethodNode(); return n; }
+| n=method() { return n; }
 }
 
 FieldNode field() :
@@ -119,10 +119,21 @@ FieldNode field() :
 	fieldType=type() fieldName=< ID > < SEMICOLON > { field.name = fieldName.image; field.type = fieldType; return field;}
 }
 
-void method() :
-{ }
+MethodNode method() :
 {
-  type() < ID > signature() blockStatement()
+  MethodNode method = new MethodNode();
+  Token methodName;
+  Type returnType;
+  ArrayList<FieldNode> arguments = null;
+}
+{
+  returnType=type() methodName=< ID > signature() blockStatement()
+  {
+		method.name = methodName.image;
+		method.returnType = returnType;
+		method.arguments = arguments;
+		return method;
+  }
 }
 
 Type type() :
@@ -138,6 +149,8 @@ Type type() :
 	  				return Type.STRING;
 	  		case "boolean":
 	  				return Type.BOOLEAN;
+	  		case "void":
+	  				return Type.VOID;
 	  		default:
 	  				return Type.INVALID;
 		}
