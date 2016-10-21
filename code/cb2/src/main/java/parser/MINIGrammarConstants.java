@@ -90,6 +90,8 @@ public interface MINIGrammarConstants {
   int BOOL = 46;
   /** RegularExpression Id. */
   int STRING = 47;
+  /** RegularExpression Id. */
+  int BAD_TOKEN = 48;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -148,6 +150,7 @@ public interface MINIGrammarConstants {
     "<INT>",
     "<BOOL>",
     "<STRING>",
+    "<BAD_TOKEN>",
   };
 
 }

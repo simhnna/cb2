@@ -1,19 +1,33 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = false;
-  lookahead = 4;}PARSER_BEGIN(MINIGrammar)package parser;
+  lookahead = 4;
+}PARSER_BEGIN(MINIGrammar)package parser;
 
 import java.io.FileInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import components.*;
 import java.util.ArrayList;
+import testsuite.MINIException;
+import errorHandling.ErrorHandler;
 
 
 public class MINIGrammar {  public static void main(String args []) throws ParseException {    MINIGrammar parser = new MINIGrammar(System.in);
     parser.file();  }
 
-  public static ArrayList<ClassNode> parse(FileInputStream in) throws ParseException {
-    MINIGrammar parser = new MINIGrammar(in);
-    return parser.file();
+  public static ArrayList<ClassNode> parse(File in) throws MINIException {
+    try { 
+    
+    	MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
+    	return parser.file();
+    } catch (FileNotFoundException e) {
+    	e.printStackTrace();
+    	return null;
+  	} catch (ParseException e) {
+			ErrorHandler.handleParseError(in, e);
+			return null;
+  	}
   }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
 
 /* COMMENTS */
@@ -78,9 +92,9 @@ MORE :
 | < ID : ([ "a"-"z","A"-"Z" ])+ >
 | < INT: ([ "0"-"9" ])+ >
 | < BOOL: ("true"|"false") >
-| < STRING: "\"" ("\u0020"|"\u0021"|["\u0023"-"\u007E"])* "\"" > 
+| < STRING: "\"" ("\u0020"|"\u0021"|["\u0023"-"\u007E"])* "\"" >
+| < BAD_TOKEN : ~[] >
 }
-
 
 ArrayList<ClassNode> file() :
 {
@@ -102,35 +116,42 @@ ClassNode mini_class() :
 
 Node classMember() :
 {
-  Node n;
-  }
+  FieldNode f = null;
+  MethodNode m = null;
+  Type memberType;
+  Token memberName;
+}
 {
-	n=field() { return n; }
-| n=method() { return n; }
+  memberType=type() memberName=< ID > (f=field() | m=method())
+  {
+		if (f == null) {
+			m.name = memberName.image;
+			m.returnType = memberType;
+			return m;
+		} else { 
+			f.name = memberName.image;
+			f.type = memberType;
+			return f;
+		}
+  }
+
 }
 
 FieldNode field() :
+{}
 {
-  FieldNode field = new FieldNode();
-	Token fieldName;
-	Type fieldType;
-}
-{
-	fieldType=type() fieldName=< ID > < SEMICOLON > { field.name = fieldName.image; field.type = fieldType; return field;}
+	 < SEMICOLON > { return new FieldNode();}
+
 }
 
 MethodNode method() :
 {
   MethodNode method = new MethodNode();
-  Token methodName;
-  Type returnType;
   ArrayList<FieldNode> arguments = null;
 }
 {
-  returnType=type() methodName=< ID > signature() blockStatement()
+    signature() blockStatement()
   {
-		method.name = methodName.image;
-		method.returnType = returnType;
 		method.arguments = arguments;
 		return method;
   }
@@ -183,8 +204,7 @@ void blockStatement() :
 void ifStatement() :
 { }
 {
-  < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
-| < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement() < ELSE > blockStatement()
+ < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement() (< ELSE > blockStatement())?
 }
 
 void whileStatement() :
@@ -287,14 +307,13 @@ void memberSelection_() :
 void atomicExpression() :
 { }
 {
-  < ID >
+ < ID > (argumentList())?
 | < THIS >
 | < STRING >
 | < INT >
 | < BOOL >
 | nullExpression()
 | newExpression()
-| < ID > argumentList()
 | < PARAN_OPEN > expression() < PARAN_CLOSE >
 }
 

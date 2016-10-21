@@ -10,7 +10,7 @@ import components.FieldNode;
 import components.MethodNode;
 import components.Node;
 import parser.MINIGrammar;
-import parser.ParseException;
+import testsuite.MINIException;
 
 public class Main {
 
@@ -21,7 +21,7 @@ public class Main {
 	public static void main(String... args) {
 		ArrayList<ClassNode> classes;
 		try {
-			classes = MINIGrammar.parse(new FileInputStream(new File("res/example_code/valid/testing_file.m")));
+			classes = MINIGrammar.parse(new File("res/example_code/valid/testing_file.m"));
 			for (ClassNode cls: classes) {
 				System.out.println(cls.name);
 				for (Node child : cls.children) {
@@ -34,10 +34,7 @@ public class Main {
 					}
 				}
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (MINIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
