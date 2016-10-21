@@ -1,3 +1,3 @@
 class validJava {
-  int meh = 1;
+  int meh;
 }
