@@ -2,14 +2,10 @@ package main;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
 import parser.MINIGrammar;
-import parser.ParseException;
-import parser.TokenMgrError;
 import testsuite.MINIException;
 
 
