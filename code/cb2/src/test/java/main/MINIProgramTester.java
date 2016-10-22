@@ -10,6 +10,7 @@ import org.junit.Test;
 import parser.MINIGrammar;
 import parser.ParseException;
 import parser.TokenMgrError;
+import testsuite.MINIException;
 
 
 public class MINIProgramTester {
@@ -19,12 +20,8 @@ public class MINIProgramTester {
 		for (File f: sourceFiles) {
 			if (f.isFile() && f.getName().endsWith(".m")) {
 				try {
-					MINIGrammar parser = new MINIGrammar(new FileInputStream(f));
-					parser.file();
-				} catch (FileNotFoundException e) {
-					// SHOULD NOT HAPPEN
-					e.printStackTrace();
-				} catch (ParseException e) {
+					MINIGrammar.parse(f);
+				} catch (MINIException e) {
 					// TEST FAILURE
 					assertFalse("Failed to parse file " + f.getAbsolutePath(), true);
 					e.printStackTrace();
@@ -39,14 +36,11 @@ public class MINIProgramTester {
 		for (File f: sourceFiles) {
 			if (f.isFile() && f.getName().endsWith(".m")) {
 				try {
-					MINIGrammar parser = new MINIGrammar(new FileInputStream(f));
-					parser.file();
+					MINIGrammar.parse(f);
 					assertFalse("Successfully parsed file that should contain errors " + f.getAbsolutePath(), true);
-				} catch (FileNotFoundException e) {
-					// SHOULD NOT HAPPEN
-					e.printStackTrace();
-				} catch (ParseException|TokenMgrError e) {
+				} catch (MINIException e) {
 					// TEST SUCCESS
+					e.printStackTrace();
 				}
 			}
 		}
