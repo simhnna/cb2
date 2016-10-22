@@ -1,7 +1,6 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = false;
-  lookahead = 4;
 }PARSER_BEGIN(MINIGrammar)package parser;
 
 import java.io.FileInputStream;
@@ -25,7 +24,7 @@ public class MINIGrammar {  public static void main(String args []) throws Pars
     	e.printStackTrace();
     	return null;
   	} catch (ParseException e) {
-			ErrorHandler.handleParseError(in, e);
+			ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
 			return null;
   	}
   }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
@@ -147,10 +146,10 @@ FieldNode field() :
 MethodNode method() :
 {
   MethodNode method = new MethodNode();
-  ArrayList<FieldNode> arguments = null;
+  ArrayList<FieldNode> arguments;
 }
 {
-    signature() blockStatement()
+    arguments=signature() blockStatement()
   {
 		method.arguments = arguments;
 		return method;
@@ -178,20 +177,42 @@ Type type() :
 	}
 }
 
-void signature() :
-{ }
+ArrayList<FieldNode> signature() :
 {
-	< PARAN_OPEN > ( type() < ID > (< COMMA > type() < ID >)*)? < PARAN_CLOSE >
+  ArrayList<FieldNode> arguments = new ArrayList<FieldNode>();
+	Token argument;
+	Type type;
+}
+{
+	< PARAN_OPEN >
+	( type=type() argument=< ID >
+		(< COMMA > type=type() argument=< ID >
+			{
+			  FieldNode n = new FieldNode();
+			  n.type = type;
+			  n.name = argument.image;
+			  arguments.add(n);
+			})*
+			{
+			  FieldNode n = new FieldNode();
+			  n.type = type;
+			  n.name = argument.image;
+			  arguments.add(n);
+			}
+	)? < PARAN_CLOSE > { return arguments; }
 }
 
 void statement() :
 { }
-{
+{  
   blockStatement()
 | ifStatement()
 | whileStatement()
-| assignmentStatement()
-| expressionStatement()
+| expression() (
+  < ASSIGNMENT > expression() < SEMICOLON >
+	| < SEMICOLON >
+	) 
+| < VAR > < ID > <ASSIGNMENT > expression() < SEMICOLON >
 | returnStatement()
 }
 
@@ -213,20 +234,6 @@ void whileStatement() :
   < WHILE > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
 }
 
-void assignmentStatement() :
-{ }
-{
-  expression() < ASSIGNMENT > expression() < SEMICOLON >
-| < VAR > < ID > <ASSIGNMENT > expression() < SEMICOLON >
-}
-
-
-void expressionStatement() :
-{}
-{
-  expression() < SEMICOLON >
-}
-
 void returnStatement():
 { }
 {
@@ -236,29 +243,9 @@ void returnStatement():
 void expression() :
 { }
 {
-  application()
-| memberSelection()
-| atomicExpression()
+  ( unaryOperator() expression() | atomicExpression() ) (binaryOperator() expression() | argumentList() | < DOT > < ID >)*
 }
 
-void application() :
-{ }
-{
-  unaryOperator() expression() application_()
-| atomicExpression() < DOT > < ID > memberSelection_() binaryOperator() expression() application_()
-| atomicExpression() binaryOperator() expression() application_()
-| atomicExpression() < DOT > < ID > memberSelection_() < DOT > < ID > argumentList() application_()
-| atomicExpression() < DOT > < ID > argumentList() application_()
-}
-
-void application_():
-{ }
-{
-  binaryOperator() expression() (application_())?
-| < DOT > < ID > argumentList() (application_())?
-| < DOT > < ID > memberSelection_() < DOT > < ID > argumentList() (application_())?
-| < DOT > < ID > memberSelection_() binaryOperator() expression() (application_())?
-}
 
 void unaryOperator() :
 { }
@@ -291,23 +278,10 @@ void argumentList() :
   < PARAN_OPEN > (expression() (< COMMA > expression())*)? < PARAN_CLOSE >
 }
 
-void memberSelection () :
-{ }
-{
-  application() < DOT > < ID > memberSelection_()
-| atomicExpression() < DOT > < ID > memberSelection_()
-}
-
-void memberSelection_() :
-{ }
-{
-  < DOT > < ID > (memberSelection_())?
-}
-
 void atomicExpression() :
 { }
 {
- < ID > (argumentList())?
+ < ID >
 | < THIS >
 | < STRING >
 | < INT >

@@ -9,6 +9,15 @@ public class MethodNode extends Node {
 	
 	@Override
 	public String toString() {
-		return "<Method name='" + this.name + "', returns='" + this.returnType + "'>";
+		StringBuilder bldr = new StringBuilder();
+		bldr.append("<Method name='" + this.name + "', returns='" + this.returnType + "' with args: [");
+		for (int i = 0; i < arguments.size(); ++i) {
+			bldr.append(arguments.get(i));
+			if (i < arguments.size() - 1) {
+				bldr.append(", ");
+			}
+		}
+		bldr.append("]>");
+		return bldr.toString();
 	}
 }

@@ -2,19 +2,24 @@ package errorHandling;
 
 import java.io.File;
 
-import parser.ParseException;
+import parser.Token;
 import testsuite.MINIException;
 import testsuite.TypeException;
 
 public class ErrorHandler {
 
-	public static void handleParseError(File f, ParseException e) throws MINIException {
-		String file;
-		int line = e.currentToken.next.beginLine;
-		int column = e.currentToken.next.beginColumn;
-		System.err.println(">>>>>>>>>>>");
-		e.printStackTrace();
-		System.err.println("<<<<<<<<<<<");
-		throw new TypeException(f, line, "error");
+	public static void handleParseError(File f, Token currentToken, String[] tokenImage, int[][] expectedTokenSequences) throws MINIException {
+		int line = currentToken.next.beginLine;
+		int col = currentToken.next.beginColumn;
+		StringBuilder bldr = new StringBuilder("col:" + col +" -> was expecting ");
+		for (int i = 0; i < expectedTokenSequences.length; ++i) {
+			for (int j = 0; j < expectedTokenSequences[i].length; ++j) {
+				bldr.append(tokenImage[expectedTokenSequences[i][j]] + " ");
+			}
+			if (i < expectedTokenSequences.length - 1) {
+				bldr.append("or ");
+			}
+		}
+		throw new TypeException(f, line, bldr.toString());
 	}
 }
