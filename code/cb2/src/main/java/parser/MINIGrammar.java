@@ -11,11 +11,6 @@ import errorHandling.ErrorHandler;
 
 
 public class MINIGrammar implements MINIGrammarConstants {
-  public static void main(String args []) throws ParseException {
-    MINIGrammar parser = new MINIGrammar(System.in);
-    parser.file();
-  }
-
   public static ArrayList<ClassNode> parse(File in) throws MINIException {
     try {
 
