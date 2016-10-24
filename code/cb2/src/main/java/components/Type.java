@@ -1,5 +1,5 @@
 package components;
 
 public enum Type {
-	INTEGER, STRING, ARRAY, BOOLEAN, INVALID, VOID
+    INTEGER, STRING, ARRAY, BOOLEAN, INVALID, VOID
 }

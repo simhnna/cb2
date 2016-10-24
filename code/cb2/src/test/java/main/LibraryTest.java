@@ -1,4 +1,5 @@
 package main;
+
 import org.junit.Test;
 
 import main.Main;
@@ -12,7 +13,8 @@ import static org.junit.Assert.*;
  * @author sim, @date 10/20/16 7:30 PM
  */
 public class LibraryTest {
-    @Test public void testSomeLibraryMethod() {
+    @Test
+    public void testSomeLibraryMethod() {
         Main classUnderTest = new Main();
         assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
