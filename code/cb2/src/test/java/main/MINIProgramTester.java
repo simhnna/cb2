@@ -43,7 +43,6 @@ public class MINIProgramTester {
                         int lineNumber = Integer.parseInt(errorLine);
                         assertEquals("The error occurred in an unexpected line", lineNumber, e.getLineNumber());
                     } catch (NumberFormatException ne) {}
-                    e.printStackTrace();
                 }
             }
         }
