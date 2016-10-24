@@ -12,3 +12,7 @@ This will generate a html report with the results in `build/reports/tests/`
 The `master` branch is protected, meaning no (force) pushes are allowed to it. Everything has to merged using Pull Requests.
 
 Pull requests have to be reviewed by at least one other person, before they can be merged.
+
+## Build reports
+
+Build reports are uploaded [here](https://simonsmiley.github.io/cb2)
