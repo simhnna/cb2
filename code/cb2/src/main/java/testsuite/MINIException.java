@@ -23,7 +23,7 @@ public abstract class MINIException extends Exception {
         return file;
     }
 
-    int getLineNumber() {
+    public int getLineNumber() {
         return line;
     }
 

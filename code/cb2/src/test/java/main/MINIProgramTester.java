@@ -38,6 +38,11 @@ public class MINIProgramTester {
                     assertFalse("Successfully parsed file that should contain errors " + f.getAbsolutePath(), true);
                 } catch (MINIException e) {
                     // TEST SUCCESS
+                    String errorLine = f.getName().substring(0, 4);
+                    try {
+                        int lineNumber = Integer.parseInt(errorLine);
+                        assertEquals("The error occurred in an unexpected line", lineNumber, e.getLineNumber());
+                    } catch (NumberFormatException ne) {}
                     e.printStackTrace();
                 }
             }
