@@ -1,0 +1,406 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = false;
+}
+
+PARSER_BEGIN(MINIGrammar)
+package parser;
+import java.io.FileInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import components.*;
+import java.util.ArrayList;
+import testsuite.MINIException;
+import errorHandling.ErrorHandler;
+
+public class MINIGrammar
+{
+  public static ArrayList < ClassNode > parse(File in) throws MINIException
+  {
+    try
+    {
+      MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
+      return parser.file();
+    }
+    catch (FileNotFoundException e)
+    {
+      e.printStackTrace();
+      return null;
+    }
+    catch (ParseException e)
+    {
+      ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
+      return null;
+    }
+  }
+}
+
+PARSER_END(MINIGrammar)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+/* COMMENTS */
+
+MORE :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+| 
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+< IN_SINGLE_LINE_COMMENT >
+SPECIAL_TOKEN :
+{
+  < SINGLE_LINE_COMMENT :
+    "\n"
+  | "\r"
+  | "\r\n" > : DEFAULT
+}
+
+< IN_MULTI_LINE_COMMENT >
+SPECIAL_TOKEN :
+{
+  < MULTI_LINE_COMMENT : "*/" > : DEFAULT
+}
+
+< IN_SINGLE_LINE_COMMENT, IN_MULTI_LINE_COMMENT >
+MORE :
+{
+  < ~[ ] >
+}
+
+< DEFAULT >
+TOKEN : /* Reserved keywords and such */
+{
+  < CLASS : "class" >
+| < BRACE_OPEN : "{" >
+| < BRACE_CLOSE : "}" >
+| < PARAN_OPEN : "(" >
+| < PARAN_CLOSE : ")" >
+| < ARRAY_DEF : "[]" >
+| < THIS : "this" >
+| < DOT : "." >
+| < COMMA : "," >
+| < SEMICOLON : ";" >
+| < NULL : "null" >
+| < NEW : "new" >
+| < RETURN : "return" >
+| < VAR : "var" >
+| < IF : "if" >
+| < ELSE : "else" >
+| < WHILE : "while" >
+| < ASSIGNMENT : ":=" >
+| < MINUS : "-" >
+| < NEGATION : "!" >
+| < PLUS : "+" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
+| < REMAINDER : "%" >
+| < EQUAL : "==" >
+| < NOTEQUAL : "!=" >
+| < LESS_THAN_EQUAL : "<=" >
+| < GREATER_THAN_EQUAL : ">=" >
+| < LESS_THAN : "<" >
+| < GREATER_THAN : ">" >
+| < AND : "&&" >
+| < OR : "||" >
+| < TRUE : "true" >
+| < FALSE : "false" >
+| < ID : ([ "a"-"z", "A"-"Z" ])+ >
+| < INT : ([ "0"-"9" ])+ >
+| < BOOL :
+    (
+      "true"
+    | "false"
+    ) >
+| < STRING :
+    "\""
+    (
+      " "
+    | "!"
+    | [ "#"-"~" ]
+    )*
+    "\"" >
+| < BAD_TOKEN : ~[ ] >
+}
+
+ArrayList < ClassNode > file() :
+{
+  ArrayList < ClassNode > classes = new ArrayList < ClassNode > ();
+  ClassNode cls;
+}
+{
+  (
+    cls = mini_class()
+    {
+      classes.add(cls);
+    }
+  )*
+  < EOF >
+  {
+    return classes;
+  }
+}
+
+ClassNode mini_class() :
+{
+  ClassNode cls = new ClassNode();
+  Token clsName;
+  Node classMember;
+}
+{
+  < CLASS > clsName = < ID > < BRACE_OPEN >
+  (
+    classMember = classMember()
+    {
+      cls.children.add(classMember);
+    }
+  )*
+  < BRACE_CLOSE >
+  {
+    cls.name = clsName.image;
+    return cls;
+  }
+}
+
+Node classMember() :
+{
+  FieldNode type = null;
+  MethodNode m = null;
+  Token memberName;
+}
+{
+  type = type() memberName = < ID >
+  (
+    field()
+  | m = method()
+  )
+  {
+    if (m != null)
+    {
+      m.name = memberName.image;
+      m.returnType = type;
+      return m;
+    }
+    else
+    {
+      type.name = memberName.image;
+      return type;
+    }
+  }
+}
+
+void field() :
+{}
+{
+  < SEMICOLON >
+}
+
+MethodNode method() :
+{
+  MethodNode method = new MethodNode();
+  ArrayList < FieldNode > arguments;
+}
+{
+  arguments = signature() blockStatement()
+  {
+    method.arguments = arguments;
+    return method;
+  }
+}
+
+FieldNode type() :
+{
+  Token typeIdentifier;
+}
+{
+  typeIdentifier = < ID > (< ARRAY_DEF >)*
+  {
+    switch (typeIdentifier.image)
+    {
+      case "int" : 
+      return new IntegerField();
+      case "string" : 
+      return new StringField();
+      case "boolean" : 
+      return new BooleanField();
+      case "void" : 
+      return new VoidField();
+      default : 
+      return new InvalidField();
+    }
+  }
+}
+
+ArrayList < FieldNode > signature() :
+{
+  ArrayList < FieldNode > arguments = new ArrayList < FieldNode > ();
+  Token argument;
+  FieldNode n;
+}
+{
+  < PARAN_OPEN >
+  (
+    n = type() argument = < ID >
+    (
+      < COMMA > n = type() argument = < ID >
+      {
+        n.name = argument.image;
+        arguments.add(n);
+      }
+    )*
+    {
+      n.name = argument.image;
+      arguments.add(n);
+    }
+  )?
+  < PARAN_CLOSE >
+  {
+    return arguments;
+  }
+}
+
+void statement() :
+{}
+{
+  blockStatement()
+| ifStatement()
+| whileStatement()
+| expression()
+  (
+    < ASSIGNMENT > expression() < SEMICOLON >
+  | < SEMICOLON >
+  )
+| < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
+| returnStatement()
+}
+
+void blockStatement() :
+{}
+{
+  < BRACE_OPEN >
+  (
+    statement()
+  )*
+  < BRACE_CLOSE >
+}
+
+void ifStatement() :
+{}
+{
+  < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+  (
+    < ELSE > blockStatement()
+  )?
+}
+
+void whileStatement() :
+{}
+{
+  < WHILE > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+}
+
+void returnStatement() :
+{}
+{
+  < RETURN > expression() < SEMICOLON >
+}
+
+void expression() :
+{}
+{
+  (
+    unaryOperator() expression()
+  | atomicExpression()
+  )
+  (
+    LOOKAHEAD(< PARAN_OPEN >
+  | < DOT >
+  | binaryOperator())
+    (
+      binaryOperator() expression()
+    | argumentList()
+    | < DOT > < ID >
+    )
+  )*
+}
+
+void unaryOperator() :
+{}
+{
+  < MINUS >
+| < NEGATION >
+}
+
+void binaryOperator() :
+{}
+{
+  < PLUS >
+| < MINUS >
+| < MULTIPLY >
+| < DIVIDE >
+| < REMAINDER >
+| < EQUAL >
+| < NOTEQUAL >
+| < LESS_THAN_EQUAL >
+| < GREATER_THAN_EQUAL >
+| < LESS_THAN >
+| < GREATER_THAN >
+| < AND >
+| < OR >
+}
+
+void argumentList() :
+{}
+{
+  < PARAN_OPEN >
+  (
+    expression()
+    (
+      < COMMA > expression()
+    )*
+  )?
+  < PARAN_CLOSE >
+}
+
+void atomicExpression() :
+{}
+{
+  < ID >
+| < THIS >
+| < STRING >
+| < INT >
+| < BOOL >
+| nullExpression()
+| newExpression()
+| < PARAN_OPEN > expression() < PARAN_CLOSE >
+}
+
+void nullExpression() :
+{}
+{
+  < NULL > < LESS_THAN > type() < GREATER_THAN >
+}
+
+void newExpression() :
+{}
+{
+  < NEW > < LESS_THAN > type()
+  (
+    < COMMA >
+    (
+      < INT >
+    | < ID >
+    )
+  )*
+  < GREATER_THAN >
+}
