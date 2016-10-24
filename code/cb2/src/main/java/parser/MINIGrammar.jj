@@ -112,31 +112,29 @@ ClassNode mini_class() :
 
 Node classMember() :
 {
-  FieldNode f = null;
+  FieldNode type = null;
   MethodNode m = null;
-  Type memberType;
   Token memberName;
 }
 {
-  memberType=type() memberName=< ID > (f=field() | m=method())
+  type=type() memberName=< ID > (field() | m=method())
   {
-		if (f == null) {
+		if (m != null) {
 			m.name = memberName.image;
-			m.returnType = memberType;
+			m.returnType = type;
 			return m;
 		} else { 
-			f.name = memberName.image;
-			f.type = memberType;
-			return f;
+			type.name = memberName.image;
+			return type;
 		}
   }
 
 }
 
-FieldNode field() :
+void field() :
 {}
 {
-	 < SEMICOLON > { return new FieldNode();}
+	 < SEMICOLON >
 
 }
 
@@ -153,7 +151,7 @@ MethodNode method() :
   }
 }
 
-Type type() :
+FieldNode type() :
 {
   Token typeIdentifier;
   }
@@ -161,15 +159,15 @@ Type type() :
 	typeIdentifier=< ID > (< ARRAY_DEF >)* {
 	  switch(typeIdentifier.image) { 
 	  		case "int":
-	  				return Type.INTEGER;
+	  				return new IntegerField();
 	  		case "string":
-	  				return Type.STRING;
+	  				return new StringField();
 	  		case "boolean":
-	  				return Type.BOOLEAN;
+	  				return new BooleanField();
 	  		case "void":
-	  				return Type.VOID;
+	  				return new VoidField();
 	  		default:
-	  				return Type.INVALID;
+	  				return new InvalidField();
 		}
 	}
 }
@@ -178,21 +176,17 @@ ArrayList<FieldNode> signature() :
 {
   ArrayList<FieldNode> arguments = new ArrayList<FieldNode>();
 	Token argument;
-	Type type;
+	FieldNode n;
 }
 {
 	< PARAN_OPEN >
-	( type=type() argument=< ID >
-		(< COMMA > type=type() argument=< ID >
+	( n=type() argument=< ID >
+		(< COMMA > n=type() argument=< ID >
 			{
-			  FieldNode n = new FieldNode();
-			  n.type = type;
 			  n.name = argument.image;
 			  arguments.add(n);
 			})*
 			{
-			  FieldNode n = new FieldNode();
-			  n.type = type;
 			  n.name = argument.image;
 			  arguments.add(n);
 			}
@@ -291,11 +285,11 @@ void atomicExpression() :
 void nullExpression() :
 { }
 {
-  < NULL > < PARAN_OPEN > type() < PARAN_CLOSE >
+  < NULL > < LESS_THAN > type() < GREATER_THAN >
 }
 
 void newExpression() :
 { }
 {
-  < NEW > <PARAN_OPEN > type() (< COMMA > (< INT >|< ID >))* < PARAN_CLOSE >
+  < NEW > < LESS_THAN > type() (< COMMA > (< INT >|< ID >))* < GREATER_THAN >
 }

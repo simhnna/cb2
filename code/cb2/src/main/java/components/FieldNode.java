@@ -1,11 +1,10 @@
 package components;
 
-public class FieldNode extends Node {
-    public Type type;
+public abstract class FieldNode extends Node {
     public String name;
-
+    
     @Override
     public String toString() {
-        return "<Field name='" + this.name + "', type='" + this.type + "'>";
+        return "<Field name='" + this.name + "'>";
     }
 }
