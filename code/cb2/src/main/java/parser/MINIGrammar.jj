@@ -1,7 +1,13 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = false;
-}PARSER_BEGIN(MINIGrammar)package parser;
+ */
+options
+{
+  static = false;
+}
+
+PARSER_BEGIN(MINIGrammar)
+package parser;
 
 import java.io.FileInputStream;
 import java.io.File;
@@ -12,7 +18,8 @@ import testsuite.MINIException;
 import errorHandling.ErrorHandler;
 
 
-public class MINIGrammar {  public static ArrayList<ClassNode> parse(File in) throws MINIException {
+public class MINIGrammar {
+  public static ArrayList<ClassNode> parse(File in) throws MINIException {
     try { 
     
     	MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
@@ -24,7 +31,18 @@ public class MINIGrammar {  public static ArrayList<ClassNode> parse(File in) t
 			ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
 			return null;
   	}
-  }}PARSER_END(MINIGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}
+  }
+}
+
+PARSER_END(MINIGrammar)
+
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
 
 /* COMMENTS */
 
@@ -54,7 +72,8 @@ MORE :
 }
 
 < DEFAULT > TOKEN : /* Reserved keywords and such */
-{  < CLASS : "class" >
+{
+  < CLASS : "class" >
 | < BRACE_OPEN : "{" >
 | < BRACE_CLOSE : "}" >
 | < PARAN_OPEN : "(" >
@@ -73,7 +92,10 @@ MORE :
 | < WHILE : "while" >
 | < ASSIGNMENT : ":=" >
 | < MINUS : "-" >
-| < NEGATION: "!" >| < PLUS : "+" >| < MULTIPLY : "*" >| < DIVIDE : "/" >
+| < NEGATION: "!" >
+| < PLUS : "+" >
+| < MULTIPLY : "*" >
+| < DIVIDE : "/" >
 | < REMAINDER : "%" >
 | < EQUAL : "==" >
 | < NOTEQUAL : "!=" >
@@ -95,7 +117,7 @@ MORE :
 ArrayList<ClassNode> file() :
 {
   ArrayList<ClassNode> classes = new ArrayList<ClassNode>();
-  ClassNode cls = new ClassNode();}
+  ClassNode cls;}
 {
 	(cls=mini_class() { classes.add(cls); })* < EOF > { return classes; }
 }
@@ -234,7 +256,15 @@ void returnStatement():
 void expression() :
 { }
 {
-  ( unaryOperator() expression() | atomicExpression() ) (binaryOperator() expression() | argumentList() | < DOT > < ID >)*
+  (
+    unaryOperator() expression()
+  | atomicExpression()
+  )
+  (
+    binaryOperator() expression()
+  | argumentList()
+  | < DOT > < ID >
+  )*
 }
 
 

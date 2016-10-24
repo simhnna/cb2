@@ -27,7 +27,7 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public ArrayList<ClassNode> file() throws ParseException {
   ArrayList<ClassNode> classes = new ArrayList<ClassNode>();
-  ClassNode cls = new ClassNode();
+  ClassNode cls;
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
