@@ -20,8 +20,8 @@ public class MINIProgramTester {
                     MINIGrammar.parse(f);
                 } catch (MINIException e) {
                     // TEST FAILURE
-                    assertFalse("Failed to parse file " + f.getAbsolutePath(), true);
                     e.printStackTrace();
+                    assertFalse("Failed to parse file " + f.getAbsolutePath(), true);
                 }
             }
         }

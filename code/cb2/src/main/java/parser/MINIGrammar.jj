@@ -113,8 +113,6 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
-| < TRUE : "true" >
-| < FALSE : "false" >
 | < ID : ([ "a"-"z", "A"-"Z" ])+ >
 | < INT : ([ "0"-"9" ])+ >
 | < BOOL :

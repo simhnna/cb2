@@ -544,6 +544,19 @@ public class MINIGrammar implements MINIGrammarConstants {
     finally { jj_save(0, xla); }
   }
 
+  private boolean jj_3_1() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(13)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(17)) {
+    jj_scanpos = xsp;
+    if (jj_3R_9()) return true;
+    }
+    }
+    return false;
+  }
+
   private boolean jj_3R_10() {
     Token xsp;
     xsp = jj_scanpos;
@@ -592,19 +605,6 @@ public class MINIGrammar implements MINIGrammarConstants {
     return false;
   }
 
-  private boolean jj_3_1() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(13)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(17)) {
-    jj_scanpos = xsp;
-    if (jj_3R_9()) return true;
-    }
-    }
-    return false;
-  }
-
   /** Generated Token Manager. */
   public MINIGrammarTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -627,7 +627,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1_0 = new int[] {0x400,0x0,0x82000,0x8000,0x40000,0x0,0x8080000,0x35f12800,0x35f12800,0x2000000,0x30312000,0xd0022000,0x30000000,0xd0000000,0x40000,0x30312000,0x312000,0x40000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x1000,0x0,0x0,0x0,0x1000,0x0,0xf000,0xf000,0x0,0xf000,0x3ff,0x0,0x3ff,0x0,0xf000,0xf000,0x0,0x3000,};
+      jj_la1_1 = new int[] {0x0,0x400,0x0,0x0,0x0,0x400,0x0,0x3c00,0x3c00,0x0,0x3c00,0x3ff,0x0,0x3ff,0x0,0x3c00,0x3c00,0x0,0xc00,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[1];
   private boolean jj_rescan = false;
@@ -813,7 +813,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[49];
+    boolean[] la1tokens = new boolean[47];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -830,7 +830,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         }
       }
     }
-    for (int i = 0; i < 49; i++) {
+    for (int i = 0; i < 47; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
