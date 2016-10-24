@@ -18,7 +18,7 @@ public class Main {
     public static void main(String... args) {
         ArrayList<ClassNode> classes;
         try {
-            classes = MINIGrammar.parse(new File("res/example_code/valid/beispiele_timm.m"));
+            classes = MINIGrammar.parse(new File("res" + File.separator + "example_code" + File.separator + "valid" + File.separator + "beispiele_timm.m"));
             for (ClassNode cls: classes) {
                 System.out.println(cls);
                 for (Node child : cls.children) {

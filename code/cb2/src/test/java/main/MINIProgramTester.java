@@ -12,7 +12,7 @@ import testsuite.MINIException;
 public class MINIProgramTester {
     @Test
     public void testValidPrograms() {
-        File validFolder = new File("res/example_code/valid");
+        File validFolder = new File("res" + File.separator + "example_code" + File.separator + "valid");
         File[] sourceFiles = validFolder.listFiles();
         for (File f : sourceFiles) {
             if (f.isFile() && f.getName().endsWith(".m")) {
@@ -29,7 +29,7 @@ public class MINIProgramTester {
 
     @Test
     public void testInvalidPrograms() {
-        File validFolder = new File("res/example_code/invalid");
+        File validFolder = new File("res" + File.separator + "example_code" + File.separator + "invalid");
         File[] sourceFiles = validFolder.listFiles();
         for (File f : sourceFiles) {
             if (f.isFile() && f.getName().endsWith(".m")) {
