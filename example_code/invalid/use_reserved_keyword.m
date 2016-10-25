@@ -1,3 +1,3 @@
 class A {
-  int var = 1;
+  int var := 1;
 }
