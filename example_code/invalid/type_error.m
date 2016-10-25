@@ -1,3 +1,3 @@
 class A {
-  int foo = "foo";
+  int foo := "foo";
 }
