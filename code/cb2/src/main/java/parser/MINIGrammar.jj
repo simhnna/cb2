@@ -321,13 +321,10 @@ void expression() :
   | atomicExpression()
   )
   (
-    LOOKAHEAD(< PARAN_OPEN >
-  | < DOT >
-  | binaryOperator())
+    LOOKAHEAD(binaryOperator() | < DOT >)
     (
       binaryOperator() expression()
-    | argumentList()
-    | < DOT > < ID >
+    | < DOT > < ID > (argumentList())?
     )
   )*
 }
@@ -374,6 +371,7 @@ void atomicExpression() :
 {}
 {
   < ID >
+  ( argumentList())?
 | < THIS >
 | < STRING >
 | < INT >
