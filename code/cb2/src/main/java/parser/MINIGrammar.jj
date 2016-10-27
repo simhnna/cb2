@@ -113,10 +113,8 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
-| < TRUE : "true" >
-| < FALSE : "false" >
 | < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ])+ >
+| < INT : ([ "0"-"9" ]) ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? >
 | < BOOL :
     (
       "true"
@@ -318,22 +316,17 @@ void returnStatement() :
 void expression() :
 {}
 {
-  (
     unaryOperator() expression()
-  | atomicExpression()
-  )
-  (
-    LOOKAHEAD(< PARAN_OPEN >
-  | < DOT >
-  | binaryOperator())
-    (
-      binaryOperator() expression()
-    | argumentList()
-    | < DOT > < ID >
-    )
-  )*
+  | atomicExpression() (expression_suffix())?
+  
 }
 
+void expression_suffix() :
+{}
+{
+	binaryOperator() expression()
+	| < DOT > < ID > (argumentList())? (expression_suffix())?
+}
 void unaryOperator() :
 {}
 {
@@ -376,6 +369,7 @@ void atomicExpression() :
 {}
 {
   < ID >
+  ( argumentList())?
 | < THIS >
 | < STRING >
 | < INT >

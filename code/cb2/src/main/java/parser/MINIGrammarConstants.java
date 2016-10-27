@@ -79,19 +79,15 @@ public interface MINIGrammarConstants {
   /** RegularExpression Id. */
   int OR = 41;
   /** RegularExpression Id. */
-  int TRUE = 42;
+  int ID = 42;
   /** RegularExpression Id. */
-  int FALSE = 43;
+  int INT = 43;
   /** RegularExpression Id. */
-  int ID = 44;
+  int BOOL = 44;
   /** RegularExpression Id. */
-  int INT = 45;
+  int STRING = 45;
   /** RegularExpression Id. */
-  int BOOL = 46;
-  /** RegularExpression Id. */
-  int STRING = 47;
-  /** RegularExpression Id. */
-  int BAD_TOKEN = 48;
+  int BAD_TOKEN = 46;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -144,8 +140,6 @@ public interface MINIGrammarConstants {
     "\">\"",
     "\"&&\"",
     "\"||\"",
-    "\"true\"",
-    "\"false\"",
     "<ID>",
     "<INT>",
     "<BOOL>",
