@@ -316,19 +316,17 @@ void returnStatement() :
 void expression() :
 {}
 {
-  (
     unaryOperator() expression()
-  | atomicExpression()
-  )
-  (
-    LOOKAHEAD(binaryOperator() | < DOT >)
-    (
-      binaryOperator() expression()
-    | < DOT > < ID > (argumentList())?
-    )
-  )*
+  | atomicExpression() (expression_suffix())?
+  
 }
 
+void expression_suffix() :
+{}
+{
+	binaryOperator() expression()
+	| < DOT > < ID > (argumentList())? (expression_suffix())?
+}
 void unaryOperator() :
 {}
 {
