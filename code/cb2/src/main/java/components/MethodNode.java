@@ -2,11 +2,14 @@ package components;
 
 import java.util.ArrayList;
 
+import parser.Token;
+
 public class MethodNode extends Node {
 
-    public String name;
-    public FieldNode returnType;
-    public ArrayList<FieldNode> arguments = new ArrayList<>();
+    public Token name;
+    public Type returnType;
+    public ArrayList<NamedType> arguments = new ArrayList<>();
+    public BlockNode body;
     
     @Override
     public String toString() {

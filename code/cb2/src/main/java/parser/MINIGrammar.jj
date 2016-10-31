@@ -152,11 +152,12 @@ ArrayList < ClassNode > file() :
 ClassNode mini_class() :
 {
   ClassNode cls = new ClassNode();
-  Token clsName;
   Node classMember;
 }
 {
-  < CLASS > clsName = < ID > < BRACE_OPEN >
+  < CLASS >
+  < ID > { cls.name = token.image; }
+  < BRACE_OPEN >
   (
     classMember = classMember()
     {
@@ -165,101 +166,85 @@ ClassNode mini_class() :
   )*
   < BRACE_CLOSE >
   {
-    cls.name = clsName.image;
     return cls;
   }
 }
 
 Node classMember() :
 {
-  FieldNode type = null;
-  MethodNode m = null;
+  FieldNode declaration = new FieldNode();
+  MethodNode m;
   Token memberName;
+  Type type;
 }
 {
   type = type() memberName = < ID >
   (
-    field()
-  | m = method()
-  )
-  {
-    if (m != null)
+    < SEMICOLON >
     {
-      m.name = memberName.image;
+      declaration.name = memberName;
+      declaration.type = type;
+      
+      return declaration;
+    }
+  | m = method()
+  {
+      m.name = memberName;
       m.returnType = type;
       return m;
     }
-    else
-    {
-      type.name = memberName.image;
-      return type;
-    }
-  }
+  )
 }
 
-void field() :
-{}
-{
-  < SEMICOLON >
-}
 
 MethodNode method() :
 {
-  MethodNode method = new MethodNode();
-  ArrayList < FieldNode > arguments;
+  MethodNode n = new MethodNode();
+  BlockNode block;
 }
 {
-  arguments = signature() blockStatement()
+  n.arguments = signature() n.body = blockStatement()
   {
-    method.arguments = arguments;
-    return method;
+    return n;
   }
 }
 
-FieldNode type() :
+Type type() :
 {
-  Token typeIdentifier;
+  Type t = new Type();
 }
 {
-  typeIdentifier = < ID > (< ARRAY_DEF >)*
+  t.baseType = < ID > (< ARRAY_DEF > { t.arrayDimensions++; })*
   {
-    switch (typeIdentifier.image)
-    {
-      case "int" : 
-      return new IntegerField();
-      case "string" : 
-      return new StringField();
-      case "boolean" : 
-      return new BooleanField();
-      case "void" : 
-      return new VoidField();
-      default : 
-      return new InvalidField();
-    }
+    return t;
   }
 }
 
-ArrayList < FieldNode > signature() :
+ArrayList < NamedType > signature() :
 {
-  ArrayList < FieldNode > arguments = new ArrayList < FieldNode > ();
-  Token argument;
-  FieldNode n;
+  ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
+  NamedType nT = new NamedType();
 }
 {
   < PARAN_OPEN >
   (
-    n = type() argument = < ID >
+    nT.type = type()
+    nT.name=< ID >
+	{
+      arguments.add(nT);
+    }
     (
-      < COMMA > n = type() argument = < ID >
+      < COMMA >
       {
-        n.name = argument.image;
-        arguments.add(n);
+        nT = new NamedType();
+      }
+      nT.type = type()
+      nT.name = < ID >
+      {
+        arguments.add(nT);
       }
     )*
-    {
-      n.name = argument.image;
-      arguments.add(n);
-    }
+    
   )?
   < PARAN_CLOSE >
   {
@@ -267,58 +252,91 @@ ArrayList < FieldNode > signature() :
   }
 }
 
-void statement() :
-{}
+StatementNode statement() :
+{StatementNode s = null;}
 {
-  blockStatement()
-| ifStatement()
-| whileStatement()
-| expression()
+  (    s = blockStatement()
+  | s = ifStatement()
+  | s = whileStatement()
+  | s = returnStatement()
+  | expression()
   (
-    < ASSIGNMENT > expression() < SEMICOLON >
-  | < SEMICOLON >
+    < SEMICOLON >
+    | < ASSIGNMENT > expression() < SEMICOLON >
+  ) 
+  | < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
   )
-| < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
-| returnStatement()
+  {
+    return s;
+  }
 }
 
-void blockStatement() :
-{}
+BlockNode blockStatement() :
+{
+  BlockNode block = new BlockNode();
+  StatementNode statement;
+}
 {
   < BRACE_OPEN >
   (
-    statement()
+    statement=statement()
+    {
+      block.children.add(statement);
+    }
   )*
   < BRACE_CLOSE >
+  {
+    return block;
+  }
 }
 
-void ifStatement() :
-{}
+IfNode ifStatement() :
 {
-  < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+  IfNode n = new IfNode();
+}
+{
+  < IF > < PARAN_OPEN > n.condition = expression()
+  < PARAN_CLOSE > n.first = blockStatement()
   (
-    < ELSE > blockStatement()
+    < ELSE > n.second = blockStatement()
   )?
+  {
+    return n;
+  }
 }
 
-void whileStatement() :
-{}
+WhileNode whileStatement() :
 {
-  < WHILE > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+  WhileNode n = new WhileNode();
+}
+{
+  < WHILE > < PARAN_OPEN > n.condition = expression()
+  < PARAN_CLOSE > n.body = blockStatement()
+  {
+    return n;
+  }
 }
 
-void returnStatement() :
-{}
+ReturnNode returnStatement() :
 {
-  < RETURN > expression() < SEMICOLON >
+  ReturnNode n = new ReturnNode();
+}
+{
+  < RETURN > n.value = expression() < SEMICOLON >
+  {
+    return n;
+  }
 }
 
-void expression() :
-{}
+ExpressionNode expression() :
+{ExpressionNode n = null;}
 {
-    unaryOperator() expression()
+  (    unaryOperator() expression()
   | atomicExpression() (expression_suffix())?
-  
+  )
+  {
+    return n;
+  }
 }
 
 void expression_suffix() :
