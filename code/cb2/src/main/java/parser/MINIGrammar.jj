@@ -149,14 +149,15 @@ ArrayList < ClassNode > file() :
   }
 }
 
-ClassNode mini_class() :
+classNode mini_class() :
 {
   ClassNode cls = new ClassNode();
-  Token clsName;
   Node classMember;
 }
 {
-  < CLASS > clsName = < ID > < BRACE_OPEN >
+  < CLASS >
+  < ID > { cls.name = token.image; }
+  < BRACE_OPEN >
   (
     classMember = classMember()
     {
@@ -165,7 +166,6 @@ ClassNode mini_class() :
   )*
   < BRACE_CLOSE >
   {
-    cls.name = clsName.image;
     return cls;
   }
 }
