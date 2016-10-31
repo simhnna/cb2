@@ -53,14 +53,14 @@ SKIP :
 MORE :
 {
   "//" : IN_SINGLE_LINE_COMMENT
-| 
+|
   "/*" : IN_MULTI_LINE_COMMENT
 }
 
 < IN_SINGLE_LINE_COMMENT >
 SPECIAL_TOKEN :
 {
-  < SINGLE_LINE_COMMENT :
+    < SINGLE_LINE_COMMENT :
     "\n"
   | "\r"
   | "\r\n" > : DEFAULT
@@ -114,7 +114,7 @@ TOKEN : /* Reserved keywords and such */
 | < AND : "&&" >
 | < OR : "||" >
 | < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ]) ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? >
+| < INT : ([ "0"-"9" ]) { 1,9 } >
 | < BOOL :
     (
       "true"
@@ -225,15 +225,15 @@ FieldNode type() :
   {
     switch (typeIdentifier.image)
     {
-      case "int" : 
+      case "int" :
       return new IntegerField();
-      case "string" : 
+      case "string" :
       return new StringField();
-      case "boolean" : 
+      case "boolean" :
       return new BooleanField();
-      case "void" : 
+      case "void" :
       return new VoidField();
-      default : 
+      default :
       return new InvalidField();
     }
   }
@@ -318,7 +318,7 @@ void expression() :
 {
     unaryOperator() expression()
   | atomicExpression() (expression_suffix())?
-  
+
 }
 
 void expression_suffix() :
