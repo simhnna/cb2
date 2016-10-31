@@ -149,7 +149,7 @@ ArrayList < ClassNode > file() :
   }
 }
 
-classNode mini_class() :
+ClassNode mini_class() :
 {
   ClassNode cls = new ClassNode();
   Node classMember;

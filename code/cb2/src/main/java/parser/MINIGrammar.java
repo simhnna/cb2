@@ -49,7 +49,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public classNode mini_class() throws ParseException {
+  final public ClassNode mini_class() throws ParseException {
   ClassNode cls = new ClassNode();
   Node classMember;
     jj_consume_token(CLASS);
