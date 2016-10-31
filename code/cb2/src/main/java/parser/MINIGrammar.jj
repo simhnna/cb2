@@ -114,7 +114,7 @@ TOKEN : /* Reserved keywords and such */
 | < AND : "&&" >
 | < OR : "||" >
 | < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ]) { 1,9 } >
+| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < BOOL :
     (
       "true"
