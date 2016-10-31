@@ -406,19 +406,22 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  final public void unaryOperator() throws ParseException {
+  final public UnaryExpressionNode unaryOperator() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
       jj_consume_token(MINUS);
+              {if (true) return new MinusUnaryExpression(token);}
       break;
     case NEGATION:
       jj_consume_token(NEGATION);
+                 {if (true) return new NegationUnaryExpression(token);}
       break;
     default:
       jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
   final public void binaryOperator() throws ParseException {
@@ -547,17 +550,21 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  final public void nullExpression() throws ParseException {
+  final public NullExpressionNode nullExpression() throws ParseException {
+  NullExpressionNode n = new NullExpressionNode();
     jj_consume_token(NULL);
     jj_consume_token(LESS_THAN);
-    type();
+    n.type = type();
     jj_consume_token(GREATER_THAN);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void newExpression() throws ParseException {
+  final public NewExpressionNode newExpression() throws ParseException {
+  NewExpressionNode n = new NewExpressionNode();
     jj_consume_token(NEW);
     jj_consume_token(LESS_THAN);
-    type();
+    n.type = type();
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -581,8 +588,11 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
+      n.arguments.add(token);
     }
     jj_consume_token(GREATER_THAN);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
   /** Generated Token Manager. */

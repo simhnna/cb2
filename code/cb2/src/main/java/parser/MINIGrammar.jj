@@ -345,11 +345,11 @@ void expression_suffix() :
 	binaryOperator() expression()
 	| < DOT > < ID > (argumentList())? (expression_suffix())?
 }
-void unaryOperator() :
+UnaryExpressionNode unaryOperator() :
 {}
 {
-  < MINUS >
-| < NEGATION >
+  < MINUS > { return new MinusUnaryExpression(token); }
+| < NEGATION > { return new NegationUnaryExpression(token); }
 }
 
 void binaryOperator() :
@@ -397,22 +397,35 @@ void atomicExpression() :
 | < PARAN_OPEN > expression() < PARAN_CLOSE >
 }
 
-void nullExpression() :
-{}
+NullExpressionNode nullExpression() :
 {
-  < NULL > < LESS_THAN > type() < GREATER_THAN >
+  NullExpressionNode n = new NullExpressionNode();
+}
+{
+  < NULL > < LESS_THAN > n.type = type() < GREATER_THAN >
+  {
+    return n;
+  }
 }
 
-void newExpression() :
-{}
+NewExpressionNode newExpression() :
 {
-  < NEW > < LESS_THAN > type()
+  NewExpressionNode n = new NewExpressionNode();
+}
+{
+  < NEW > < LESS_THAN > n.type = type()
   (
     < COMMA >
     (
       < INT >
     | < ID >
     )
+    {
+      n.arguments.add(token);
+    }
   )*
   < GREATER_THAN >
+  {
+    return n;
+  }
 }
