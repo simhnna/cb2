@@ -3,6 +3,7 @@ package errorHandling;
 import java.io.File;
 
 import parser.Token;
+import parser.TokenMgrError;
 import testsuite.MINIException;
 import testsuite.ParseException;
 
@@ -26,5 +27,9 @@ public class ErrorHandler {
             }
             throw new ParseException(f, line, bldr.toString());
         }
+    }
+
+    public static void handleTokenMgrError(File f, TokenMgrError e) throws MINIException{
+        throw new ParseException(f, 0, e.getMessage());
     }
 }

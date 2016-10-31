@@ -105,7 +105,10 @@ public class TokenMgrError extends Error
    * Note: You can customize the lexical error message by modifying this method.
    */
   protected static String LexicalError(boolean EOFSeen, int lexState, int errorLine, int errorColumn, String errorAfter, char curChar) {
-    return("Lexical error at line " +
+      if (EOFSeen && (lexState == MINIGrammarConstants.IN_MULTI_LINE_COMMENT || lexState == MINIGrammarConstants.IN_SINGLE_LINE_COMMENT)) {
+          return "Unterminated Comment found at line " + errorLine + ", column " + errorColumn;
+      }
+      return("Lexical error at line " +
           errorLine + ", column " +
           errorColumn + ".  Encountered: " +
           (EOFSeen ? "<EOF> " : ("\"" + addEscapes(String.valueOf(curChar)) + "\"") + " (" + (int)curChar + "), ") +

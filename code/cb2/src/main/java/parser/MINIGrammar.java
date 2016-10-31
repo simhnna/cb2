@@ -26,6 +26,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
       return null;
     }
+    catch (TokenMgrError e) {
+                ErrorHandler.handleTokenMgrError(in, e);
+                return null;
+    }
   }
 
   final public ArrayList < ClassNode > file() throws ParseException {
