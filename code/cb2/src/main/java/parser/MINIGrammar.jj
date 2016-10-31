@@ -57,14 +57,14 @@ SKIP :
 MORE :
 {
   "//" : IN_SINGLE_LINE_COMMENT
-| 
+|
   "/*" : IN_MULTI_LINE_COMMENT
 }
 
 < IN_SINGLE_LINE_COMMENT >
 SPECIAL_TOKEN :
 {
-  < SINGLE_LINE_COMMENT :
+    < SINGLE_LINE_COMMENT :
     "\n"
   | "\r"
   | "\r\n" > : DEFAULT
@@ -118,7 +118,7 @@ TOKEN : /* Reserved keywords and such */
 | < AND : "&&" >
 | < OR : "||" >
 | < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ]) ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? ([ "0"-"9" ])? >
+| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < BOOL :
     (
       "true"
@@ -156,11 +156,12 @@ ArrayList < ClassNode > file() :
 ClassNode mini_class() :
 {
   ClassNode cls = new ClassNode();
-  Token clsName;
   Node classMember;
 }
 {
-  < CLASS > clsName = < ID > < BRACE_OPEN >
+  < CLASS >
+  < ID > { cls.name = token.image; }
+  < BRACE_OPEN >
   (
     classMember = classMember()
     {
@@ -169,7 +170,6 @@ ClassNode mini_class() :
   )*
   < BRACE_CLOSE >
   {
-    cls.name = clsName.image;
     return cls;
   }
 }
@@ -229,15 +229,15 @@ FieldNode type() :
   {
     switch (typeIdentifier.image)
     {
-      case "int" : 
+      case "int" :
       return new IntegerField();
-      case "string" : 
+      case "string" :
       return new StringField();
-      case "boolean" : 
+      case "boolean" :
       return new BooleanField();
-      case "void" : 
+      case "void" :
       return new VoidField();
-      default : 
+      default :
       return new InvalidField();
     }
   }
@@ -322,7 +322,7 @@ void expression() :
 {
     unaryOperator() expression()
   | atomicExpression() (expression_suffix())?
-  
+
 }
 
 void expression_suffix() :
