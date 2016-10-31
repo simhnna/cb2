@@ -35,6 +35,10 @@ public class MINIGrammar
       ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
       return null;
     }
+    catch (TokenMgrError e) {
+		ErrorHandler.handleTokenMgrError(in, e);
+		return null;
+    }
   }
 }
 
