@@ -365,7 +365,7 @@ ExpressionNode expression_suffix(ExpressionNode prefix) :
 	  identifier = < ID >
 	  (m=argumentList())?
 	  {
-	    if(m != null){
+	    if(m == null){
 	      m = new FieldMemberExpressionNode();
 	    }
 	    m.identifier = identifier;
@@ -438,7 +438,7 @@ ExpressionNode atomicExpression() :
   (    identifier = < ID >
   ( m = argumentList())?
   {
-    if(m != null){
+    if(m == null){
 	  m = new FieldMemberExpressionNode();
 	}
 	m.identifier = identifier;

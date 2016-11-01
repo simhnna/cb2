@@ -386,7 +386,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[12] = jj_gen;
         ;
       }
-            if(m != null){
+            if(m == null){
               m = new FieldMemberExpressionNode();
             }
             m.identifier = identifier;
@@ -560,7 +560,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[19] = jj_gen;
         ;
       }
-    if(m != null){
+    if(m == null){
           m = new FieldMemberExpressionNode();
         }
         m.identifier = identifier;
