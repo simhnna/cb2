@@ -53,7 +53,7 @@ SKIP :
 MORE :
 {
   "//" : IN_SINGLE_LINE_COMMENT
-| 
+|
   "/*" : IN_MULTI_LINE_COMMENT
 }
 
@@ -184,7 +184,7 @@ Node classMember() :
     {
       declaration.name = memberName;
       declaration.type = type;
-      
+ 
       return declaration;
     }
   | m = method()
@@ -244,7 +244,7 @@ ArrayList < NamedType > signature() :
         arguments.add(nT);
       }
     )*
-    
+ 
   )?
   < PARAN_CLOSE >
   {
@@ -253,9 +253,12 @@ ArrayList < NamedType > signature() :
 }
 
 StatementNode statement() :
-{StatementNode s = null;}
 {
-  (    s = blockStatement()
+  StatementNode s = null;
+}
+{
+  (
+    s = blockStatement()
   | s = ifStatement()
   | s = whileStatement()
   | s = returnStatement()
@@ -263,7 +266,7 @@ StatementNode statement() :
   (
     < SEMICOLON >
     | < ASSIGNMENT > expression() < SEMICOLON >
-  ) 
+  )
   | < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
   )
   {
@@ -334,7 +337,8 @@ ExpressionNode expression() :
   UnaryExpressionNode unary;
 }
 {
-  (    unary = unaryOperator() unary.child = expression()
+  (
+    unary = unaryOperator() unary.child = expression()
     {
       return unary;
     }
@@ -435,15 +439,16 @@ ExpressionNode atomicExpression() :
   Token identifier;
 }
 {
-  (    identifier = < ID >
-  ( m = argumentList())?
-  {
-    if(m == null){
-	  m = new FieldMemberExpressionNode();
-	}
-	m.identifier = identifier;
-	return m;
-  }
+  (
+    identifier = < ID >
+    ( m = argumentList())?
+    {
+      if(m == null){
+	    m = new FieldMemberExpressionNode();
+	  }
+	  m.identifier = identifier;
+	  return m;
+    }
   | < THIS > { n = new ThisAtomicExpressionNode(token); }
   | < STRING > { n = new StringAtomicExpressionNode(token); }
   | < INT > { n = new IntAtomicExpressionNode(token); }
@@ -452,7 +457,8 @@ ExpressionNode atomicExpression() :
   | n = newExpression()
   | < PARAN_OPEN > { PriorityExpressionNode priorityNode = new PriorityExpressionNode();}
     priorityNode.child = expression()
-    < PARAN_CLOSE > { return priorityNode; })
+    < PARAN_CLOSE > { return priorityNode; }
+  )
 {
   return n;
 }
