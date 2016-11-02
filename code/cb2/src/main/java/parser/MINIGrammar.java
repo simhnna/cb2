@@ -172,7 +172,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public StatementNode statement() throws ParseException {
- StatementNode s = null;
+  StatementNode s = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BRACE_OPEN:
       s = blockStatement();
@@ -564,11 +564,11 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[19] = jj_gen;
         ;
       }
-    if(m == null){
-          m = new FieldMemberExpressionNode();
-        }
-        m.identifier = identifier;
-        {if (true) return m;}
+      if(m == null){
+            m = new FieldMemberExpressionNode();
+          }
+          m.identifier = identifier;
+          {if (true) return m;}
       break;
     case THIS:
       jj_consume_token(THIS);

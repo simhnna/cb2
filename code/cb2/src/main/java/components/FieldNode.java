@@ -1,6 +1,7 @@
 package components;
 
 import parser.Token;
+import visitors.ASTVisitor;
 
 public class FieldNode extends Node {
     public Token name;
@@ -10,4 +11,10 @@ public class FieldNode extends Node {
     public String toString() {
         return "<Field name='" + this.name + "'>";
     }
+    
+    @Override
+    public void accept(ASTVisitor visitor) {    
+        visitor.visit(this);    
+    }
+    
 }

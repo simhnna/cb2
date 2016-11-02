@@ -3,6 +3,7 @@ package components;
 import java.util.ArrayList;
 
 import parser.Token;
+import visitors.ASTVisitor;
 
 public class MethodNode extends Node {
 
@@ -24,4 +25,11 @@ public class MethodNode extends Node {
         bldr.append("]>");
         return bldr.toString();
     }
+
+    @Override
+    public void accept(ASTVisitor visitor) {    
+        visitor.visit(this);    
+        visitor.closeScope();
+    }
+    
 }
