@@ -33,4 +33,7 @@ public class ASTVisitor {
         System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
         this.indent = this.indent + 2;
     }
+
+    public void visit(Node blockNode) {
+    }
 }

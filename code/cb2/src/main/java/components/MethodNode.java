@@ -29,7 +29,10 @@ public class MethodNode extends Node {
     @Override
     public void accept(ASTVisitor visitor) {    
         visitor.visit(this);    
+// TODO: ast is not ready here?
+//        for(Node blockNode : this.body.children) {
+//            blockNode.accept(visitor);
+//        }
         visitor.closeScope();
     }
-    
 }
