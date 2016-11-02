@@ -1,7 +1,10 @@
 package components;
 
-public abstract class FieldNode extends Node {
-    public String name;
+import parser.Token;
+
+public class FieldNode extends Node {
+    public Token name;
+    public Type type;
     
     @Override
     public String toString() {

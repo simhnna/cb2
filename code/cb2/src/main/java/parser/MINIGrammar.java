@@ -79,54 +79,46 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public Node classMember() throws ParseException {
-  FieldNode type = null;
-  MethodNode m = null;
+  FieldNode declaration = new FieldNode();
+  MethodNode m;
   Token memberName;
+  Type type;
     type = type();
     memberName = jj_consume_token(ID);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SEMICOLON:
-      field();
+      jj_consume_token(SEMICOLON);
+      declaration.name = memberName;
+      declaration.type = type;
+
+      {if (true) return declaration;}
       break;
     case PARAN_OPEN:
       m = method();
+      m.name = memberName;
+      m.returnType = type;
+      {if (true) return m;}
       break;
     default:
       jj_la1[2] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    if (m != null)
-    {
-      m.name = memberName.image;
-      m.returnType = type;
-      {if (true) return m;}
-    }
-    else
-    {
-      type.name = memberName.image;
-      {if (true) return type;}
-    }
     throw new Error("Missing return statement in function");
-  }
-
-  final public void field() throws ParseException {
-    jj_consume_token(SEMICOLON);
   }
 
   final public MethodNode method() throws ParseException {
-  MethodNode method = new MethodNode();
-  ArrayList < FieldNode > arguments;
-    arguments = signature();
-    blockStatement();
-    method.arguments = arguments;
-    {if (true) return method;}
+  MethodNode n = new MethodNode();
+  BlockNode block;
+    n.arguments = signature();
+    n.body = blockStatement();
+    {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
 
-  final public FieldNode type() throws ParseException {
-  Token typeIdentifier;
-    typeIdentifier = jj_consume_token(ID);
+  final public Type type() throws ParseException {
+  Type t = new Type();
+    t.baseType = jj_consume_token(ID);
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -138,32 +130,21 @@ public class MINIGrammar implements MINIGrammarConstants {
         break label_3;
       }
       jj_consume_token(ARRAY_DEF);
+                                       t.arrayDimensions++;
     }
-    switch (typeIdentifier.image)
-    {
-      case "int" :
-      {if (true) return new IntegerField();}
-      case "string" :
-      {if (true) return new StringField();}
-      case "boolean" :
-      {if (true) return new BooleanField();}
-      case "void" :
-      {if (true) return new VoidField();}
-      default :
-      {if (true) return new InvalidField();}
-    }
+    {if (true) return t;}
     throw new Error("Missing return statement in function");
   }
 
-  final public ArrayList < FieldNode > signature() throws ParseException {
-  ArrayList < FieldNode > arguments = new ArrayList < FieldNode > ();
-  Token argument;
-  FieldNode n;
+  final public ArrayList < NamedType > signature() throws ParseException {
+  ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
+  NamedType nT = new NamedType();
     jj_consume_token(PARAN_OPEN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
-      n = type();
-      argument = jj_consume_token(ID);
+      nT.type = type();
+      nT.name = jj_consume_token(ID);
+      arguments.add(nT);
       label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -175,13 +156,11 @@ public class MINIGrammar implements MINIGrammarConstants {
           break label_4;
         }
         jj_consume_token(COMMA);
-        n = type();
-        argument = jj_consume_token(ID);
-        n.name = argument.image;
-        arguments.add(n);
+        nT = new NamedType();
+        nT.type = type();
+        nT.name = jj_consume_token(ID);
+        arguments.add(nT);
       }
-      n.name = argument.image;
-      arguments.add(n);
       break;
     default:
       jj_la1[5] = jj_gen;
@@ -192,16 +171,20 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public void statement() throws ParseException {
+  final public StatementNode statement() throws ParseException {
+ StatementNode s = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BRACE_OPEN:
-      blockStatement();
+      s = blockStatement();
       break;
     case IF:
-      ifStatement();
+      s = ifStatement();
       break;
     case WHILE:
-      whileStatement();
+      s = whileStatement();
+      break;
+    case RETURN:
+      s = returnStatement();
       break;
     case PARAN_OPEN:
     case THIS:
@@ -215,12 +198,12 @@ public class MINIGrammar implements MINIGrammarConstants {
     case STRING:
       expression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case SEMICOLON:
+        jj_consume_token(SEMICOLON);
+        break;
       case ASSIGNMENT:
         jj_consume_token(ASSIGNMENT);
         expression();
-        jj_consume_token(SEMICOLON);
-        break;
-      case SEMICOLON:
         jj_consume_token(SEMICOLON);
         break;
       default:
@@ -236,17 +219,18 @@ public class MINIGrammar implements MINIGrammarConstants {
       expression();
       jj_consume_token(SEMICOLON);
       break;
-    case RETURN:
-      returnStatement();
-      break;
     default:
       jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    {if (true) return s;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void blockStatement() throws ParseException {
+  final public BlockNode blockStatement() throws ParseException {
+  BlockNode block = new BlockNode();
+  StatementNode statement;
     jj_consume_token(BRACE_OPEN);
     label_5:
     while (true) {
@@ -272,48 +256,63 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[8] = jj_gen;
         break label_5;
       }
-      statement();
+      statement = statement();
+      block.children.add(statement);
     }
     jj_consume_token(BRACE_CLOSE);
+    {if (true) return block;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void ifStatement() throws ParseException {
+  final public IfNode ifStatement() throws ParseException {
+  IfNode n = new IfNode();
     jj_consume_token(IF);
     jj_consume_token(PARAN_OPEN);
-    expression();
+    n.condition = expression();
     jj_consume_token(PARAN_CLOSE);
-    blockStatement();
+    n.first = blockStatement();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ELSE:
       jj_consume_token(ELSE);
-      blockStatement();
+      n.second = blockStatement();
       break;
     default:
       jj_la1[9] = jj_gen;
       ;
     }
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void whileStatement() throws ParseException {
+  final public WhileNode whileStatement() throws ParseException {
+  WhileNode n = new WhileNode();
     jj_consume_token(WHILE);
     jj_consume_token(PARAN_OPEN);
-    expression();
+    n.condition = expression();
     jj_consume_token(PARAN_CLOSE);
-    blockStatement();
+    n.body = blockStatement();
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void returnStatement() throws ParseException {
+  final public ReturnNode returnStatement() throws ParseException {
+  ReturnNode n = new ReturnNode();
     jj_consume_token(RETURN);
-    expression();
+    n.value = expression();
     jj_consume_token(SEMICOLON);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void expression() throws ParseException {
+  final public ExpressionNode expression() throws ParseException {
+  ExpressionNode n;
+  UnaryExpressionNode unary;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
     case NEGATION:
-      unaryOperator();
-      expression();
+      unary = unaryOperator();
+      unary.child = expression();
+      {if (true) return unary;}
       break;
     case PARAN_OPEN:
     case THIS:
@@ -323,7 +322,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     case INT:
     case BOOL:
     case STRING:
-      atomicExpression();
+      n = atomicExpression();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOT:
       case MINUS:
@@ -339,7 +338,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       case GREATER_THAN:
       case AND:
       case OR:
-        expression_suffix();
+        n = expression_suffix(n);
         break;
       default:
         jj_la1[10] = jj_gen;
@@ -351,9 +350,13 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_consume_token(-1);
       throw new ParseException();
     }
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void expression_suffix() throws ParseException {
+  final public ExpressionNode expression_suffix(ExpressionNode prefix) throws ParseException {
+  BinaryExpressionNode b;
+  MemberExpressionNode m = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
     case PLUS:
@@ -368,20 +371,30 @@ public class MINIGrammar implements MINIGrammarConstants {
     case GREATER_THAN:
     case AND:
     case OR:
-      binaryOperator();
-      expression();
+      b = binaryOperator();
+      b.second = expression();
+          b.first = prefix;
+          b.balance();
+          {if (true) return b;}
       break;
     case DOT:
       jj_consume_token(DOT);
-      jj_consume_token(ID);
+            Token identifier;
+            ExpressionNode n=null;
+      identifier = jj_consume_token(ID);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PARAN_OPEN:
-        argumentList();
+        m = argumentList();
         break;
       default:
         jj_la1[12] = jj_gen;
         ;
       }
+            if(m == null){
+              m = new FieldMemberExpressionNode();
+            }
+            m.identifier = identifier;
+            m.child = prefix;
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DOT:
       case MINUS:
@@ -397,84 +410,107 @@ public class MINIGrammar implements MINIGrammarConstants {
       case GREATER_THAN:
       case AND:
       case OR:
-        expression_suffix();
+        n = expression_suffix(m);
         break;
       default:
         jj_la1[13] = jj_gen;
         ;
       }
+            if(n != null)
+              {if (true) return n;}
+            {if (true) return m;}
       break;
     default:
       jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void unaryOperator() throws ParseException {
+  final public UnaryExpressionNode unaryOperator() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
       jj_consume_token(MINUS);
+              {if (true) return new MinusUnaryExpressionNode(token);}
       break;
     case NEGATION:
       jj_consume_token(NEGATION);
+                 {if (true) return new NegationUnaryExpressionNode(token);}
       break;
     default:
       jj_la1[15] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void binaryOperator() throws ParseException {
+  final public BinaryExpressionNode binaryOperator() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PLUS:
       jj_consume_token(PLUS);
+             {if (true) return new PlusBinaryExpressionNode(token);}
       break;
     case MINUS:
       jj_consume_token(MINUS);
+              {if (true) return new MinusBinaryExpressionNode(token);}
       break;
     case MULTIPLY:
       jj_consume_token(MULTIPLY);
+                 {if (true) return new MultiplyBinaryExpressionNode(token);}
       break;
     case DIVIDE:
       jj_consume_token(DIVIDE);
+               {if (true) return new DivideBinaryExpressionNode(token);}
       break;
     case REMAINDER:
       jj_consume_token(REMAINDER);
+                  {if (true) return new RemainderBinaryExpressionNode(token);}
       break;
     case EQUAL:
       jj_consume_token(EQUAL);
+              {if (true) return new EqBinaryExpressionNode(token);}
       break;
     case NOTEQUAL:
       jj_consume_token(NOTEQUAL);
+                 {if (true) return new NeqBinaryExpressionNode(token);}
       break;
     case LESS_THAN_EQUAL:
       jj_consume_token(LESS_THAN_EQUAL);
+                        {if (true) return new LteBinaryExpressionNode(token);}
       break;
     case GREATER_THAN_EQUAL:
       jj_consume_token(GREATER_THAN_EQUAL);
+                           {if (true) return new GteBinaryExpressionNode(token);}
       break;
     case LESS_THAN:
       jj_consume_token(LESS_THAN);
+                  {if (true) return new LtBinaryExpressionNode(token);}
       break;
     case GREATER_THAN:
       jj_consume_token(GREATER_THAN);
+                     {if (true) return new GtBinaryExpressionNode(token);}
       break;
     case AND:
       jj_consume_token(AND);
+            {if (true) return new AndBinaryExpressionNode(token);}
       break;
     case OR:
       jj_consume_token(OR);
+           {if (true) return new OrBinaryExpressionNode(token);}
       break;
     default:
       jj_la1[16] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+    throw new Error("Missing return statement in function");
   }
 
-  final public void argumentList() throws ParseException {
+  final public MethodMemberExpressionNode argumentList() throws ParseException {
+  MethodMemberExpressionNode n = new MethodMemberExpressionNode();
+  ExpressionNode expr;
     jj_consume_token(PARAN_OPEN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PARAN_OPEN:
@@ -487,7 +523,8 @@ public class MINIGrammar implements MINIGrammarConstants {
     case INT:
     case BOOL:
     case STRING:
-      expression();
+      expr = expression();
+      n.children.add(expr);
       label_6:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -499,7 +536,8 @@ public class MINIGrammar implements MINIGrammarConstants {
           break label_6;
         }
         jj_consume_token(COMMA);
-        expression();
+        expr = expression();
+        n.children.add(expr);
       }
       break;
     default:
@@ -507,62 +545,84 @@ public class MINIGrammar implements MINIGrammarConstants {
       ;
     }
     jj_consume_token(PARAN_CLOSE);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void atomicExpression() throws ParseException {
+  final public ExpressionNode atomicExpression() throws ParseException {
+  ExpressionNode n;
+  MemberExpressionNode m = null;
+  Token identifier;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
-      jj_consume_token(ID);
+      identifier = jj_consume_token(ID);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PARAN_OPEN:
-        argumentList();
+        m = argumentList();
         break;
       default:
         jj_la1[19] = jj_gen;
         ;
       }
+    if(m == null){
+          m = new FieldMemberExpressionNode();
+        }
+        m.identifier = identifier;
+        {if (true) return m;}
       break;
     case THIS:
       jj_consume_token(THIS);
+               n = new ThisAtomicExpressionNode(token);
       break;
     case STRING:
       jj_consume_token(STRING);
+                 n = new StringAtomicExpressionNode(token);
       break;
     case INT:
       jj_consume_token(INT);
+              n = new IntAtomicExpressionNode(token);
       break;
     case BOOL:
       jj_consume_token(BOOL);
+               n = new BoolAtomicExpressionNode(token);
       break;
     case NULL:
-      nullExpression();
+      n = nullExpression();
       break;
     case NEW:
-      newExpression();
+      n = newExpression();
       break;
     case PARAN_OPEN:
       jj_consume_token(PARAN_OPEN);
-      expression();
+                     PriorityExpressionNode priorityNode = new PriorityExpressionNode();
+      priorityNode.child = expression();
       jj_consume_token(PARAN_CLOSE);
+                      {if (true) return priorityNode;}
       break;
     default:
       jj_la1[20] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+  {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void nullExpression() throws ParseException {
+  final public NullExpressionNode nullExpression() throws ParseException {
+  NullExpressionNode n = new NullExpressionNode();
     jj_consume_token(NULL);
     jj_consume_token(LESS_THAN);
-    type();
+    n.type = type();
     jj_consume_token(GREATER_THAN);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
-  final public void newExpression() throws ParseException {
+  final public NewExpressionNode newExpression() throws ParseException {
+  NewExpressionNode n = new NewExpressionNode();
     jj_consume_token(NEW);
     jj_consume_token(LESS_THAN);
-    type();
+    n.type = type();
     label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -586,8 +646,11 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_consume_token(-1);
         throw new ParseException();
       }
+      n.arguments.add(token);
     }
     jj_consume_token(GREATER_THAN);
+    {if (true) return n;}
+    throw new Error("Missing return statement in function");
   }
 
   /** Generated Token Manager. */

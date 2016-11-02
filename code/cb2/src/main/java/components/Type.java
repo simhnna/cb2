@@ -1,5 +1,8 @@
 package components;
 
-public enum Type {
-    INTEGER, STRING, ARRAY, BOOLEAN, INVALID, VOID
+import parser.Token;
+
+public class Type {
+    public Token baseType;
+    public int arrayDimensions = 0;
 }
