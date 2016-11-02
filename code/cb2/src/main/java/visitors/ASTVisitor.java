@@ -23,7 +23,14 @@ public class ASTVisitor {
 
     public void visit(MethodNode methodNode) {
         System.out.print(new String(new char[this.indent]).replace('\0', ' '));
-        System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + "args..." + ") {");
+        String arglist = "";
+        for(int i = 0; i < methodNode.arguments.size(); i++) {
+            arglist = arglist + methodNode.arguments.get(i).type.baseType.image + " " + methodNode.arguments.get(i).name.image;
+            if(i+1 != methodNode.arguments.size()) {
+                arglist = arglist + ", ";
+            }
+        }
+        System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
         this.indent = this.indent + 2;
     }
 }
