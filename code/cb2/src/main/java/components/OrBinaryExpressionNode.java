@@ -1,5 +1,6 @@
 package components;
 
+import components.interfaces.BinaryExpressionNode;
 import parser.Token;
 
 public class OrBinaryExpressionNode extends BinaryExpressionNode {

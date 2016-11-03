@@ -2,6 +2,7 @@ package components;
 
 import java.util.ArrayList;
 
+import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 
 public class BlockNode extends StatementNode {

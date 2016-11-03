@@ -1,5 +1,6 @@
 package components;
 
+import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 
 public class SimpleStatementNode extends StatementNode {

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import components.ClassNode;
-import components.Node;
+import components.interfaces.Node;
 import parser.MINIGrammar;
 import testsuite.MINIException;
 import visitors.ASTVisitor;

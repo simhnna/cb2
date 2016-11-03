@@ -1,6 +1,8 @@
 package components;
 
 import java.util.ArrayList;
+
+import components.interfaces.Node;
 import visitors.ASTVisitor;
 
 public class ClassNode extends Node {

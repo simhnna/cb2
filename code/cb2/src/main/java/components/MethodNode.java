@@ -2,6 +2,7 @@ package components;
 
 import java.util.ArrayList;
 
+import components.interfaces.Node;
 import parser.Token;
 import visitors.ASTVisitor;
 
