@@ -128,6 +128,7 @@ public class ASTVisitor {
 
     public void visitAfter(ClassNode classNode) {
         closeScope();
+        System.out.println("}");
     }
 
     public void visit(NullExpressionNode nullExpression) {
