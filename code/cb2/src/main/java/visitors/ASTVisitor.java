@@ -4,7 +4,7 @@ import components.*;
 
 public class ASTVisitor {
     private int indent = 0;
-    
+
     private void writeIndent() {
         System.out.print(new String(new char[this.indent]).replace('\0', ' '));
     }
@@ -13,10 +13,14 @@ public class ASTVisitor {
         this.indent = this.indent - 2;
     }
 
+    public void openScope() {
+        this.indent = this.indent + 2;
+    }
+
     public void visit(ClassNode clsNode) {
         // classes need no indent
         System.out.println("class " + clsNode.name + " {");
-        this.indent = 2;
+        openScope();
     }
 
     public void visit(FieldNode fieldNode) {
@@ -42,10 +46,15 @@ public class ASTVisitor {
             }
         }
         System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
-        this.indent = this.indent + 2;
+    }
+
+    public void visitAfter(MethodNode methodNode) {
+        writeIndent();
+        System.out.println("}");
     }
 
     public void visit(BlockNode blockNode) {
+        this.writeIndent();
         System.out.println("block node content here");
     }
 
@@ -78,7 +87,26 @@ public class ASTVisitor {
         if(ifNode.hasSecond()) {
             System.out.println("}");
         }
-        
     }
 
+    public void visitPre(ReturnNode returnNode) {
+        writeIndent();
+        System.out.print("return ");
+    }
+
+    public void visitAfter(ReturnNode returnNode) {
+        System.out.println(";");
+    }
+
+    public void visit(ExpressionNode value) {
+        System.out.print("This subclass of expression was not implemented yet");
+    }
+
+    public void visitPre(BlockNode blockNode) {
+        openScope();
+    }
+
+    public void visitAfter(BlockNode blockNode) {
+        closeScope();
+    }
 }
