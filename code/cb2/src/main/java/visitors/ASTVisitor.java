@@ -4,10 +4,14 @@ import components.*;
 
 public class ASTVisitor {
     private int indent = 0;
+    
+    private void writeIndent() {
+        System.out.print(new String(new char[this.indent]).replace('\0', ' '));
+    }
 
     public void closeScope() {
         this.indent = this.indent - 2;
-        System.out.println(new String(new char[this.indent]).replace('\0', ' ') + "}");
+        this.writeIndent();
     }
 
     public void visit(ClassNode clsNode) {
@@ -17,7 +21,7 @@ public class ASTVisitor {
     }
 
     public void visit(FieldNode fieldNode) {
-        System.out.print(new String(new char[this.indent]).replace('\0', ' '));
+        this.writeIndent();
         String arrayDef = "";
         for (int i = 0; i < fieldNode.type.arrayDimensions; ++i) {
             arrayDef += "[]";
@@ -26,7 +30,7 @@ public class ASTVisitor {
     }
 
     public void visit(MethodNode methodNode) {
-        System.out.print(new String(new char[this.indent]).replace('\0', ' '));
+        this.writeIndent();
         String arglist = "";
         for(int i = 0; i < methodNode.arguments.size(); i++) {
             String arrayDef = "";
