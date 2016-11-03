@@ -57,6 +57,7 @@ class A {
       "Yeeees".print();
     }
     print(car.velocityTimesConstant(100));
+    var nothing := null<Car>;
   }
 }
 
