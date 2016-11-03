@@ -115,4 +115,8 @@ public class ASTVisitor {
     public void visitAfter(BlockNode blockNode) {
         closeScope();
     }
+
+    public void visitAfter(ClassNode classNode) {
+        closeScope();
+    }
 }

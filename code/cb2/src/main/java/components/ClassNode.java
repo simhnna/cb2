@@ -18,6 +18,6 @@ public class ClassNode extends Node {
         for(Node child : this.children) {
             child.accept(visitor);
         }
-        visitor.closeScope();
+        visitor.visitAfter(this);
     }
 }
