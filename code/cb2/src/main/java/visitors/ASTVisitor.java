@@ -30,27 +30,19 @@ public class ASTVisitor {
 
     public void visit(FieldNode fieldNode) {
         this.writeIndent();
-        String arrayDef = "";
-        for (int i = 0; i < fieldNode.type.arrayDimensions; ++i) {
-            arrayDef += "[]";
-        }
-        System.out.println(fieldNode.type.baseType.image + arrayDef + " " + fieldNode.name.image + ";");
+        System.out.println(fieldNode.type + " " + fieldNode.name.image + ";");
     }
 
     public void visit(MethodNode methodNode) {
         this.writeIndent();
         String arglist = "";
         for(int i = 0; i < methodNode.arguments.size(); i++) {
-            String arrayDef = "";
-            for (int j = 0; j < methodNode.arguments.get(i).type.arrayDimensions; ++j) {
-                arrayDef += "[]";
-            }
-            arglist = arglist + methodNode.arguments.get(i).type.baseType.image + arrayDef + " " + methodNode.arguments.get(i).name.image;
+            arglist = arglist + methodNode.arguments.get(i).type + " " + methodNode.arguments.get(i).name.image;
             if(i+1 != methodNode.arguments.size()) {
                 arglist = arglist + ", ";
             }
         }
-        System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
+        System.out.println(methodNode.returnType.baseType + " " + methodNode.name.image + "(" + arglist + ") {");
     }
 
     public void visitAfter(MethodNode methodNode) {

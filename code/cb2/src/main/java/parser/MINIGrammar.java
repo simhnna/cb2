@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import testsuite.MINIException;
 import errorHandling.ErrorHandler;
 
+@SuppressWarnings("unused")
 public class MINIGrammar implements MINIGrammarConstants {
   public static ArrayList < ClassNode > parse(File in) throws MINIException
   {
