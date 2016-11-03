@@ -11,7 +11,6 @@ public class ASTVisitor {
 
     public void closeScope() {
         this.indent = this.indent - 2;
-        this.writeIndent();
     }
 
     public void visit(ClassNode clsNode) {
@@ -49,4 +48,18 @@ public class ASTVisitor {
     public void visit(BlockNode blockNode) {
         System.out.println("block node content here");
     }
+
+    public void visitPre(AssignmentStatementNode assignmentStatementNode) {
+        this.writeIndent();
+        System.out.print("var ");
+    }
+
+    public void visit(AssignmentStatementNode assignmentStatementNode) {
+        System.out.print(" := ");
+    }
+
+    public void visitAfter(AssignmentStatementNode assignmentStatementNode) {
+        System.out.println(";");
+    }
+
 }
