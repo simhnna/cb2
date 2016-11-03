@@ -29,7 +29,7 @@ public class Main {
     public static void main(String... args) {
         ArrayList<ClassNode> classes;
         try {
-            classes = MINIGrammar.parse(new File("res" + File.separator + "example_code" + File.separator + "valid" + File.separator + "beispiele_timm.m"));
+            classes = MINIGrammar.parse(new File("res" + File.separator + "example_code" + File.separator + "valid" + File.separator + "pretty_much_everything.m"));
 //            printClassesAndMembers(classes);
             printPretty(classes);
         } catch (MINIException e) {
