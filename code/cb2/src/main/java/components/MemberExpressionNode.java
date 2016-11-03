@@ -8,7 +8,10 @@ public class MemberExpressionNode extends ExpressionNode {
     public ExpressionNode child;
 
     public void accept(ASTVisitor visitor) {
-        // TODO not implemented
-        System.out.print("(not implemented Member)");
+        if (child != null) {
+            child.accept(visitor);
+            visitor.visitPre(this);
+        }
+        visitor.visit(this);
     }
 }

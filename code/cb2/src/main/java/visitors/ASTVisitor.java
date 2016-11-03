@@ -142,4 +142,12 @@ public class ASTVisitor {
     public void visitAfter(DeclarationStatementNode declarationStatementNode) {
         System.out.println(";");
     }
+
+    public void visitPre(MemberExpressionNode memberExpression) {
+        System.out.print(".");
+    }
+
+    public void visit(MemberExpressionNode memberExpression) {
+        System.out.print(memberExpression.identifier);
+    }
 }
