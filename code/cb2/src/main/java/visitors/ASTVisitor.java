@@ -13,10 +13,14 @@ public class ASTVisitor {
         this.indent = this.indent - 2;
     }
 
+    public void openScope() {
+        this.indent = this.indent + 2;
+    }
+
     public void visit(ClassNode clsNode) {
         // classes need no indent
         System.out.println("class " + clsNode.name + " {");
-        this.indent = 2;
+        openScope();
     }
 
     public void visit(FieldNode fieldNode) {
@@ -42,7 +46,7 @@ public class ASTVisitor {
             }
         }
         System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
-        this.indent = this.indent + 2;
+        openScope();
     }
 
     public void visit(BlockNode blockNode) {
