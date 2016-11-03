@@ -74,10 +74,13 @@ public class ASTVisitor {
     }
 
     public void visit(IfNode ifNode) {
+        ifNode.condition.accept(this);
         System.out.println(") {");
+        ifNode.first.accept(this);
         if(ifNode.hasSecond()) {
             this.writeIndent();
             System.out.println("} else {");
+            ifNode.second.accept(this);
         }
     }
 
