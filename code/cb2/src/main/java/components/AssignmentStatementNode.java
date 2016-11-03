@@ -11,6 +11,10 @@ public class AssignmentStatementNode extends StatementNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        System.out.println("accept() Method not implemented for AssignmentStatementNode.");
+        visitor.visitPre(this);
+        this.first.accept(visitor);
+        visitor.visit(this);
+        this.second.accept(visitor);
+        visitor.visitAfter(this);
     }
 }
