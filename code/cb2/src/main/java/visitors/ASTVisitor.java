@@ -178,4 +178,21 @@ public class ASTVisitor {
     public void visitAfter(MethodMemberExpressionNode methodMemberExpressionNode) {
         System.out.print(")");
     }
+
+    public void visitPre(NewExpressionNode newExpressionNode) {
+        System.out.print("new " + newExpressionNode.type + "<");
+    }
+
+    public void visit(NewExpressionNode newExpressionNode) {
+        for (int i = 0; i < newExpressionNode.arguments.size(); ++i) {
+            System.out.print(newExpressionNode.arguments.get(i));
+            if (i != newExpressionNode.arguments.size() - 1) {
+                System.out.print(", ");
+            }
+        }
+    }
+
+    public void visitAfter(NewExpressionNode newExpressionNode) {
+        System.out.print(">");
+    }
 }
