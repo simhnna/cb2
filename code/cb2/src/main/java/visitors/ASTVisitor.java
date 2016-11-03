@@ -133,4 +133,13 @@ public class ASTVisitor {
     public void visit(NullExpressionNode nullExpression) {
         System.out.print("null<" + nullExpression.type + ">");
     }
+
+    public void visitPre(DeclarationStatementNode declarationStatementNode) {
+        writeIndent();
+        System.out.print("var " + declarationStatementNode.name + " := ");
+    }
+
+    public void visitAfter(DeclarationStatementNode declarationStatementNode) {
+        System.out.println(";");
+    }
 }

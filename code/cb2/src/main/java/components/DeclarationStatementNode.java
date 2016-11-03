@@ -9,7 +9,8 @@ public class DeclarationStatementNode extends StatementNode {
     public ExpressionNode expression;
     
     public void accept(ASTVisitor visitor) {
-        // TODO not implemented
-        System.out.print("(not implemented Declaration)");
+        visitor.visitPre(this);
+        expression.accept(visitor);
+        visitor.visitAfter(this);
     }
 }
