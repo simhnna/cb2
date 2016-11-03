@@ -99,7 +99,8 @@ public class ASTVisitor {
     }
 
     public void visit(ExpressionNode value) {
-        System.out.print("This subclass of expression was not implemented yet");
+        // TODO remove this when all expressions have been implemented
+        System.out.print("(expression)");
     }
 
     public void visitPre(BlockNode blockNode) {
