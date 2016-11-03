@@ -10,6 +10,7 @@ public class NewExpressionNode extends ExpressionNode {
     public ArrayList<Token> arguments = new ArrayList<>();
 
     public void accept(ASTVisitor visitor) {
-        System.out.println("accept() Method not implemented for this node type.");
+        // TODO not implemented
+        System.out.print("(not implemented New)");
     }
 }

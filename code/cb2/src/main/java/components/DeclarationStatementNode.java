@@ -8,6 +8,7 @@ public class DeclarationStatementNode extends StatementNode {
     public ExpressionNode expression;
     
     public void accept(ASTVisitor visitor) {
-        System.out.println("accept() Method not implemented for this node type.");
+        // TODO not implemented
+        System.out.print("(not implemented Declaration)");
     }
 }
