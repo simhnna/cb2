@@ -1,6 +1,7 @@
 package visitors;
 
 import components.*;
+import components.interfaces.PrimitiveType;
 
 public class ASTVisitor {
     private int indent = 0;
@@ -101,6 +102,10 @@ public class ASTVisitor {
     public void visit(ExpressionNode value) {
         // TODO remove this when all expressions have been implemented
         System.out.print("(expression)");
+    }
+
+    public void visit(PrimitiveType type) {
+        System.out.print(type);
     }
 
     public void visitPre(BlockNode blockNode) {

@@ -1,15 +1,10 @@
 package components;
 
+import components.interfaces.PrimitiveType;
 import parser.Token;
-import visitors.ASTVisitor;
 
-public class IntAtomicExpressionNode extends ExpressionNode {
-    public Token token;
+public class IntAtomicExpressionNode extends PrimitiveType{
     public IntAtomicExpressionNode(Token token){
-        this.token = token;
-    }
-
-    public void accept(ASTVisitor visitor) {
-        System.out.println("accept() Method not implemented for this node type.");
+        super(token);
     }
 }
