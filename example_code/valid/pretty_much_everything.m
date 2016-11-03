@@ -63,6 +63,7 @@ class Car {
   int maximumVelocity;
   int numSeats;
   int weight;
+  int[] wheelPressure;
 
   void Car() {
     this.name := "name";
