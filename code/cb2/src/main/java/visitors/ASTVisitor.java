@@ -7,12 +7,19 @@ import components.interfaces.PrimitiveType;
 public class ASTVisitor {
     private int indent = 0;
 
+    private StringBuilder bldr = new StringBuilder();
+
+    @Override
+    public String toString() {
+        return bldr.toString();
+    }
+
     /*
      * Helper methods used internally
      */
 
     private void writeIndent() {
-        System.out.print(new String(new char[this.indent]).replace('\0', ' '));
+        bldr.append(new String(new char[this.indent]).replace('\0', ' '));
     }
 
     private void closeScope() {
@@ -25,13 +32,15 @@ public class ASTVisitor {
 
     public void visit(ClassNode clsNode) {
         // classes need no indent
-        System.out.println("class " + clsNode.name + " {");
+        bldr.append("class " + clsNode.name + " {");
+        bldr.append("\n");
         openScope();
     }
 
     public void visit(FieldNode fieldNode) {
         this.writeIndent();
-        System.out.println(fieldNode.type + " " + fieldNode.name.image + ";");
+        bldr.append(fieldNode.type + " " + fieldNode.name.image + ";");
+        bldr.append("\n");
     }
 
     public void visit(MethodNode methodNode) {
@@ -43,56 +52,62 @@ public class ASTVisitor {
                 arglist = arglist + ", ";
             }
         }
-        System.out.println(methodNode.returnType.baseType + " " + methodNode.name.image + "(" + arglist + ") {");
+        bldr.append(methodNode.returnType.baseType + " " + methodNode.name.image + "(" + arglist + ") {");
+        bldr.append("\n");
     }
 
     public void visitAfter(MethodNode methodNode) {
         writeIndent();
-        System.out.println("}");
+        bldr.append("}");
+        bldr.append("\n");
     }
 
     public void visit(BlockNode blockNode) {
         this.writeIndent();
-        System.out.println("block node content here");
+        bldr.append("block node content here");
+        bldr.append("\n");
     }
 
     public void visitPre(AssignmentStatementNode assignmentStatementNode) {
         this.writeIndent();
-        System.out.print("var ");
     }
 
     public void visit(AssignmentStatementNode assignmentStatementNode) {
-        System.out.print(" := ");
+        bldr.append(" := ");
     }
 
     public void visitAfter(AssignmentStatementNode assignmentStatementNode) {
-        System.out.println(";");
+        bldr.append(";");
+        bldr.append("\n");
     }
 
     public void visitPre(IfNode ifNode) {
         this.writeIndent();
-        System.out.print("if (");
+        bldr.append("if (");
     }
 
     public void visit(IfNode ifNode) {
         ifNode.condition.accept(this);
-        System.out.println(") {");
+        bldr.append(") {");
+        bldr.append("\n");
         ifNode.first.accept(this);
         if(ifNode.hasSecond()) {
             this.writeIndent();
-            System.out.println("} else {");
+            bldr.append("} else {");
+            bldr.append("\n");
             ifNode.second.accept(this);
         }
     }
 
     public void visitAfter(IfNode ifNode) {
         this.writeIndent();
-        System.out.println("}");
+        bldr.append("}");
+        bldr.append("\n");
     }
 
     public void visitPre(ReturnNode returnNode) {
         writeIndent();
-        System.out.print("return ");
+        bldr.append("return ");
     }
 
     public void visit(ReturnNode returnNode) {
@@ -100,11 +115,12 @@ public class ASTVisitor {
     }
 
     public void visitAfter(ReturnNode returnNode) {
-        System.out.println(";");
+        bldr.append(";");
+        bldr.append("\n");
     }
 
     public void visit(PrimitiveType type) {
-        System.out.print(type);
+        bldr.append(type);
     }
 
     public void visitPre(BlockNode blockNode) {
@@ -117,42 +133,46 @@ public class ASTVisitor {
 
     public void visitPre(WhileNode whileNode) {
         writeIndent();
-        System.out.print("while (");
+        bldr.append("while (");
     }
 
     public void visit(WhileNode whileNode) {
-        System.out.println(") {");
+        bldr.append(") {");
+        bldr.append("\n");
     }
 
     public void visitAfter(WhileNode whileNode) {
         writeIndent();
-        System.out.println("}");
+        bldr.append("}");
+        bldr.append("\n");
     }
 
     public void visitAfter(ClassNode classNode) {
         closeScope();
-        System.out.println("}");
+        bldr.append("}");
+        bldr.append("\n");
     }
 
     public void visit(NullExpressionNode nullExpression) {
-        System.out.print("null<" + nullExpression.type + ">");
+        bldr.append("null<" + nullExpression.type + ">");
     }
 
     public void visitPre(DeclarationStatementNode declarationStatementNode) {
         writeIndent();
-        System.out.print("var " + declarationStatementNode.name + " := ");
+        bldr.append("var " + declarationStatementNode.name + " := ");
     }
 
     public void visitAfter(DeclarationStatementNode declarationStatementNode) {
-        System.out.println(";");
+        bldr.append(";");
+        bldr.append("\n");
     }
 
     public void visitPre(MemberExpressionNode memberExpression) {
-        System.out.print(".");
+        bldr.append(".");
     }
 
     public void visit(MemberExpressionNode memberExpression) {
-        System.out.print(memberExpression.identifier);
+        bldr.append(memberExpression.identifier);
     }
 
     public void visitPre(SimpleStatementNode simpleStatementNode) {
@@ -164,40 +184,41 @@ public class ASTVisitor {
     }
 
     public void visitAfter(SimpleStatementNode simpleStatementNode) {
-        System.out.println(";");
+        bldr.append(";");
+        bldr.append("\n");
     }
 
     public void visitPre(MethodMemberExpressionNode methodMemberExpressionNode) {
         if (methodMemberExpressionNode.child != null) {
             methodMemberExpressionNode.child.accept(this);
-            System.out.print(".");
+            bldr.append(".");
         }
-        System.out.print(methodMemberExpressionNode.identifier + "(");
+        bldr.append(methodMemberExpressionNode.identifier + "(");
     }
 
     public void visit(MethodMemberExpressionNode methodMemberExpressionNode) {
-        System.out.print(", ");
+        bldr.append(", ");
     }
 
     public void visitAfter(MethodMemberExpressionNode methodMemberExpressionNode) {
-        System.out.print(")");
+        bldr.append(")");
     }
 
     public void visitPre(NewExpressionNode newExpressionNode) {
-        System.out.print("new " + newExpressionNode.type + "<");
+        bldr.append("new <" + newExpressionNode.type);
     }
 
     public void visit(NewExpressionNode newExpressionNode) {
         for (int i = 0; i < newExpressionNode.arguments.size(); ++i) {
-            System.out.print(newExpressionNode.arguments.get(i));
+            bldr.append(newExpressionNode.arguments.get(i));
             if (i != newExpressionNode.arguments.size() - 1) {
-                System.out.print(", ");
+                bldr.append(", ");
             }
         }
     }
 
     public void visitAfter(NewExpressionNode newExpressionNode) {
-        System.out.print(">");
+        bldr.append(">");
     }
 
     public void visitPre(BinaryExpressionNode binaryExpressionNode) {
@@ -205,7 +226,7 @@ public class ASTVisitor {
     }
     
     public void visit(BinaryExpressionNode binaryExpressionNode) {
-        System.out.print(" " + binaryExpressionNode.operator.image + " ");
+        bldr.append(" " + binaryExpressionNode.operator.image + " ");
     }
 
     public void visitAfter(BinaryExpressionNode binaryExpressionNode) {
@@ -213,13 +234,13 @@ public class ASTVisitor {
     }
 
     public void visit(UnaryExpressionNode unaryExpressionNode) {
-        System.out.print(unaryExpressionNode.operator);
+        bldr.append(unaryExpressionNode.operator);
         unaryExpressionNode.child.accept(this);
     }
 
     public void visit(PriorityExpressionNode priorityExpressionNode) {
-        System.out.print("(");
+        bldr.append("(");
         priorityExpressionNode.child.accept(this);
-        System.out.print(")");
+        bldr.append(")");
     }
 }

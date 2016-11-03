@@ -21,9 +21,11 @@ public class Main {
     }
 
     public static void printPretty(ArrayList<ClassNode> parse_result) {
+        ASTVisitor visitor = new ASTVisitor();
         for (ClassNode cls: parse_result) {
-            cls.accept(new ASTVisitor());
+            cls.accept(visitor);
         }
+        System.out.println(visitor.toString());
     }
 
     public static void main(String... args) {
