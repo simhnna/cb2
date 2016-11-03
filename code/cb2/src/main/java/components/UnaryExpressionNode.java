@@ -10,6 +10,10 @@ public class UnaryExpressionNode extends ExpressionNode {
     public UnaryExpressionNode(Token operator) {
         this.operator = operator;
     }
+    
+    public Integer precedence(){
+        return 1;
+    }
 
     public void accept(ASTVisitor visitor) {
         System.out.println("accept() Method not implemented for this node type.");

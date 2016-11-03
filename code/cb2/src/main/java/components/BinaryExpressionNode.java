@@ -3,13 +3,16 @@ package components;
 import parser.Token;
 import visitors.ASTVisitor;
 
-public class BinaryExpressionNode extends ExpressionNode {
+public abstract class BinaryExpressionNode extends ExpressionNode {
     public ExpressionNode first;
     public ExpressionNode second;
     public Token operator;
     public void balance(){
         
     }
+    
+    public abstract Integer precedence();
+        
     
     public BinaryExpressionNode(Token operator) {
         this.operator = operator;

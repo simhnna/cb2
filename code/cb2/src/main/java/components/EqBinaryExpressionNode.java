@@ -8,4 +8,7 @@ public class EqBinaryExpressionNode extends BinaryExpressionNode {
         super(operator);
     }
 
+    public Integer precedence(){
+        return 5;
+    }
 }

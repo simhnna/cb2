@@ -2,7 +2,7 @@ package components;
 
 import parser.Token;
 
-public class GtBinaryExpressionNode extends BinaryExpressionNode {
+public class GtBinaryExpressionNode extends RelationalBinaryExpressionNode {
 
     public GtBinaryExpressionNode(Token operator) {
         super(operator);

@@ -8,4 +8,7 @@ public class OrBinaryExpressionNode extends BinaryExpressionNode {
         super(operator);
     }
 
+    public Integer precedence(){
+        return 7;
+    }
 }
