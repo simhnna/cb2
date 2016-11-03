@@ -8,7 +8,7 @@ class A {
   }
 
   int fibonacci(int n) {
-        
+
   }
 
   int returnArgument(int n) {
@@ -45,7 +45,7 @@ class A {
     print(nonRecursiveFactorial(otherFactorial(2)));
     print(args.length);
     var car := new <Car>;
-    print(car.name); 
+    print(car.name);
     car.name.print();
     car.setName("whhhhaaat");
     if (car.getName() != "whhhhaaat" || car.name != car.getName()) {
@@ -53,6 +53,8 @@ class A {
     }
     if (car.getName().length != car.name.length) {
       "Noo".print();
+    } else {
+      "Yeeees".print();
     }
     print(car.velocityTimesConstant(100));
   }
