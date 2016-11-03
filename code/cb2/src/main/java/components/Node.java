@@ -1,5 +1,4 @@
 package components;
 
-public class Node {
-    public int id;
+public abstract class Node {
 }
