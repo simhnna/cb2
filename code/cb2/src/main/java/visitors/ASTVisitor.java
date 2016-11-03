@@ -116,6 +116,20 @@ public class ASTVisitor {
         closeScope();
     }
 
+    public void visitPre(WhileNode whileNode) {
+        writeIndent();
+        System.out.print("while (");
+    }
+
+    public void visit(WhileNode whileNode) {
+        System.out.println(") {");
+    }
+
+    public void visitAfter(WhileNode whileNode) {
+        writeIndent();
+        System.out.println("}");
+    }
+
     public void visitAfter(ClassNode classNode) {
         closeScope();
     }

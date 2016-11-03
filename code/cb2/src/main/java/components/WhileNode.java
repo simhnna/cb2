@@ -7,6 +7,10 @@ public class WhileNode extends StatementNode {
     public BlockNode body;
 
     public void accept(ASTVisitor visitor) {
-        System.out.println("accept() Method not implemented for this node type.");
+        visitor.visitPre(this);
+        this.condition.accept(visitor);
+        visitor.visit(this);
+        this.body.accept(visitor);
+        visitor.visitAfter(this);
     }
 }
