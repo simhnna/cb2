@@ -11,7 +11,6 @@ public class ASTVisitor {
 
     public void closeScope() {
         this.indent = this.indent - 2;
-        this.writeIndent();
     }
 
     public void visit(ClassNode clsNode) {
