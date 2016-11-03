@@ -29,10 +29,14 @@ public class MethodNode extends Node {
     @Override
     public void accept(ASTVisitor visitor) {    
         visitor.visit(this);    
-// TODO: ast is not ready here?
-//        for(Node blockNode : this.body.children) {
-//            blockNode.accept(visitor);
-//        }
+        for(Node blockNode : this.body.children) {
+            // TODO: why are there null elements?
+            if(blockNode != null) {
+                blockNode.accept(visitor);
+            } else {
+                System.err.println("Skipped a null element in AST...");
+            }
+        }
         visitor.closeScope();
     }
 }

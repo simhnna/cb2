@@ -34,6 +34,7 @@ public class ASTVisitor {
         this.indent = this.indent + 2;
     }
 
-    public void visit(Node blockNode) {
+    public void visit(BlockNode blockNode) {
+        System.out.println("block node content here");
     }
 }
