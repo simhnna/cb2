@@ -9,11 +9,6 @@ public class FieldNode extends Node {
     public Type type;
     
     @Override
-    public String toString() {
-        return "<Field name='" + this.name + "'>";
-    }
-    
-    @Override
     public void accept(ASTVisitor visitor) {    
         visitor.visit(this);    
     }
