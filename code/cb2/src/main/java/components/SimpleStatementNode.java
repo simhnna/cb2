@@ -11,7 +11,8 @@ public class SimpleStatementNode extends StatementNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        // TODO not implemented
-        System.out.println("(not implemented SimpleStatement)");
+        visitor.visitPre(this);
+        expression.accept(visitor);
+        visitor.visitAfter(this);
     }
 }

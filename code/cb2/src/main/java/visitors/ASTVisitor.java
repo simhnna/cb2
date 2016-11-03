@@ -150,4 +150,28 @@ public class ASTVisitor {
     public void visit(MemberExpressionNode memberExpression) {
         System.out.print(memberExpression.identifier);
     }
+
+    public void visitPre(SimpleStatementNode simpleStatementNode) {
+        writeIndent();
+    }
+
+    public void visitAfter(SimpleStatementNode simpleStatementNode) {
+        System.out.println(";");
+    }
+
+    public void visitPre(MethodMemberExpressionNode methodMemberExpressionNode) {
+        if (methodMemberExpressionNode.child != null) {
+            methodMemberExpressionNode.child.accept(this);
+            System.out.print(".");
+        }
+        System.out.print(methodMemberExpressionNode.identifier + "(");
+    }
+
+    public void visit(MethodMemberExpressionNode methodMemberExpressionNode) {
+        System.out.print(", ");
+    }
+
+    public void visitAfter(MethodMemberExpressionNode methodMemberExpressionNode) {
+        System.out.print(")");
+    }
 }
