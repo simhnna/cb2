@@ -62,4 +62,23 @@ public class ASTVisitor {
         System.out.println(";");
     }
 
+    public void visitPre(IfNode ifNode) {
+        this.writeIndent();
+        System.out.print("if (");
+    }
+
+    public void visit(IfNode ifNode) {
+        System.out.println(") {");
+        if(ifNode.hasSecond()) {
+            System.out.println("} else {");
+        }
+    }
+
+    public void visitAfter(IfNode ifNode) {
+        if(ifNode.hasSecond()) {
+            System.out.println("}");
+        }
+        
+    }
+
 }
