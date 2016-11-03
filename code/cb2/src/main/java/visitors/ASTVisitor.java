@@ -129,4 +129,8 @@ public class ASTVisitor {
     public void visitAfter(ClassNode classNode) {
         closeScope();
     }
+
+    public void visit(NullExpressionNode nullExpression) {
+        System.out.print("null<" + nullExpression.type + ">");
+    }
 }
