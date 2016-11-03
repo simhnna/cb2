@@ -15,6 +15,19 @@ class A {
     return n;
   }
 
+  int additiveInverse(int n) {
+    return -n;
+  }
+
+  int identity(int n) {
+    return - - - - n;
+  }
+
+  // should return zero
+  int messedUpStatement() {
+    return 1 - - - - 2 + - 2 - 1;
+  }
+
   int factorial(int n) {
     if (n <= 1) {
       return 1;

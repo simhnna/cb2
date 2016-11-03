@@ -17,7 +17,6 @@ public class UnaryExpressionNode extends ExpressionNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        // TODO not implemented
-        System.out.print("(not implemented UnaryExpression)");
+        visitor.visit(this);
     }
 }

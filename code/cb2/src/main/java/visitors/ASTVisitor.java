@@ -217,4 +217,9 @@ public class ASTVisitor {
     public void visitAfter(BinaryExpressionNode binaryExpressionNode) {
         binaryExpressionNode.second.accept(this);
     }
+
+    public void visit(UnaryExpressionNode unaryExpressionNode) {
+        System.out.print(unaryExpressionNode.operator);
+        unaryExpressionNode.child.accept(this);
+    }
 }
