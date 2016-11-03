@@ -109,7 +109,6 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public MethodNode method() throws ParseException {
   MethodNode n = new MethodNode();
-  BlockNode block;
     n.arguments = signature();
     n.body = blockStatement();
     {if (true) return n;}
@@ -196,35 +195,51 @@ public class MINIGrammar implements MINIGrammarConstants {
     case INT:
     case BOOL:
     case STRING:
-      expression();
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case SEMICOLON:
-        jj_consume_token(SEMICOLON);
-        break;
-      case ASSIGNMENT:
-        jj_consume_token(ASSIGNMENT);
-        expression();
-        jj_consume_token(SEMICOLON);
-        break;
-      default:
-        jj_la1[6] = jj_gen;
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      s = simpleStatement();
       break;
     case VAR:
-      jj_consume_token(VAR);
-      jj_consume_token(ID);
-      jj_consume_token(ASSIGNMENT);
-      expression();
+      s = declaration();
+      break;
+    default:
+      jj_la1[6] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    {if (true) return s;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public StatementNode simpleStatement() throws ParseException {
+  ExpressionNode first, second;
+    first = expression();
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case SEMICOLON:
       jj_consume_token(SEMICOLON);
+                    {if (true) return new SimpleStatementNode(first);}
+      break;
+    case ASSIGNMENT:
+      jj_consume_token(ASSIGNMENT);
+      second = expression();
+      jj_consume_token(SEMICOLON);
+                                                            {if (true) return new AssignmentStatementNode(first, second);}
       break;
     default:
       jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    {if (true) return s;}
+    throw new Error("Missing return statement in function");
+  }
+
+  final public DeclarationStatementNode declaration() throws ParseException {
+  DeclarationStatementNode n = new DeclarationStatementNode();
+    jj_consume_token(VAR);
+    jj_consume_token(ID);
+           n.name = token;
+    jj_consume_token(ASSIGNMENT);
+    n.expression = expression();
+    jj_consume_token(SEMICOLON);
+    {if (true) return n;}
     throw new Error("Missing return statement in function");
   }
 
@@ -670,10 +685,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x400,0x0,0x82000,0x8000,0x40000,0x0,0x8080000,0x35f12800,0x35f12800,0x2000000,0xd0020000,0x30312000,0x2000,0xd0020000,0xd0020000,0x30000000,0xd0000000,0x40000,0x30312000,0x2000,0x312000,0x40000,0x0,};
+      jj_la1_0 = new int[] {0x400,0x0,0x82000,0x8000,0x40000,0x0,0x35f12800,0x8080000,0x35f12800,0x2000000,0xd0020000,0x30312000,0x2000,0xd0020000,0xd0020000,0x30000000,0xd0000000,0x40000,0x30312000,0x2000,0x312000,0x40000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x400,0x0,0x0,0x0,0x400,0x0,0x3c00,0x3c00,0x0,0x3ff,0x3c00,0x0,0x3ff,0x3ff,0x0,0x3ff,0x0,0x3c00,0x0,0x3c00,0x0,0xc00,};
+      jj_la1_1 = new int[] {0x0,0x400,0x0,0x0,0x0,0x400,0x3c00,0x0,0x3c00,0x0,0x3ff,0x3c00,0x0,0x3ff,0x3ff,0x0,0x3ff,0x0,0x3c00,0x0,0x3c00,0x0,0xc00,};
    }
 
   /** Constructor with InputStream. */

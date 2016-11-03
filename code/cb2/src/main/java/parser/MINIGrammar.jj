@@ -204,7 +204,6 @@ Node classMember() :
 MethodNode method() :
 {
   MethodNode n = new MethodNode();
-  BlockNode block;
 }
 {
   n.arguments = signature() n.body = blockStatement()
@@ -266,15 +265,38 @@ StatementNode statement() :
   | s = ifStatement()
   | s = whileStatement()
   | s = returnStatement()
-  | expression()
-  (
-    < SEMICOLON >
-    | < ASSIGNMENT > expression() < SEMICOLON >
-  )
-  | < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
+  | s = simpleStatement()
+  | s = declaration()
   )
   {
     return s;
+  }
+}
+
+StatementNode simpleStatement() :
+{
+  ExpressionNode first, second;
+}
+{
+  first = expression()
+  (
+    < SEMICOLON > { return new SimpleStatementNode(first); }
+    | < ASSIGNMENT > second = expression() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
+  )
+}
+
+DeclarationStatementNode declaration() :
+{
+  DeclarationStatementNode n = new DeclarationStatementNode();
+}
+{
+  < VAR >
+  < ID > { n.name = token; }
+  < ASSIGNMENT >
+  n.expression = expression()
+  < SEMICOLON >
+  {
+    return n;
   }
 }
 
