@@ -94,6 +94,10 @@ public class ASTVisitor {
         System.out.print("return ");
     }
 
+    public void visit(ReturnNode returnNode) {
+        returnNode.value.accept(this);
+    }
+
     public void visitAfter(ReturnNode returnNode) {
         System.out.println(";");
     }
@@ -157,6 +161,10 @@ public class ASTVisitor {
 
     public void visitPre(SimpleStatementNode simpleStatementNode) {
         writeIndent();
+    }
+
+    public void visit(SimpleStatementNode simpleStatementNode) {
+        simpleStatementNode.expression.accept(this);
     }
 
     public void visitAfter(SimpleStatementNode simpleStatementNode) {

@@ -12,7 +12,7 @@ public class SimpleStatementNode extends StatementNode {
 
     public void accept(ASTVisitor visitor) {
         visitor.visitPre(this);
-        expression.accept(visitor);
+        visitor.visit(this);
         visitor.visitAfter(this);
     }
 }
