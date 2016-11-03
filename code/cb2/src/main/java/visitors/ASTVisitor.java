@@ -1,6 +1,7 @@
 package visitors;
 
 import components.*;
+import components.interfaces.BinaryExpressionNode;
 import components.interfaces.PrimitiveType;
 
 public class ASTVisitor {
@@ -202,5 +203,17 @@ public class ASTVisitor {
 
     public void visitAfter(NewExpressionNode newExpressionNode) {
         System.out.print(">");
+    }
+
+    public void visitPre(BinaryExpressionNode binaryExpressionNode) {
+        binaryExpressionNode.first.accept(this);
+    }
+    
+    public void visit(BinaryExpressionNode binaryExpressionNode) {
+        System.out.print(" " + binaryExpressionNode.operator.image + " ");
+    }
+
+    public void visitAfter(BinaryExpressionNode binaryExpressionNode) {
+        binaryExpressionNode.second.accept(this);
     }
 }
