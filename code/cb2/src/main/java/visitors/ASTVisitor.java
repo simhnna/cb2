@@ -6,15 +6,19 @@ import components.interfaces.PrimitiveType;
 public class ASTVisitor {
     private int indent = 0;
 
+    /*
+     * Helper methods used internally
+     */
+
     private void writeIndent() {
         System.out.print(new String(new char[this.indent]).replace('\0', ' '));
     }
 
-    public void closeScope() {
+    private void closeScope() {
         this.indent = this.indent - 2;
     }
 
-    public void openScope() {
+    private void openScope() {
         this.indent = this.indent + 2;
     }
 
