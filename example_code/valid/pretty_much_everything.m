@@ -23,6 +23,16 @@ class A {
     return - - - - n;
   }
 
+  void allKindsOfIntOperators() {
+    var x := 0;
+    var y := 0;
+    x := 1 * 2 / 3 + 4 - 5 % 6;
+    y := 1 * (2 + 3);
+    if (1 * 2 + 3 != 2 + 3 * 1) {
+      "nooo!".print();
+    }
+  }
+
   // should return zero
   int messedUpStatement() {
     return 1 - - - - 2 + - 2 - 1;

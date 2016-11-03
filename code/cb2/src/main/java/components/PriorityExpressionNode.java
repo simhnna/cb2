@@ -7,7 +7,6 @@ public class PriorityExpressionNode extends ExpressionNode {
     public ExpressionNode child;
 
     public void accept(ASTVisitor visitor) {
-        // TODO not implemented
-        System.out.print("(not implemented PriorityExpression)");
+        visitor.visit(this);
     }
 }

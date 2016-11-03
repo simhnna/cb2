@@ -2,7 +2,6 @@ package visitors;
 
 import components.*;
 import components.interfaces.BinaryExpressionNode;
-import components.interfaces.ExpressionNode;
 import components.interfaces.PrimitiveType;
 
 public class ASTVisitor {
@@ -102,11 +101,6 @@ public class ASTVisitor {
 
     public void visitAfter(ReturnNode returnNode) {
         System.out.println(";");
-    }
-
-    public void visit(ExpressionNode value) {
-        // TODO remove this when all expressions have been implemented
-        System.out.print("(expression)");
     }
 
     public void visit(PrimitiveType type) {
@@ -221,5 +215,11 @@ public class ASTVisitor {
     public void visit(UnaryExpressionNode unaryExpressionNode) {
         System.out.print(unaryExpressionNode.operator);
         unaryExpressionNode.child.accept(this);
+    }
+
+    public void visit(PriorityExpressionNode priorityExpressionNode) {
+        System.out.print("(");
+        priorityExpressionNode.child.accept(this);
+        System.out.print(")");
     }
 }
