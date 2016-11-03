@@ -46,10 +46,15 @@ public class ASTVisitor {
             }
         }
         System.out.println(methodNode.returnType.baseType.image + " " + methodNode.name.image + "(" + arglist + ") {");
-        openScope();
+    }
+
+    public void visitAfter(MethodNode methodNode) {
+        writeIndent();
+        System.out.println("}");
     }
 
     public void visit(BlockNode blockNode) {
+        this.writeIndent();
         System.out.println("block node content here");
     }
 
@@ -66,4 +71,23 @@ public class ASTVisitor {
         System.out.println(";");
     }
 
+    public void visitPre(ReturnNode returnNode) {
+        writeIndent();
+        System.out.print("return ");
+    }
+    public void visitAfter(ReturnNode returnNode) {
+        System.out.println(";");
+    }
+
+    public void visit(ExpressionNode value) {
+        System.out.print("This subclass of expression was not implemented yet");
+    }
+
+    public void visitPre(BlockNode blockNode) {
+        openScope();
+    }
+
+    public void visitAfter(BlockNode blockNode) {
+        closeScope();
+    }
 }

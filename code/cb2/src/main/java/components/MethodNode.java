@@ -30,6 +30,6 @@ public class MethodNode extends Node {
     public void accept(ASTVisitor visitor) {    
         visitor.visit(this);    
         this.body.accept(visitor);
-        visitor.closeScope();
+        visitor.visitAfter(this);
     }
 }
