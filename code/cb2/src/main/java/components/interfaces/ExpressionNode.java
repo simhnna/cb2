@@ -1,6 +1,4 @@
-package components;
-
-import components.interfaces.Node;
+package components.interfaces;
 
 public abstract class ExpressionNode extends Node {
 

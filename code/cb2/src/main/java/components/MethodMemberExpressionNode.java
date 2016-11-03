@@ -2,6 +2,7 @@ package components;
 
 import java.util.ArrayList;
 
+import components.interfaces.ExpressionNode;
 import visitors.ASTVisitor;
 
 public class MethodMemberExpressionNode extends MemberExpressionNode {

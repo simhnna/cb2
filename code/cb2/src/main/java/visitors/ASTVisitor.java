@@ -2,6 +2,7 @@ package visitors;
 
 import components.*;
 import components.interfaces.BinaryExpressionNode;
+import components.interfaces.ExpressionNode;
 import components.interfaces.PrimitiveType;
 
 public class ASTVisitor {

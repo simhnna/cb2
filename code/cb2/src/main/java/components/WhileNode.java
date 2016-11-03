@@ -1,5 +1,6 @@
 package components;
 
+import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 

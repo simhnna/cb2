@@ -1,6 +1,5 @@
 package components.interfaces;
 
-import components.ExpressionNode;
 import parser.Token;
 import visitors.ASTVisitor;
 
