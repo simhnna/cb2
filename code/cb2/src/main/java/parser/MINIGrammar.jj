@@ -12,10 +12,12 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import components.*;
+import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
 import errorHandling.ErrorHandler;
 
+@SuppressWarnings("unused")
 public class MINIGrammar
 {
   public static ArrayList < ClassNode > parse(File in) throws MINIException
@@ -176,94 +178,78 @@ ClassNode mini_class() :
 
 Node classMember() :
 {
-  FieldNode type = null;
-  MethodNode m = null;
+  FieldNode declaration = new FieldNode();
+  MethodNode m;
   Token memberName;
+  Type type;
 }
 {
   type = type() memberName = < ID >
   (
-    field()
-  | m = method()
-  )
-  {
-    if (m != null)
+    < SEMICOLON >
     {
-      m.name = memberName.image;
+      declaration.name = memberName;
+      declaration.type = type;
+ 
+      return declaration;
+    }
+  | m = method()
+  {
+      m.name = memberName;
       m.returnType = type;
       return m;
     }
-    else
-    {
-      type.name = memberName.image;
-      return type;
-    }
-  }
+  )
 }
 
-void field() :
-{}
-{
-  < SEMICOLON >
-}
 
 MethodNode method() :
 {
-  MethodNode method = new MethodNode();
-  ArrayList < FieldNode > arguments;
+  MethodNode n = new MethodNode();
 }
 {
-  arguments = signature() blockStatement()
+  n.arguments = signature() n.body = blockStatement()
   {
-    method.arguments = arguments;
-    return method;
+    return n;
   }
 }
 
-FieldNode type() :
+Type type() :
 {
-  Token typeIdentifier;
+  Type t = new Type();
 }
 {
-  typeIdentifier = < ID > (< ARRAY_DEF >)*
+  t.baseType = < ID > (< ARRAY_DEF > { t.arrayDimensions++; })*
   {
-    switch (typeIdentifier.image)
-    {
-      case "int" :
-      return new IntegerField();
-      case "string" :
-      return new StringField();
-      case "boolean" :
-      return new BooleanField();
-      case "void" :
-      return new VoidField();
-      default :
-      return new InvalidField();
-    }
+    return t;
   }
 }
 
-ArrayList < FieldNode > signature() :
+ArrayList < NamedType > signature() :
 {
-  ArrayList < FieldNode > arguments = new ArrayList < FieldNode > ();
-  Token argument;
-  FieldNode n;
+  ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
+  NamedType nT = new NamedType();
 }
 {
   < PARAN_OPEN >
   (
-    n = type() argument = < ID >
+    nT.type = type()
+    nT.name=< ID >
+	{
+      arguments.add(nT);
+    }
     (
-      < COMMA > n = type() argument = < ID >
+      < COMMA >
       {
-        n.name = argument.image;
-        arguments.add(n);
+        nT = new NamedType();
+      }
+      nT.type = type()
+      nT.name = < ID >
+      {
+        arguments.add(nT);
       }
     )*
-    {
-      n.name = argument.image;
-      arguments.add(n);
-    }
+ 
   )?
   < PARAN_CLOSE >
   {
@@ -271,134 +257,270 @@ ArrayList < FieldNode > signature() :
   }
 }
 
-void statement() :
-{}
+StatementNode statement() :
 {
-  blockStatement()
-| ifStatement()
-| whileStatement()
-| expression()
+  StatementNode s = null;
+}
+{
   (
-    < ASSIGNMENT > expression() < SEMICOLON >
-  | < SEMICOLON >
+    s = blockStatement()
+  | s = ifStatement()
+  | s = whileStatement()
+  | s = returnStatement()
+  | s = simpleStatement()
+  | s = declaration()
   )
-| < VAR > < ID > < ASSIGNMENT > expression() < SEMICOLON >
-| returnStatement()
+  {
+    return s;
+  }
 }
 
-void blockStatement() :
-{}
+StatementNode simpleStatement() :
+{
+  ExpressionNode first, second;
+}
+{
+  first = expression()
+  (
+    < SEMICOLON > { return new SimpleStatementNode(first); }
+    | < ASSIGNMENT > second = expression() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
+  )
+}
+
+DeclarationStatementNode declaration() :
+{
+  DeclarationStatementNode n = new DeclarationStatementNode();
+}
+{
+  < VAR >
+  < ID > { n.name = token; }
+  < ASSIGNMENT >
+  n.expression = expression()
+  < SEMICOLON >
+  {
+    return n;
+  }
+}
+
+BlockNode blockStatement() :
+{
+  BlockNode block = new BlockNode();
+  StatementNode statement;
+}
 {
   < BRACE_OPEN >
   (
-    statement()
+    statement=statement()
+    {
+      block.children.add(statement);
+    }
   )*
   < BRACE_CLOSE >
+  {
+    return block;
+  }
 }
 
-void ifStatement() :
-{}
+IfNode ifStatement() :
 {
-  < IF > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+  IfNode n = new IfNode();
+}
+{
+  < IF > < PARAN_OPEN > n.condition = expression()
+  < PARAN_CLOSE > n.first = blockStatement()
   (
-    < ELSE > blockStatement()
+    < ELSE > n.second = blockStatement()
   )?
+  {
+    return n;
+  }
 }
 
-void whileStatement() :
+WhileNode whileStatement() :
+{
+  WhileNode n = new WhileNode();
+}
+{
+  < WHILE > < PARAN_OPEN > n.condition = expression()
+  < PARAN_CLOSE > n.body = blockStatement()
+  {
+    return n;
+  }
+}
+
+ReturnNode returnStatement() :
+{
+  ReturnNode n = new ReturnNode();
+}
+{
+  < RETURN > n.value = expression() < SEMICOLON >
+  {
+    return n;
+  }
+}
+
+ExpressionNode expression() :
+{
+  ExpressionNode n;
+  UnaryExpressionNode unary;
+}
+{
+  (
+    unary = unaryOperator() unary.child = expression()
+    {
+      return unary;
+    }
+  | n = atomicExpression() (n = expression_suffix(n))?
+  )
+  {
+    return n;
+  }
+}
+
+ExpressionNode expression_suffix(ExpressionNode prefix) :
+{
+  BinaryExpressionNode b;
+  MemberExpressionNode m = null;
+}
+{
+    b=binaryOperator() b.second = expression()
+	{
+	  b.first = prefix;
+	  b.balance();
+	  return b;
+	}
+	| < DOT >
+	  {
+	    Token identifier;
+	    ExpressionNode n=null;
+	  }
+	  identifier = < ID >
+	  (m=argumentList())?
+	  {
+	    if(m == null){
+	      m = new FieldMemberExpressionNode();
+	    }
+	    m.identifier = identifier;
+	    m.child = prefix;
+	  }
+	  (n=expression_suffix(m))?
+	  {
+	    if(n != null)
+	      return n;
+	    return m;
+	  }
+}
+UnaryExpressionNode unaryOperator() :
 {}
 {
-  < WHILE > < PARAN_OPEN > expression() < PARAN_CLOSE > blockStatement()
+  < MINUS > { return new MinusUnaryExpressionNode(token); }
+| < NEGATION > { return new NegationUnaryExpressionNode(token); }
 }
 
-void returnStatement() :
+BinaryExpressionNode binaryOperator() :
 {}
 {
-  < RETURN > expression() < SEMICOLON >
+  < PLUS > { return new PlusBinaryExpressionNode(token); }
+| < MINUS > { return new MinusBinaryExpressionNode(token); }
+| < MULTIPLY > { return new MultiplyBinaryExpressionNode(token); }
+| < DIVIDE > { return new DivideBinaryExpressionNode(token); }
+| < REMAINDER > { return new RemainderBinaryExpressionNode(token); }
+| < EQUAL > { return new EqBinaryExpressionNode(token); }
+| < NOTEQUAL > { return new NeqBinaryExpressionNode(token); }
+| < LESS_THAN_EQUAL > { return new LteBinaryExpressionNode(token); }
+| < GREATER_THAN_EQUAL > { return new GteBinaryExpressionNode(token); }
+| < LESS_THAN > { return new LtBinaryExpressionNode(token); }
+| < GREATER_THAN > { return new GtBinaryExpressionNode(token); }
+| < AND > { return new AndBinaryExpressionNode(token); }
+| < OR > { return new OrBinaryExpressionNode(token); }
 }
 
-void expression() :
-{}
+MethodMemberExpressionNode argumentList() :
 {
-    unaryOperator() expression()
-  | atomicExpression() (expression_suffix())?
-
+  MethodMemberExpressionNode n = new MethodMemberExpressionNode();
+  ExpressionNode expr;
 }
-
-void expression_suffix() :
-{}
-{
-	binaryOperator() expression()
-	| < DOT > < ID > (argumentList())? (expression_suffix())?
-}
-void unaryOperator() :
-{}
-{
-  < MINUS >
-| < NEGATION >
-}
-
-void binaryOperator() :
-{}
-{
-  < PLUS >
-| < MINUS >
-| < MULTIPLY >
-| < DIVIDE >
-| < REMAINDER >
-| < EQUAL >
-| < NOTEQUAL >
-| < LESS_THAN_EQUAL >
-| < GREATER_THAN_EQUAL >
-| < LESS_THAN >
-| < GREATER_THAN >
-| < AND >
-| < OR >
-}
-
-void argumentList() :
-{}
 {
   < PARAN_OPEN >
   (
-    expression()
+    expr = expression()
+    {
+      n.children.add(expr);
+    }
     (
-      < COMMA > expression()
+      < COMMA > expr = expression()
+      {
+        n.children.add(expr);
+      }
     )*
   )?
   < PARAN_CLOSE >
+  {
+    return n;
+  }
 }
 
-void atomicExpression() :
-{}
+ExpressionNode atomicExpression() :
 {
-  < ID >
-  ( argumentList())?
-| < THIS >
-| < STRING >
-| < INT >
-| < BOOL >
-| nullExpression()
-| newExpression()
-| < PARAN_OPEN > expression() < PARAN_CLOSE >
+  ExpressionNode n;
+  MemberExpressionNode m = null;
+  Token identifier;
+}
+{
+  (
+    identifier = < ID >
+    ( m = argumentList())?
+    {
+      if(m == null){
+	    m = new FieldMemberExpressionNode();
+	  }
+	  m.identifier = identifier;
+	  return m;
+    }
+  | < THIS > { n = new ThisAtomicExpressionNode(token); }
+  | < STRING > { n = new StringAtomicExpressionNode(token); }
+  | < INT > { n = new IntAtomicExpressionNode(token); }
+  | < BOOL > { n = new BoolAtomicExpressionNode(token); }
+  | n = nullExpression()
+  | n = newExpression()
+  | < PARAN_OPEN > { PriorityExpressionNode priorityNode = new PriorityExpressionNode();}
+    priorityNode.child = expression()
+    < PARAN_CLOSE > { return priorityNode; }
+  )
+{
+  return n;
+}
 }
 
-void nullExpression() :
-{}
+NullExpressionNode nullExpression() :
 {
-  < NULL > < LESS_THAN > type() < GREATER_THAN >
+  NullExpressionNode n = new NullExpressionNode();
+}
+{
+  < NULL > < LESS_THAN > n.type = type() < GREATER_THAN >
+  {
+    return n;
+  }
 }
 
-void newExpression() :
-{}
+NewExpressionNode newExpression() :
 {
-  < NEW > < LESS_THAN > type()
+  NewExpressionNode n = new NewExpressionNode();
+}
+{
+  < NEW > < LESS_THAN > n.type = type()
   (
     < COMMA >
     (
       < INT >
     | < ID >
     )
+    {
+      n.arguments.add(token);
+    }
   )*
   < GREATER_THAN >
+  {
+    return n;
+  }
 }

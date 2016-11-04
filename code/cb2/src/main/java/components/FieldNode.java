@@ -1,10 +1,16 @@
 package components;
 
-public abstract class FieldNode extends Node {
-    public String name;
+import components.interfaces.Node;
+import parser.Token;
+import visitors.ASTVisitor;
+
+public class FieldNode extends Node {
+    public Token name;
+    public Type type;
     
     @Override
-    public String toString() {
-        return "<Field name='" + this.name + "'>";
+    public void accept(ASTVisitor visitor) {    
+        visitor.visit(this);    
     }
+    
 }
