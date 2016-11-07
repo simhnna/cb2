@@ -497,7 +497,10 @@ ExpressionNode expression0 () :
     }
   )*
   {
-    return current;
+    if (base == null) {
+      return current;
+    }
+    return base;
   }
 }
 

@@ -608,7 +608,10 @@ public class MINIGrammar implements MINIGrammarConstants {
             base = current;
           }
     }
-    {if (true) return current;}
+    if (base == null) {
+      {if (true) return current;}
+    }
+    {if (true) return base;}
     throw new Error("Missing return statement in function");
   }
 
