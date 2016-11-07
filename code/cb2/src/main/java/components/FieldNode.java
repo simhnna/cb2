@@ -1,10 +1,10 @@
 package components;
 
-import components.interfaces.Node;
+import components.interfaces.MemberNode;
 import parser.Token;
 import visitors.ASTVisitor;
 
-public class FieldNode extends Node {
+public class FieldNode extends MemberNode {
     public Token name;
     public Type type;
     

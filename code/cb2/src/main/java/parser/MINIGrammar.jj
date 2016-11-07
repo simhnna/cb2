@@ -158,11 +158,11 @@ ArrayList < ClassNode > file() :
 ClassNode mini_class() :
 {
   ClassNode cls = new ClassNode();
-  Node classMember;
+  MemberNode classMember;
 }
 {
   < CLASS >
-  < ID > { cls.name = token.image; }
+  < ID > { cls.name = token; }
   < BRACE_OPEN >
   (
     classMember = classMember()
@@ -176,7 +176,7 @@ ClassNode mini_class() :
   }
 }
 
-Node classMember() :
+MemberNode classMember() :
 {
   FieldNode declaration = new FieldNode();
   MethodNode m;

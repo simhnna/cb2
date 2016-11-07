@@ -32,7 +32,7 @@ public class ASTVisitor {
 
     public void visit(ClassNode clsNode) {
         // classes need no indent
-        bldr.append("class " + clsNode.name + " {");
+        bldr.append("class " + clsNode.name.image + " {");
         bldr.append("\n");
         openScope();
     }

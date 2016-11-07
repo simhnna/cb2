@@ -57,10 +57,10 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public ClassNode mini_class() throws ParseException {
   ClassNode cls = new ClassNode();
-  Node classMember;
+  MemberNode classMember;
     jj_consume_token(CLASS);
     jj_consume_token(ID);
-           cls.name = token.image;
+           cls.name = token;
     jj_consume_token(BRACE_OPEN);
     label_2:
     while (true) {
@@ -80,7 +80,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public Node classMember() throws ParseException {
+  final public MemberNode classMember() throws ParseException {
   FieldNode declaration = new FieldNode();
   MethodNode m;
   Token memberName;
