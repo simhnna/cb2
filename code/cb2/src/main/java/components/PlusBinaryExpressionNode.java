@@ -1,12 +1,13 @@
 package components;
 
 import components.interfaces.BinaryExpressionNode;
+import components.interfaces.ExpressionNode;
 import parser.Token;
 
 public class PlusBinaryExpressionNode extends BinaryExpressionNode {
 
-    public PlusBinaryExpressionNode(Token operator) {
-        super(operator);
+    public PlusBinaryExpressionNode(Token operator, ExpressionNode first, ExpressionNode second) {
+        super(operator, first, second);
     }
     
     public Integer precedence(){

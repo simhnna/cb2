@@ -358,78 +358,127 @@ ReturnNode returnStatement() :
 ExpressionNode expression7 () :
 //logical or
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression6()(< OR >expression6())*
+  current=expression6() (< OR >next = expression6() { current = new OrBinaryExpressionNode(token, current, next); })*
   {
-    return null;
+    return current;
   }
 }
 
-void expression6 () :
+ExpressionNode expression6 () :
 //logical and
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression5()(< AND >expression5())*
+  current= expression5()(< AND >next = expression5() { current = new AndBinaryExpressionNode(token,current,next); })*
+  {
+    return current;
+  }
 }
 
-void expression5 () :
+ExpressionNode expression5 () :
 //equality
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression4()((< EQUAL >| < NOTEQUAL >)expression4())*
+  current=expression4()(
+    (< EQUAL > next = expression4() { current= new EqBinaryExpressionNode(token, current, next); })
+    | (< NOTEQUAL > next = expression4() { current= new NeqBinaryExpressionNode(token, current, next); })
+  )*
+  {
+    return current;
+  }
 }
 
-void expression4 () :
+ExpressionNode expression4 () :
 //relational
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression3()((< LESS_THAN_EQUAL >| < GREATER_THAN_EQUAL >|< LESS_THAN >|< GREATER_THAN >)expression3())*
+  current=expression3()(
+    (< LESS_THAN_EQUAL > next=expression3() { current = new LteBinaryExpressionNode(token, current, next); })
+    | (< GREATER_THAN_EQUAL > next=expression3() { current = new GteBinaryExpressionNode(token, current, next); })
+    | (< LESS_THAN > next=expression3() { current = new LtBinaryExpressionNode(token, current, next); })
+    | (< GREATER_THAN > next=expression3() { current = new GtBinaryExpressionNode(token, current, next); })
+  )*
+  {
+    return current;
+  }
 }
 
-void expression3 () :
+ExpressionNode expression3 () :
 //addition
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression2()((< PLUS >|< MINUS >)expression2())*
+  current=expression2()(
+    (< PLUS > next=expression2() { current = new PlusBinaryExpressionNode(token, current, next); })
+    | (< MINUS > next=expression2() { current = new MinusBinaryExpressionNode(token, current, next); })
+  )*
+  {
+    return current;
+  }
 }
 
-void expression2 () :
+ExpressionNode expression2 () :
 //multiplicative
 {
-  
+  ExpressionNode current;
+  ExpressionNode next;
 }
 {
-  expression1()((< MULTIPLY >| < DIVIDE >|< REMAINDER >)expression1())*
+  current=expression1()(
+    (< MULTIPLY > next=expression1() { current = new MultiplyBinaryExpressionNode(token, current, next); })
+    | (< DIVIDE > next=expression1() { current = new DivideBinaryExpressionNode(token, current, next); })
+    | (< REMAINDER > next=expression1() { current = new RemainderBinaryExpressionNode(token, current, next); })
+  )*
+  {
+    return current;
+  }
 }
 
-void expression1 () :
+ExpressionNode expression1 () :
 //unary
 {
-  
+  ExpressionNode current;
 }
 {
-  (< NEGATION >|< MINUS >)expression1()
-  | expression0()
+  (    
+    (
+      (< NEGATION > current = expression1() { current = new NegationUnaryExpressionNode(token,current); })
+      | (< MINUS > current = expression1() { current = new MinusUnaryExpressionNode(token, current); })
+    )
+    | current = expression0()
+  )
+  {
+    return current;
+  }
 }
 
-void expression0 () :
+ExpressionNode expression0 () :
 //atomic (+ member)
 {
-  
+  ExpressionNode current;
 }
 {
-  atomicExpression() (< DOT ><ID >(argumentList(token))?)*
+  current = atomicExpression() (< DOT ><ID >(current=argumentList(token, current))?)*
+  {
+    return current;
+  }
 }
+
+
 /*
 ExpressionNode expression() :
 {
@@ -505,9 +554,9 @@ BinaryExpressionNode binaryOperator() :
 | < OR > { return new OrBinaryExpressionNode(token); }
 }
 */
-MethodMemberExpressionNode argumentList(Token name) :
+MethodInvocationExpressionNode argumentList(Token name, ExpressionNode child) :
 {
-  MethodMemberExpressionNode n = new MethodMemberExpressionNode(name, null);
+  MethodInvocationExpressionNode n = new MethodInvocationExpressionNode(name, child);
   ExpressionNode expr;
 }
 {
@@ -540,7 +589,7 @@ ExpressionNode atomicExpression() :
 {
   (
     identifier = < ID >
-    ( m = argumentList(identifier))?
+    ( m = argumentList(identifier, null))?
     {
       if(m == null){
 	    m = new FieldMemberExpressionNode(identifier, null);

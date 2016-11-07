@@ -3,6 +3,7 @@ package visitors;
 import components.*;
 import components.interfaces.BinaryExpressionNode;
 import components.interfaces.PrimitiveType;
+import components.interfaces.UnaryExpressionNode;
 
 public class ASTVisitor {
     private int indent = 0;
@@ -188,19 +189,19 @@ public class ASTVisitor {
         bldr.append("\n");
     }
 
-    public void visitPre(MethodMemberExpressionNode methodMemberExpressionNode) {
-        if (methodMemberExpressionNode.child != null) {
-            methodMemberExpressionNode.child.accept(this);
+    public void visitPre(MethodInvocationExpressionNode methodMemberExpressionNode) {
+        if (methodMemberExpressionNode.baseObject != null) {
+            methodMemberExpressionNode.baseObject.accept(this);
             bldr.append(".");
         }
         bldr.append(methodMemberExpressionNode.identifier + "(");
     }
 
-    public void visit(MethodMemberExpressionNode methodMemberExpressionNode) {
+    public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
         bldr.append(", ");
     }
 
-    public void visitAfter(MethodMemberExpressionNode methodMemberExpressionNode) {
+    public void visitAfter(MethodInvocationExpressionNode methodMemberExpressionNode) {
         bldr.append(")");
     }
 

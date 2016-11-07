@@ -6,11 +6,11 @@ import components.interfaces.ExpressionNode;
 import parser.Token;
 import visitors.ASTVisitor;
 
-public class MethodMemberExpressionNode extends MemberExpressionNode {
+public class MethodInvocationExpressionNode extends MemberExpressionNode {
     public final ArrayList<ExpressionNode> children;
 
-    public MethodMemberExpressionNode(Token identifier, ExpressionNode child) {
-        super(identifier, child);
+    public MethodInvocationExpressionNode(Token identifier, ExpressionNode baseObject) {
+        super(identifier, baseObject);
         children = new ArrayList<ExpressionNode>();
     }
 

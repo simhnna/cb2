@@ -6,17 +6,17 @@ import visitors.ASTVisitor;
 
 public class MemberExpressionNode extends ExpressionNode {
     public final Token identifier;
-    public final ExpressionNode child;
+    public final ExpressionNode baseObject;
 
-    public MemberExpressionNode(Token identifier, ExpressionNode child) {
+    public MemberExpressionNode(Token identifier, ExpressionNode baseObject) {
         super();
         this.identifier = identifier;
-        this.child = child;
+        this.baseObject = baseObject;
     }
 
     public void accept(ASTVisitor visitor) {
-        if (child != null) {
-            child.accept(visitor);
+        if (baseObject != null) {
+            baseObject.accept(visitor);
             visitor.visitPre(this);
         }
         visitor.visit(this);

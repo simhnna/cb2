@@ -1,14 +1,13 @@
-package components;
+package components.interfaces;
 
-import components.interfaces.ExpressionNode;
 import parser.Token;
 import visitors.ASTVisitor;
 
-public class UnaryExpressionNode extends ExpressionNode {
+public abstract class UnaryExpressionNode extends ExpressionNode {
     public final ExpressionNode child;
     public final Token operator;
 
-    public UnaryExpressionNode(ExpressionNode child, Token operator) {
+    public UnaryExpressionNode(Token operator, ExpressionNode child) {
         super();
         this.child = child;
         this.operator = operator;
