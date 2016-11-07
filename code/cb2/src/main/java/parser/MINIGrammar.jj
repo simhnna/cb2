@@ -273,10 +273,10 @@ StatementNode simpleStatement() :
   ExpressionNode first, second;
 }
 {
-  first = expression()
+  first = expression7()
   (
     < SEMICOLON > { return new SimpleStatementNode(first); }
-    | < ASSIGNMENT > second = expression() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
+    | < ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
   )
 }
 
@@ -289,7 +289,7 @@ DeclarationStatementNode declaration() :
   < VAR >
   < ID > { name = token; }
   < ASSIGNMENT >
-  expression = expression()
+  expression = expression7()
   < SEMICOLON >
   {
     return new DeclarationStatementNode(name, expression);
@@ -321,7 +321,7 @@ IfNode ifStatement() :
   BlockNode first, second = null;
 }
 {
-  < IF > < PARAN_OPEN > condition = expression()
+  < IF > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > first = blockStatement()
   (
     < ELSE > second = blockStatement()
@@ -337,7 +337,7 @@ WhileNode whileStatement() :
   BlockNode body;
 }
 {
-  < WHILE > < PARAN_OPEN > condition = expression()
+  < WHILE > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > body = blockStatement()
   {
     return new WhileNode(condition, body);
@@ -349,12 +349,88 @@ ReturnNode returnStatement() :
   ExpressionNode returnValue;
 }
 {
-  < RETURN > returnValue = expression() < SEMICOLON >
+  < RETURN > returnValue = expression7() < SEMICOLON >
   {
     return new ReturnNode(returnValue);
   }
 }
 
+ExpressionNode expression7 () :
+//logical or
+{
+  
+}
+{
+  expression6()(< OR >expression6())*
+  {
+    return null;
+  }
+}
+
+void expression6 () :
+//logical and
+{
+  
+}
+{
+  expression5()(< AND >expression5())*
+}
+
+void expression5 () :
+//equality
+{
+  
+}
+{
+  expression4()((< EQUAL >| < NOTEQUAL >)expression4())*
+}
+
+void expression4 () :
+//relational
+{
+  
+}
+{
+  expression3()((< LESS_THAN_EQUAL >| < GREATER_THAN_EQUAL >|< LESS_THAN >|< GREATER_THAN >)expression3())*
+}
+
+void expression3 () :
+//addition
+{
+  
+}
+{
+  expression2()((< PLUS >|< MINUS >)expression2())*
+}
+
+void expression2 () :
+//multiplicative
+{
+  
+}
+{
+  expression1()((< MULTIPLY >| < DIVIDE >|< REMAINDER >)expression1())*
+}
+
+void expression1 () :
+//unary
+{
+  
+}
+{
+  (< NEGATION >|< MINUS >)expression1()
+  | expression0()
+}
+
+void expression0 () :
+//atomic (+ member)
+{
+  
+}
+{
+  atomicExpression() (< DOT ><ID >(argumentList(token))?)*
+}
+/*
 ExpressionNode expression() :
 {
   ExpressionNode n;
@@ -428,21 +504,21 @@ BinaryExpressionNode binaryOperator() :
 | < AND > { return new AndBinaryExpressionNode(token); }
 | < OR > { return new OrBinaryExpressionNode(token); }
 }
-
+*/
 MethodMemberExpressionNode argumentList(Token name) :
 {
-  MethodMemberExpressionNode n = new MethodMemberExpressionNode(name);
+  MethodMemberExpressionNode n = new MethodMemberExpressionNode(name, null);
   ExpressionNode expr;
 }
 {
   < PARAN_OPEN >
   (
-    expr = expression()
+    expr = expression7()
     {
       n.children.add(expr);
     }
     (
-      < COMMA > expr = expression()
+      < COMMA > expr = expression7()
       {
         n.children.add(expr);
       }
@@ -459,6 +535,7 @@ ExpressionNode atomicExpression() :
   ExpressionNode n;
   MemberExpressionNode m = null;
   Token identifier;
+  ExpressionNode expression;
 }
 {
   (
@@ -466,7 +543,7 @@ ExpressionNode atomicExpression() :
     ( m = argumentList(identifier))?
     {
       if(m == null){
-	    m = new FieldMemberExpressionNode(identifier);
+	    m = new FieldMemberExpressionNode(identifier, null);
 	  }
 	  return m;
     }
@@ -476,9 +553,9 @@ ExpressionNode atomicExpression() :
   | < BOOL > { n = new BoolAtomicExpressionNode(token); }
   | n = nullExpression()
   | n = newExpression()
-  | < PARAN_OPEN > { PriorityExpressionNode priorityNode = new PriorityExpressionNode();}
-    priorityNode.child = expression()
-    < PARAN_CLOSE > { return priorityNode; }
+  | < PARAN_OPEN >
+    expression = expression7()
+    < PARAN_CLOSE > { return new PriorityExpressionNode(expression); }
   )
 {
   return n;
@@ -502,7 +579,7 @@ NewExpressionNode newExpression() :
   Type type;
 }
 {
-  < NEW > < LESS_THAN > type = type() { n = new ExpressionNode(type); }
+  < NEW > < LESS_THAN > type = type() { n = new NewExpressionNode(type); }
   (
     < COMMA >
     (
