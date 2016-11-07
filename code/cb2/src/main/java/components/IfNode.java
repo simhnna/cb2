@@ -5,10 +5,17 @@ import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 
 public class IfNode extends StatementNode {
-    public ExpressionNode condition;
-    public BlockNode first;
-    public BlockNode second;
-    
+    public final ExpressionNode condition;
+    public final BlockNode first;
+    public final BlockNode second;
+
+    public IfNode(ExpressionNode condition, BlockNode first, BlockNode second) {
+        super();
+        this.condition = condition;
+        this.first = first;
+        this.second = second;
+    }
+
     public boolean hasSecond() {
         return second != null;
     }

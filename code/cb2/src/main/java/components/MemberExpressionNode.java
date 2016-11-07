@@ -5,8 +5,14 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public class MemberExpressionNode extends ExpressionNode {
-    public Token identifier; 
-    public ExpressionNode child;
+    public final Token identifier;
+    public final ExpressionNode child;
+
+    public MemberExpressionNode(Token identifier, ExpressionNode child) {
+        super();
+        this.identifier = identifier;
+        this.child = child;
+    }
 
     public void accept(ASTVisitor visitor) {
         if (child != null) {

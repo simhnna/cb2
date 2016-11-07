@@ -3,6 +3,12 @@ package components;
 import parser.Token;
 
 public class NamedType {
-    public Token name;
-    public Type type;
+    public final Token name;
+    public final Type type;
+
+    public NamedType(Token name, Type type) {
+        super();
+        this.name = name;
+        this.type = type;
+    }
 }

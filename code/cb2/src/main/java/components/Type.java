@@ -3,8 +3,13 @@ package components;
 import parser.Token;
 
 public class Type {
-    public Token baseType;
-    public int arrayDimensions = 0;
+    public final Token baseType;
+    public final int arrayDimensions = 0;
+
+    public Type(Token baseType) {
+        super();
+        this.baseType = baseType;
+    }
 
     @Override
     public String toString() {

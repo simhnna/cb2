@@ -5,13 +5,15 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public class UnaryExpressionNode extends ExpressionNode {
-    public ExpressionNode child;
-    public Token operator;
-    
-    public UnaryExpressionNode(Token operator) {
+    public final ExpressionNode child;
+    public final Token operator;
+
+    public UnaryExpressionNode(ExpressionNode child, Token operator) {
+        super();
+        this.child = child;
         this.operator = operator;
     }
-    
+
     public Integer precedence(){
         return 1;
     }

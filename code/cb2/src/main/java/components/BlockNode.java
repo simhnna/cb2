@@ -6,8 +6,8 @@ import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 
 public class BlockNode extends StatementNode {
-    public ArrayList<StatementNode> children = new ArrayList<>();
-    
+    public final ArrayList<StatementNode> children = new ArrayList<>();
+
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visitPre(this);

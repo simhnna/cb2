@@ -1,11 +1,11 @@
 package components;
 
+import components.interfaces.ExpressionNode;
 import parser.Token;
 
 public class NegationUnaryExpressionNode extends UnaryExpressionNode {
 
-    public NegationUnaryExpressionNode(Token operator) {
-        super(operator);
+    public NegationUnaryExpressionNode(ExpressionNode child, Token operator) {
+        super(child, operator);
     }
-
 }

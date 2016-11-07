@@ -5,8 +5,8 @@ import components.interfaces.StatementNode;
 import visitors.ASTVisitor;
 
 public class SimpleStatementNode extends StatementNode {
-    public ExpressionNode expression;
-    
+    public final ExpressionNode expression;
+
     public SimpleStatementNode(ExpressionNode expression) {
         this.expression = expression;
     }

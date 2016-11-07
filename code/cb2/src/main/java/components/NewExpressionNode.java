@@ -7,8 +7,14 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public class NewExpressionNode extends ExpressionNode {
-    public Type type;
-    public ArrayList<Token> arguments = new ArrayList<>();
+    public final Type type;
+    public final ArrayList<Token> arguments;
+
+    public NewExpressionNode(Type type) {
+        super();
+        this.type = type;
+        this.arguments = new ArrayList<>();
+    }
 
     public void accept(ASTVisitor visitor) {
         visitor.visitPre(this);
