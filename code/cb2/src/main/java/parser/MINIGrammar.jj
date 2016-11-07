@@ -157,12 +157,12 @@ ArrayList < ClassNode > file() :
 
 ClassNode mini_class() :
 {
-  ClassNode cls = new ClassNode();
+  ClassNode cls;
   MemberNode classMember;
 }
 {
   < CLASS >
-  < ID > { cls.name = token; }
+  < ID > { cls = new ClassNode(token); }
   < BRACE_OPEN >
   (
     classMember = classMember()
@@ -178,7 +178,6 @@ ClassNode mini_class() :
 
 MemberNode classMember() :
 {
-  FieldNode declaration = new FieldNode();
   MethodNode m;
   Token memberName;
   Type type;
@@ -188,65 +187,59 @@ MemberNode classMember() :
   (
     < SEMICOLON >
     {
-      declaration.name = memberName;
-      declaration.type = type;
- 
-      return declaration;
+      return new FieldNode(memberName, type);
     }
-  | m = method()
+  | m = method(memberName, type)
   {
-      m.name = memberName;
-      m.returnType = type;
       return m;
     }
   )
 }
 
 
-MethodNode method() :
+MethodNode method(Token name, Type type) :
 {
-  MethodNode n = new MethodNode();
+  BlockNode body;
+  ArrayList<NamedType> arguments;
 }
 {
-  n.arguments = signature() n.body = blockStatement()
+  arguments = signature() body = blockStatement()
   {
-    return n;
+    return new MethodNode(name, type, body);
   }
 }
 
 Type type() :
 {
-  Type t = new Type();
+  Token type;
+  int dimensions = 0;
 }
 {
-  t.baseType = < ID > (< ARRAY_DEF > { t.arrayDimensions++; })*
+  type = < ID > (< ARRAY_DEF > { dimensions++; })*
   {
-    return t;
+    return new Type(type, dimensions);
   }
 }
 
 ArrayList < NamedType > signature() :
 {
   ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
-  NamedType nT = new NamedType();
+  Type type;
 }
 {
   < PARAN_OPEN >
   (
-    nT.type = type()
-    nT.name=< ID >
+    type = type()
+    < ID >
 	{
-      arguments.add(nT);
+      arguments.add(new NamedType(token, type));
     }
     (
       < COMMA >
+      type = type()
+      < ID >
       {
-        nT = new NamedType();
-      }
-      nT.type = type()
-      nT.name = < ID >
-      {
-        arguments.add(nT);
+        arguments.add(new NamedType(token, type));
       }
     )*
  
@@ -289,16 +282,17 @@ StatementNode simpleStatement() :
 
 DeclarationStatementNode declaration() :
 {
-  DeclarationStatementNode n = new DeclarationStatementNode();
+  Token name;
+  ExpressionNode expression;
 }
 {
   < VAR >
-  < ID > { n.name = token; }
+  < ID > { name = token; }
   < ASSIGNMENT >
-  n.expression = expression()
+  expression = expression()
   < SEMICOLON >
   {
-    return n;
+    return new DeclarationStatementNode(name, expression);
   }
 }
 
@@ -323,39 +317,41 @@ BlockNode blockStatement() :
 
 IfNode ifStatement() :
 {
-  IfNode n = new IfNode();
+  ExpressionNode condition;
+  BlockNode first, second = null;
 }
 {
-  < IF > < PARAN_OPEN > n.condition = expression()
-  < PARAN_CLOSE > n.first = blockStatement()
+  < IF > < PARAN_OPEN > condition = expression()
+  < PARAN_CLOSE > first = blockStatement()
   (
-    < ELSE > n.second = blockStatement()
+    < ELSE > second = blockStatement()
   )?
   {
-    return n;
+    return new IfNode(condition, first, second);
   }
 }
 
 WhileNode whileStatement() :
 {
-  WhileNode n = new WhileNode();
+  ExpressionNode condition;
+  BlockNode body;
 }
 {
-  < WHILE > < PARAN_OPEN > n.condition = expression()
-  < PARAN_CLOSE > n.body = blockStatement()
+  < WHILE > < PARAN_OPEN > condition = expression()
+  < PARAN_CLOSE > body = blockStatement()
   {
-    return n;
+    return new WhileNode(condition, body);
   }
 }
 
 ReturnNode returnStatement() :
 {
-  ReturnNode n = new ReturnNode();
+  ExpressionNode returnValue;
 }
 {
-  < RETURN > n.value = expression() < SEMICOLON >
+  < RETURN > returnValue = expression() < SEMICOLON >
   {
-    return n;
+    return new ReturnNode(returnValue);
   }
 }
 
@@ -395,13 +391,11 @@ ExpressionNode expression_suffix(ExpressionNode prefix) :
 	    ExpressionNode n=null;
 	  }
 	  identifier = < ID >
-	  (m=argumentList())?
+	  (m=argumentList(identifier))?
 	  {
 	    if(m == null){
-	      m = new FieldMemberExpressionNode();
+	      m = new FieldMemberExpressionNode(identifier, prefix);
 	    }
-	    m.identifier = identifier;
-	    m.child = prefix;
 	  }
 	  (n=expression_suffix(m))?
 	  {
@@ -435,9 +429,9 @@ BinaryExpressionNode binaryOperator() :
 | < OR > { return new OrBinaryExpressionNode(token); }
 }
 
-MethodMemberExpressionNode argumentList() :
+MethodMemberExpressionNode argumentList(Token name) :
 {
-  MethodMemberExpressionNode n = new MethodMemberExpressionNode();
+  MethodMemberExpressionNode n = new MethodMemberExpressionNode(name);
   ExpressionNode expr;
 }
 {
@@ -469,12 +463,11 @@ ExpressionNode atomicExpression() :
 {
   (
     identifier = < ID >
-    ( m = argumentList())?
+    ( m = argumentList(identifier))?
     {
       if(m == null){
-	    m = new FieldMemberExpressionNode();
+	    m = new FieldMemberExpressionNode(identifier);
 	  }
-	  m.identifier = identifier;
 	  return m;
     }
   | < THIS > { n = new ThisAtomicExpressionNode(token); }
@@ -494,21 +487,22 @@ ExpressionNode atomicExpression() :
 
 NullExpressionNode nullExpression() :
 {
-  NullExpressionNode n = new NullExpressionNode();
+  Type type;
 }
 {
-  < NULL > < LESS_THAN > n.type = type() < GREATER_THAN >
+  < NULL > < LESS_THAN > type = type() < GREATER_THAN >
   {
-    return n;
+    return new NullExpressionNode(type);
   }
 }
 
 NewExpressionNode newExpression() :
 {
-  NewExpressionNode n = new NewExpressionNode();
+  NewExpressionNode n;
+  Type type;
 }
 {
-  < NEW > < LESS_THAN > n.type = type()
+  < NEW > < LESS_THAN > type = type() { n = new ExpressionNode(type); }
   (
     < COMMA >
     (

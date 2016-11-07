@@ -4,11 +4,12 @@ import parser.Token;
 
 public class Type {
     public final Token baseType;
-    public final int arrayDimensions = 0;
+    public final int arrayDimensions;
 
-    public Type(Token baseType) {
+    public Type(Token baseType, int arrayDimensions) {
         super();
         this.baseType = baseType;
+        this.arrayDimensions = arrayDimensions;
     }
 
     @Override
