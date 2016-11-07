@@ -669,8 +669,8 @@ BinaryExpressionNode binaryOperator() :
 | < OR > { return new OrBinaryExpressionNode(token); }
 }
 */
-  final public MethodInvocationExpressionNode argumentList(Token name, ExpressionNode child) throws ParseException {
-  MethodInvocationExpressionNode n = new MethodInvocationExpressionNode(name, child);
+  final public ArrayList<ExpressionNode> argumentList() throws ParseException {
+  ArrayList<ExpressionNode> arguments = new ArrayList<ExpressionNode>();
   ExpressionNode expr;
     jj_consume_token(PARAN_OPEN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -685,7 +685,7 @@ BinaryExpressionNode binaryOperator() :
     case BOOL:
     case STRING:
       expr = expression7();
-      n.children.add(expr);
+      arguments.add(expr);
       label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -698,7 +698,7 @@ BinaryExpressionNode binaryOperator() :
         }
         jj_consume_token(COMMA);
         expr = expression7();
-        n.children.add(expr);
+        arguments.add(expr);
       }
       break;
     default:
@@ -706,46 +706,46 @@ BinaryExpressionNode binaryOperator() :
       ;
     }
     jj_consume_token(PARAN_CLOSE);
-    {if (true) return n;}
+    {if (true) return arguments;}
     throw new Error("Missing return statement in function");
   }
 
   final public ExpressionNode atomicExpression() throws ParseException {
   ExpressionNode n;
-  MemberExpressionNode m = null;
-  Token identifier;
   ExpressionNode expression;
+  ArrayList<ExpressionNode> arguments = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
-      identifier = jj_consume_token(ID);
+      jj_consume_token(ID);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PARAN_OPEN:
-        m = argumentList(identifier, null);
+        arguments = argumentList();
         break;
       default:
         jj_la1[26] = jj_gen;
         ;
       }
-      if(m == null){
-            m = new FieldMemberExpressionNode(identifier, null);
+      if(arguments == null){
+        // null because we don't have a base object
+        {if (true) return new FieldMemberExpressionNode(token, null);}
           }
-          {if (true) return m;}
+          {if (true) return new MethodInvocationExpressionNode(token, null, arguments);}
       break;
     case THIS:
       jj_consume_token(THIS);
-               n = new ThisAtomicExpressionNode(token);
+               {if (true) return new ThisAtomicExpressionNode(token);}
       break;
     case STRING:
       jj_consume_token(STRING);
-                 n = new StringAtomicExpressionNode(token);
+                 {if (true) return new StringAtomicExpressionNode(token);}
       break;
     case INT:
       jj_consume_token(INT);
-              n = new IntAtomicExpressionNode(token);
+              {if (true) return new IntAtomicExpressionNode(token);}
       break;
     case BOOL:
       jj_consume_token(BOOL);
-               n = new BoolAtomicExpressionNode(token);
+               {if (true) return new BoolAtomicExpressionNode(token);}
       break;
     case NULL:
       n = nullExpression();

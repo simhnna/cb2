@@ -7,19 +7,20 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public class MethodInvocationExpressionNode extends MemberExpressionNode {
-    public final ArrayList<ExpressionNode> children;
+    public final ArrayList<ExpressionNode> arguments;
 
-    public MethodInvocationExpressionNode(Token identifier, ExpressionNode baseObject) {
+    public MethodInvocationExpressionNode(Token identifier, ExpressionNode baseObject, ArrayList<ExpressionNode> arguments) {
         super(identifier, baseObject);
-        children = new ArrayList<ExpressionNode>();
+        this.arguments = new ArrayList<ExpressionNode>();
+        this.arguments.addAll(arguments);
     }
 
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visitPre(this);
-        for (int i = 0; i < children.size(); ++i) {
-            children.get(i).accept(visitor);
-            if (i != children.size() - 1) {
+        for (int i = 0; i < arguments.size(); ++i) {
+            arguments.get(i).accept(visitor);
+            if (i != arguments.size() - 1) {
                 visitor.visit(this);
             }
         }

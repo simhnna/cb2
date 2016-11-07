@@ -554,9 +554,9 @@ BinaryExpressionNode binaryOperator() :
 | < OR > { return new OrBinaryExpressionNode(token); }
 }
 */
-MethodInvocationExpressionNode argumentList(Token name, ExpressionNode child) :
+ArrayList<ExpressionNode> argumentList() :
 {
-  MethodInvocationExpressionNode n = new MethodInvocationExpressionNode(name, child);
+  ArrayList<ExpressionNode> arguments = new ArrayList<ExpressionNode>();
   ExpressionNode expr;
 }
 {
@@ -564,42 +564,42 @@ MethodInvocationExpressionNode argumentList(Token name, ExpressionNode child) :
   (
     expr = expression7()
     {
-      n.children.add(expr);
+      arguments.add(expr);
     }
     (
       < COMMA > expr = expression7()
       {
-        n.children.add(expr);
+     	arguments.add(expr);
       }
     )*
   )?
   < PARAN_CLOSE >
   {
-    return n;
+    return arguments;
   }
 }
 
 ExpressionNode atomicExpression() :
 {
   ExpressionNode n;
-  MemberExpressionNode m = null;
-  Token identifier;
   ExpressionNode expression;
+  ArrayList<ExpressionNode> arguments = null;
 }
 {
   (
-    identifier = < ID >
-    ( m = argumentList(identifier, null))?
+    < ID >
+    ( arguments = argumentList())?
     {
-      if(m == null){
-	    m = new FieldMemberExpressionNode(identifier, null);
+      if(arguments == null){
+        // null because we don't have a base object
+        return new FieldMemberExpressionNode(token, null);
 	  }
-	  return m;
+	  return new MethodInvocationExpressionNode(token, null, arguments);
     }
-  | < THIS > { n = new ThisAtomicExpressionNode(token); }
-  | < STRING > { n = new StringAtomicExpressionNode(token); }
-  | < INT > { n = new IntAtomicExpressionNode(token); }
-  | < BOOL > { n = new BoolAtomicExpressionNode(token); }
+  | < THIS > { return new ThisAtomicExpressionNode(token); }
+  | < STRING > { return new StringAtomicExpressionNode(token); }
+  | < INT > { return new IntAtomicExpressionNode(token); }
+  | < BOOL > { return new BoolAtomicExpressionNode(token); }
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
