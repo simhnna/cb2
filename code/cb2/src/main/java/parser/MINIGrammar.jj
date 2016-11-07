@@ -360,9 +360,10 @@ ExpressionNode expression7 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
-  current=expression6() (< OR >next = expression6() { current = new OrBinaryExpressionNode(token, current, next); })*
+  current=expression6() (operator=< OR >next = expression6() { current = new OrBinaryExpressionNode(operator, current, next); })*
   {
     return current;
   }
@@ -373,9 +374,10 @@ ExpressionNode expression6 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
-  current= expression5()(< AND >next = expression5() { current = new AndBinaryExpressionNode(token,current,next); })*
+  current= expression5()(operator=< AND >next = expression5() { current = new AndBinaryExpressionNode(operator, current, next); })*
   {
     return current;
   }
@@ -386,11 +388,12 @@ ExpressionNode expression5 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
   current=expression4()(
-    (< EQUAL > next = expression4() { current= new EqBinaryExpressionNode(token, current, next); })
-    | (< NOTEQUAL > next = expression4() { current= new NeqBinaryExpressionNode(token, current, next); })
+    (operator=< EQUAL > next = expression4() { current= new EqBinaryExpressionNode(operator, current, next); })
+    | (operator=< NOTEQUAL > next = expression4() { current= new NeqBinaryExpressionNode(operator, current, next); })
   )*
   {
     return current;
@@ -402,13 +405,14 @@ ExpressionNode expression4 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
   current=expression3()(
-    (< LESS_THAN_EQUAL > next=expression3() { current = new LteBinaryExpressionNode(token, current, next); })
-    | (< GREATER_THAN_EQUAL > next=expression3() { current = new GteBinaryExpressionNode(token, current, next); })
-    | (< LESS_THAN > next=expression3() { current = new LtBinaryExpressionNode(token, current, next); })
-    | (< GREATER_THAN > next=expression3() { current = new GtBinaryExpressionNode(token, current, next); })
+    (operator=< LESS_THAN_EQUAL > next=expression3() { current = new LteBinaryExpressionNode(operator, current, next); })
+    | (operator=< GREATER_THAN_EQUAL > next=expression3() { current = new GteBinaryExpressionNode(operator, current, next); })
+    | (operator=< LESS_THAN > next=expression3() { current = new LtBinaryExpressionNode(operator, current, next); })
+    | (operator=< GREATER_THAN > next=expression3() { current = new GtBinaryExpressionNode(operator, current, next); })
   )*
   {
     return current;
@@ -420,11 +424,12 @@ ExpressionNode expression3 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
   current=expression2()(
-    (< PLUS > next=expression2() { current = new PlusBinaryExpressionNode(token, current, next); })
-    | (< MINUS > next=expression2() { current = new MinusBinaryExpressionNode(token, current, next); })
+    (operator=< PLUS > next=expression2() { current = new PlusBinaryExpressionNode(operator, current, next); })
+    | (operator=< MINUS > next=expression2() { current = new MinusBinaryExpressionNode(operator, current, next); })
   )*
   {
     return current;
@@ -436,12 +441,13 @@ ExpressionNode expression2 () :
 {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
 }
 {
   current=expression1()(
-    (< MULTIPLY > next=expression1() { current = new MultiplyBinaryExpressionNode(token, current, next); })
-    | (< DIVIDE > next=expression1() { current = new DivideBinaryExpressionNode(token, current, next); })
-    | (< REMAINDER > next=expression1() { current = new RemainderBinaryExpressionNode(token, current, next); })
+    (operator=< MULTIPLY > next=expression1() { current = new MultiplyBinaryExpressionNode(operator, current, next); })
+    | (operator=< DIVIDE > next=expression1() { current = new DivideBinaryExpressionNode(operator, current, next); })
+    | (operator=< REMAINDER > next=expression1() { current = new RemainderBinaryExpressionNode(operator, current, next); })
   )*
   {
     return current;
@@ -452,12 +458,13 @@ ExpressionNode expression1 () :
 //unary
 {
   ExpressionNode current;
+  Token operator;
 }
 {
   (    
     (
-      (< NEGATION > current = expression1() { current = new NegationUnaryExpressionNode(token,current); })
-      | (< MINUS > current = expression1() { current = new MinusUnaryExpressionNode(token, current); })
+      (operator=< NEGATION > current = expression1() { current = new NegationUnaryExpressionNode(operator,current); })
+      | (operator=< MINUS > current = expression1() { current = new MinusUnaryExpressionNode(operator, current); })
     )
     | current = expression0()
   )
@@ -469,10 +476,26 @@ ExpressionNode expression1 () :
 ExpressionNode expression0 () :
 //atomic (+ member)
 {
+  ExpressionNode base = null;
   ExpressionNode current;
+  ArrayList<ExpressionNode> arguments = null;
+  Token name;
 }
 {
-  current = atomicExpression() (< DOT ><ID >(current=argumentList(token, current))?)*
+  current = atomicExpression()
+  (
+    < DOT > name=< ID >(arguments=argumentList())?
+    {
+	  if (arguments != null) {
+		current = new MethodInvocationExpressionNode(current, name, arguments);
+	  } else {
+		current = new FieldMemberExpressionNode(current, name);
+	  }
+	  if (base == null) {
+	    base = current;
+	  }
+    }
+  )*
   {
     return current;
   }
@@ -584,17 +607,18 @@ ExpressionNode atomicExpression() :
   ExpressionNode n;
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
+  Token name;
 }
 {
   (
-    < ID >
+    name=< ID >
     ( arguments = argumentList())?
     {
+      // baseObject is null because it doesn't exist here
       if(arguments == null){
-        // null because we don't have a base object
-        return new FieldMemberExpressionNode(token, null);
+        return new FieldMemberExpressionNode(null, name);
 	  }
-	  return new MethodInvocationExpressionNode(token, null, arguments);
+	  return new MethodInvocationExpressionNode(null, name, arguments);
     }
   | < THIS > { return new ThisAtomicExpressionNode(token); }
   | < STRING > { return new StringAtomicExpressionNode(token); }

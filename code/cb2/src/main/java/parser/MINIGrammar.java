@@ -322,6 +322,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression7() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression6();
     label_6:
     while (true) {
@@ -333,9 +334,9 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[10] = jj_gen;
         break label_6;
       }
-      jj_consume_token(OR);
+      operator = jj_consume_token(OR);
       next = expression6();
-                                                      current = new OrBinaryExpressionNode(token, current, next);
+                                                               current = new OrBinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -344,6 +345,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression6() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression5();
     label_7:
     while (true) {
@@ -355,9 +357,9 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[11] = jj_gen;
         break label_7;
       }
-      jj_consume_token(AND);
+      operator = jj_consume_token(AND);
       next = expression5();
-                                                       current = new AndBinaryExpressionNode(token,current,next);
+                                                                current = new AndBinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -366,6 +368,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression5() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression4();
     label_8:
     while (true) {
@@ -380,14 +383,14 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EQUAL:
-        jj_consume_token(EQUAL);
+        operator = jj_consume_token(EQUAL);
         next = expression4();
-                                      current= new EqBinaryExpressionNode(token, current, next);
+                                               current= new EqBinaryExpressionNode(operator, current, next);
         break;
       case NOTEQUAL:
-        jj_consume_token(NOTEQUAL);
+        operator = jj_consume_token(NOTEQUAL);
         next = expression4();
-                                           current= new NeqBinaryExpressionNode(token, current, next);
+                                                    current= new NeqBinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[13] = jj_gen;
@@ -402,6 +405,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression4() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression3();
     label_9:
     while (true) {
@@ -418,24 +422,24 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LESS_THAN_EQUAL:
-        jj_consume_token(LESS_THAN_EQUAL);
+        operator = jj_consume_token(LESS_THAN_EQUAL);
         next = expression3();
-                                              current = new LteBinaryExpressionNode(token, current, next);
+                                                       current = new LteBinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN_EQUAL:
-        jj_consume_token(GREATER_THAN_EQUAL);
+        operator = jj_consume_token(GREATER_THAN_EQUAL);
         next = expression3();
-                                                   current = new GteBinaryExpressionNode(token, current, next);
+                                                            current = new GteBinaryExpressionNode(operator, current, next);
         break;
       case LESS_THAN:
-        jj_consume_token(LESS_THAN);
+        operator = jj_consume_token(LESS_THAN);
         next = expression3();
-                                          current = new LtBinaryExpressionNode(token, current, next);
+                                                   current = new LtBinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN:
-        jj_consume_token(GREATER_THAN);
+        operator = jj_consume_token(GREATER_THAN);
         next = expression3();
-                                             current = new GtBinaryExpressionNode(token, current, next);
+                                                      current = new GtBinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[15] = jj_gen;
@@ -450,6 +454,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression3() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression2();
     label_10:
     while (true) {
@@ -464,14 +469,14 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
-        jj_consume_token(PLUS);
+        operator = jj_consume_token(PLUS);
         next = expression2();
-                                   current = new PlusBinaryExpressionNode(token, current, next);
+                                            current = new PlusBinaryExpressionNode(operator, current, next);
         break;
       case MINUS:
-        jj_consume_token(MINUS);
+        operator = jj_consume_token(MINUS);
         next = expression2();
-                                      current = new MinusBinaryExpressionNode(token, current, next);
+                                               current = new MinusBinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[17] = jj_gen;
@@ -486,6 +491,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression2() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
+  Token operator;
     current = expression1();
     label_11:
     while (true) {
@@ -501,19 +507,19 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MULTIPLY:
-        jj_consume_token(MULTIPLY);
+        operator = jj_consume_token(MULTIPLY);
         next = expression1();
-                                       current = new MultiplyBinaryExpressionNode(token, current, next);
+                                                current = new MultiplyBinaryExpressionNode(operator, current, next);
         break;
       case DIVIDE:
-        jj_consume_token(DIVIDE);
+        operator = jj_consume_token(DIVIDE);
         next = expression1();
-                                       current = new DivideBinaryExpressionNode(token, current, next);
+                                                current = new DivideBinaryExpressionNode(operator, current, next);
         break;
       case REMAINDER:
-        jj_consume_token(REMAINDER);
+        operator = jj_consume_token(REMAINDER);
         next = expression1();
-                                          current = new RemainderBinaryExpressionNode(token, current, next);
+                                                   current = new RemainderBinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[19] = jj_gen;
@@ -527,19 +533,20 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public ExpressionNode expression1() throws ParseException {
   ExpressionNode current;
+  Token operator;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
     case NEGATION:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NEGATION:
-        jj_consume_token(NEGATION);
+        operator = jj_consume_token(NEGATION);
         current = expression1();
-                                              current = new NegationUnaryExpressionNode(token,current);
+                                                       current = new NegationUnaryExpressionNode(operator,current);
         break;
       case MINUS:
-        jj_consume_token(MINUS);
+        operator = jj_consume_token(MINUS);
         current = expression1();
-                                             current = new MinusUnaryExpressionNode(token, current);
+                                                      current = new MinusUnaryExpressionNode(operator, current);
         break;
       default:
         jj_la1[20] = jj_gen;
@@ -567,7 +574,10 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public ExpressionNode expression0() throws ParseException {
+  ExpressionNode base = null;
   ExpressionNode current;
+  ArrayList<ExpressionNode> arguments = null;
+  Token name;
     current = atomicExpression();
     label_12:
     while (true) {
@@ -580,15 +590,23 @@ public class MINIGrammar implements MINIGrammarConstants {
         break label_12;
       }
       jj_consume_token(DOT);
-      jj_consume_token(ID);
+      name = jj_consume_token(ID);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PARAN_OPEN:
-        current = argumentList(token, current);
+        arguments = argumentList();
         break;
       default:
         jj_la1[23] = jj_gen;
         ;
       }
+          if (arguments != null) {
+                current = new MethodInvocationExpressionNode(current, name, arguments);
+          } else {
+                current = new FieldMemberExpressionNode(current, name);
+          }
+          if (base == null) {
+            base = current;
+          }
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -714,9 +732,10 @@ BinaryExpressionNode binaryOperator() :
   ExpressionNode n;
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
+  Token name;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
-      jj_consume_token(ID);
+      name = jj_consume_token(ID);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PARAN_OPEN:
         arguments = argumentList();
@@ -725,11 +744,11 @@ BinaryExpressionNode binaryOperator() :
         jj_la1[26] = jj_gen;
         ;
       }
+      // baseObject is null because it doesn't exist here
       if(arguments == null){
-        // null because we don't have a base object
-        {if (true) return new FieldMemberExpressionNode(token, null);}
+        {if (true) return new FieldMemberExpressionNode(null, name);}
           }
-          {if (true) return new MethodInvocationExpressionNode(token, null, arguments);}
+          {if (true) return new MethodInvocationExpressionNode(null, name, arguments);}
       break;
     case THIS:
       jj_consume_token(THIS);
