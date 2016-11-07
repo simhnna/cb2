@@ -25,7 +25,7 @@ public class MINIParser {
 	        output.add(visitor.toString());
             Files.write(in.toPath(), output, Charset.forName("UTF-8"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            System.err.println("File not writable.");
             e.printStackTrace();
         }
 	}
