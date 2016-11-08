@@ -15,10 +15,6 @@ public class WhileNode extends StatementNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        visitor.visitPre(this);
-        this.condition.accept(visitor);
         visitor.visit(this);
-        this.body.accept(visitor);
-        visitor.visitAfter(this);
     }
 }

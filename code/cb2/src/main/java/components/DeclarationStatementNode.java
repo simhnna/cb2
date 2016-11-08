@@ -16,8 +16,6 @@ public class DeclarationStatementNode extends StatementNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        visitor.visitPre(this);
-        expression.accept(visitor);
-        visitor.visitAfter(this);
+        visitor.visit(this);
     }
 }

@@ -17,8 +17,6 @@ public class NewExpressionNode extends ExpressionNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        visitor.visitPre(this);
         visitor.visit(this);
-        visitor.visitAfter(this);
     }
 }

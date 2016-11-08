@@ -10,11 +10,7 @@ public class BlockNode extends StatementNode {
 
     @Override
     public void accept(ASTVisitor visitor) {
-        visitor.visitPre(this);
-        for(StatementNode stmntNode : this.children) {
-            stmntNode.accept(visitor);
-        }
-        visitor.visitAfter(this);
+        visitor.visit(this);
     }
 
 }

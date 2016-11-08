@@ -21,8 +21,6 @@ public class IfNode extends StatementNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        visitor.visitPre(this);
         visitor.visit(this);
-        visitor.visitAfter(this);
     }
 }

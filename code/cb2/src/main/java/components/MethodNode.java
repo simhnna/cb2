@@ -23,7 +23,5 @@ public class MethodNode extends MemberNode {
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
-        this.body.accept(visitor);
-        visitor.visitAfter(this);
     }
 }

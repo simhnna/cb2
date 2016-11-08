@@ -15,10 +15,6 @@ public abstract class MemberExpressionNode extends ExpressionNode {
     }
 
     public void accept(ASTVisitor visitor) {
-        if (baseObject != null) {
-            baseObject.accept(visitor);
-            visitor.visitPre(this);
-        }
         visitor.visit(this);
     }
 }

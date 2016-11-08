@@ -3,7 +3,9 @@ package visitors;
 import components.*;
 import components.interfaces.BinaryExpressionNode;
 import components.interfaces.MemberExpressionNode;
+import components.interfaces.Node;
 import components.interfaces.PrimitiveType;
+import components.interfaces.StatementNode;
 import components.interfaces.UnaryExpressionNode;
 
 public class ASTVisitor {
@@ -37,6 +39,11 @@ public class ASTVisitor {
         bldr.append("class ").append(clsNode.name.image).append(" {");
         bldr.append("\n");
         openScope();
+        for(Node child : clsNode.children) {
+            child.accept(this);
+        }
+        closeScope();
+        bldr.append("}\n");
     }
 
     public void visit(FieldNode fieldNode) {
@@ -56,39 +63,23 @@ public class ASTVisitor {
         }
         bldr.append(methodNode.returnType.baseType).append(" ").append(methodNode.name.image).append("(").append(arglist).append(") {");
         bldr.append("\n");
-    }
-
-    public void visitAfter(MethodNode methodNode) {
+        methodNode.body.accept(this);
         writeIndent();
         bldr.append("}");
         bldr.append("\n");
     }
 
-    public void visit(BlockNode blockNode) {
-        this.writeIndent();
-        bldr.append("block node content here");
-        bldr.append("\n");
-    }
-
-    public void visitPre(AssignmentStatementNode assignmentStatementNode) {
-        this.writeIndent();
-    }
-
     public void visit(AssignmentStatementNode assignmentStatementNode) {
-        bldr.append(" := ");
-    }
-
-    public void visitAfter(AssignmentStatementNode assignmentStatementNode) {
-        bldr.append(";");
-        bldr.append("\n");
-    }
-
-    public void visitPre(IfNode ifNode) {
         this.writeIndent();
-        bldr.append("if (");
+        assignmentStatementNode.first.accept(this);
+        bldr.append(" := ");
+        assignmentStatementNode.second.accept(this);
+        bldr.append(";\n");
     }
 
     public void visit(IfNode ifNode) {
+        this.writeIndent();
+        bldr.append("if (");
         ifNode.condition.accept(this);
         bldr.append(") {");
         bldr.append("\n");
@@ -99,139 +90,93 @@ public class ASTVisitor {
             bldr.append("\n");
             ifNode.second.accept(this);
         }
-    }
-
-    public void visitAfter(IfNode ifNode) {
         this.writeIndent();
-        bldr.append("}");
-        bldr.append("\n");
-    }
-
-    public void visitPre(ReturnNode returnNode) {
-        writeIndent();
-        bldr.append("return ");
+        bldr.append("}\n");
     }
 
     public void visit(ReturnNode returnNode) {
+        writeIndent();
+        bldr.append("return ");
         returnNode.value.accept(this);
-    }
-
-    public void visitAfter(ReturnNode returnNode) {
-        bldr.append(";");
-        bldr.append("\n");
+        bldr.append(";\n");
     }
 
     public void visit(PrimitiveType type) {
         bldr.append(type);
     }
 
-    public void visitPre(BlockNode blockNode) {
+    public void visit(BlockNode blockNode) {
         openScope();
-    }
-
-    public void visitAfter(BlockNode blockNode) {
+        for(StatementNode stmntNode : blockNode.children) {
+            stmntNode.accept(this);
+        }
         closeScope();
-    }
-
-    public void visitPre(WhileNode whileNode) {
-        writeIndent();
-        bldr.append("while (");
     }
 
     public void visit(WhileNode whileNode) {
-        bldr.append(") {");
-        bldr.append("\n");
-    }
-
-    public void visitAfter(WhileNode whileNode) {
         writeIndent();
-        bldr.append("}");
-        bldr.append("\n");
-    }
-
-    public void visitAfter(ClassNode classNode) {
-        closeScope();
-        bldr.append("}");
-        bldr.append("\n");
+        bldr.append("while (");
+        whileNode.condition.accept(this);
+        bldr.append(") {\n");
+        whileNode.body.accept(this);
+        writeIndent();
+        bldr.append("}\n");
     }
 
     public void visit(NullExpressionNode nullExpression) {
         bldr.append("null<").append(nullExpression.type).append(">");
     }
 
-    public void visitPre(DeclarationStatementNode declarationStatementNode) {
+    public void visit(DeclarationStatementNode declarationStatementNode) {
         writeIndent();
         bldr.append("var ").append(declarationStatementNode.name).append(" := ");
-    }
-
-    public void visitAfter(DeclarationStatementNode declarationStatementNode) {
-        bldr.append(";");
-        bldr.append("\n");
-    }
-
-    public void visitPre(MemberExpressionNode memberExpression) {
-        bldr.append(".");
+        declarationStatementNode.expression.accept(this);
+        bldr.append(";\n");
     }
 
     public void visit(MemberExpressionNode memberExpression) {
+        if (memberExpression.baseObject != null) {
+            memberExpression.baseObject.accept(this);
+            bldr.append(".");
+        }
         bldr.append(memberExpression.identifier);
     }
 
-    public void visitPre(SimpleStatementNode simpleStatementNode) {
-        writeIndent();
-    }
-
     public void visit(SimpleStatementNode simpleStatementNode) {
+        writeIndent();
         simpleStatementNode.expression.accept(this);
+        bldr.append(";\n");
     }
 
-    public void visitAfter(SimpleStatementNode simpleStatementNode) {
-        bldr.append(";");
-        bldr.append("\n");
-    }
-
-    public void visitPre(MethodInvocationExpressionNode methodMemberExpressionNode) {
+    public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
         if (methodMemberExpressionNode.baseObject != null) {
             methodMemberExpressionNode.baseObject.accept(this);
             bldr.append(".");
         }
         bldr.append(methodMemberExpressionNode.identifier).append("(");
-    }
-
-    public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
-        bldr.append(", ");
-    }
-
-    public void visitAfter(MethodInvocationExpressionNode methodMemberExpressionNode) {
+        for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
+            methodMemberExpressionNode.arguments.get(i).accept(this);
+            if (i != methodMemberExpressionNode.arguments.size() - 1) {
+                bldr.append(", ");
+            }
+        }
         bldr.append(")");
     }
 
-    public void visitPre(NewExpressionNode newExpressionNode) {
-        bldr.append("new <").append(newExpressionNode.type);
-    }
-
     public void visit(NewExpressionNode newExpressionNode) {
+        bldr.append("new <").append(newExpressionNode.type);
         for (int i = 0; i < newExpressionNode.arguments.size(); ++i) {
             bldr.append(newExpressionNode.arguments.get(i));
             if (i != newExpressionNode.arguments.size() - 1) {
                 bldr.append(", ");
             }
         }
-    }
-
-    public void visitAfter(NewExpressionNode newExpressionNode) {
         bldr.append(">");
     }
 
-    public void visitPre(BinaryExpressionNode binaryExpressionNode) {
-        binaryExpressionNode.first.accept(this);
-    }
-    
     public void visit(BinaryExpressionNode binaryExpressionNode) {
+        binaryExpressionNode.first.accept(this);
         bldr.append(" ").append(binaryExpressionNode.operator.image).append(" ");
-    }
-
-    public void visitAfter(BinaryExpressionNode binaryExpressionNode) {
         binaryExpressionNode.second.accept(this);
     }
 
