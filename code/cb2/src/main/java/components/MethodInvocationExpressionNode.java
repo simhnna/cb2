@@ -3,6 +3,7 @@ package components;
 import java.util.ArrayList;
 
 import components.interfaces.ExpressionNode;
+import components.interfaces.MemberExpressionNode;
 import parser.Token;
 import visitors.ASTVisitor;
 

@@ -1,10 +1,10 @@
-package components;
+package components.interfaces;
 
 import components.interfaces.ExpressionNode;
 import parser.Token;
 import visitors.ASTVisitor;
 
-public class MemberExpressionNode extends ExpressionNode {
+public abstract class MemberExpressionNode extends ExpressionNode {
     public final Token identifier;
     public final ExpressionNode baseObject;
 

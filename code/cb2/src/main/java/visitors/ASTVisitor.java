@@ -2,6 +2,7 @@ package visitors;
 
 import components.*;
 import components.interfaces.BinaryExpressionNode;
+import components.interfaces.MemberExpressionNode;
 import components.interfaces.PrimitiveType;
 import components.interfaces.UnaryExpressionNode;
 
