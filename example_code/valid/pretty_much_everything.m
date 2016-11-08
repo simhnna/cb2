@@ -109,4 +109,8 @@ class Car {
   string getName() {
     return this.name;
   }
+
+  int uselessMethod(int a, int b, int c) {
+    return 0;
+  }
 }
