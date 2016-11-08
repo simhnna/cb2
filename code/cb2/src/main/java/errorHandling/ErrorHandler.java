@@ -19,7 +19,7 @@ public class ErrorHandler {
             StringBuilder bldr = new StringBuilder("col:" + col + " -> was expecting ");
             for (int i = 0; i < expectedTokenSequences.length; ++i) {
                 for (int j = 0; j < expectedTokenSequences[i].length; ++j) {
-                    bldr.append(tokenImage[expectedTokenSequences[i][j]] + " ");
+                    bldr.append(tokenImage[expectedTokenSequences[i][j]]).append(" ");
                 }
                 if (i < expectedTokenSequences.length - 1) {
                     bldr.append("or ");

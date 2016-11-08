@@ -34,14 +34,14 @@ public class ASTVisitor {
 
     public void visit(ClassNode clsNode) {
         // classes need no indent
-        bldr.append("class " + clsNode.name.image + " {");
+        bldr.append("class ").append(clsNode.name.image).append(" {");
         bldr.append("\n");
         openScope();
     }
 
     public void visit(FieldNode fieldNode) {
         this.writeIndent();
-        bldr.append(fieldNode.type + " " + fieldNode.name.image + ";");
+        bldr.append(fieldNode.type).append(" ").append(fieldNode.name.image).append(";");
         bldr.append("\n");
     }
 
@@ -54,7 +54,7 @@ public class ASTVisitor {
                 arglist = arglist + ", ";
             }
         }
-        bldr.append(methodNode.returnType.baseType + " " + methodNode.name.image + "(" + arglist + ") {");
+        bldr.append(methodNode.returnType.baseType).append(" ").append(methodNode.name.image).append("(").append(arglist).append(") {");
         bldr.append("\n");
     }
 
@@ -156,12 +156,12 @@ public class ASTVisitor {
     }
 
     public void visit(NullExpressionNode nullExpression) {
-        bldr.append("null<" + nullExpression.type + ">");
+        bldr.append("null<").append(nullExpression.type).append(">");
     }
 
     public void visitPre(DeclarationStatementNode declarationStatementNode) {
         writeIndent();
-        bldr.append("var " + declarationStatementNode.name + " := ");
+        bldr.append("var ").append(declarationStatementNode.name).append(" := ");
     }
 
     public void visitAfter(DeclarationStatementNode declarationStatementNode) {
@@ -195,7 +195,7 @@ public class ASTVisitor {
             methodMemberExpressionNode.baseObject.accept(this);
             bldr.append(".");
         }
-        bldr.append(methodMemberExpressionNode.identifier + "(");
+        bldr.append(methodMemberExpressionNode.identifier).append("(");
     }
 
     public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
@@ -207,7 +207,7 @@ public class ASTVisitor {
     }
 
     public void visitPre(NewExpressionNode newExpressionNode) {
-        bldr.append("new <" + newExpressionNode.type);
+        bldr.append("new <").append(newExpressionNode.type);
     }
 
     public void visit(NewExpressionNode newExpressionNode) {
@@ -228,7 +228,7 @@ public class ASTVisitor {
     }
     
     public void visit(BinaryExpressionNode binaryExpressionNode) {
-        bldr.append(" " + binaryExpressionNode.operator.image + " ");
+        bldr.append(" ").append(binaryExpressionNode.operator.image).append(" ");
     }
 
     public void visitAfter(BinaryExpressionNode binaryExpressionNode) {
