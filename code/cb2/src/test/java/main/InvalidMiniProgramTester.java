@@ -30,7 +30,9 @@ public class InvalidMiniProgramTester {
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
         } catch (MINIException e) {
             // TEST SUCCESS
-            System.out.println(e.toString());
+            if (System.getenv("DEBUG") != null) {
+                System.out.println(e.toString());
+            }
             String errorLine = file.getName().substring(0, 3);
             try {
                 int lineNumber = Integer.parseInt(errorLine);
