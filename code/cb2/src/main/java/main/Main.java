@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import components.ClassNode;
-import components.interfaces.Node;
 import parser.MINIGrammar;
 import testsuite.MINIException;
 import visitors.ASTVisitor;
@@ -14,9 +13,7 @@ public class Main {
     public static void printClassesAndMembers(ArrayList<ClassNode> parse_result) {
         for (ClassNode cls: parse_result) {
             System.out.println(cls);
-            for (Node child : cls.children) {
-                System.out.println(child);
-            }
+            cls.children.forEach(System.out::println);
         }
     }
 

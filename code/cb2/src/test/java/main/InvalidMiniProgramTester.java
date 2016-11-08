@@ -44,7 +44,7 @@ public class InvalidMiniProgramTester {
 
     @Parameters(name="{1}")
     public static Collection<Object[]> data() {
-        Collection<Object[]> data = new ArrayList<Object[]>();
+        Collection<Object[]> data = new ArrayList<>();
         File validFolder = new File("res" + File.separator + "example_code" + File.separator + "invalid");
         File[] sourceFiles = validFolder.listFiles();
         for (File f : sourceFiles) {

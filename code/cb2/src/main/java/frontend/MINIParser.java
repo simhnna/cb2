@@ -19,9 +19,9 @@ public class MINIParser {
 	public static void prettyPrinted(File in, File out) throws MINIException {
 	    ArrayList<ClassNode> classes = MINIGrammar.parse(in);
 	    ASTVisitor visitor = new ASTVisitor();
-	    classes.forEach((cls) -> {cls.accept(visitor);});
+	    classes.forEach((cls) -> cls.accept(visitor));
 	    try {
-	        ArrayList<String> output = new ArrayList<String>();
+	        ArrayList<String> output = new ArrayList<>();
 	        output.add(visitor.toString());
             Files.write(in.toPath(), output, Charset.forName("UTF-8"));
         } catch (IOException e) {
