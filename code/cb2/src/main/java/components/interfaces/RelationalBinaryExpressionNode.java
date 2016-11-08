@@ -1,10 +1,8 @@
-package components;
+package components.interfaces;
 
-import components.interfaces.BinaryExpressionNode;
-import components.interfaces.ExpressionNode;
 import parser.Token;
 
-public class RelationalBinaryExpressionNode extends BinaryExpressionNode {
+public abstract class RelationalBinaryExpressionNode extends BinaryExpressionNode {
 
     public RelationalBinaryExpressionNode(Token operator, ExpressionNode first, ExpressionNode second) {
         super(operator, first, second);

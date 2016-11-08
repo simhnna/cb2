@@ -12,11 +12,11 @@ public class MethodNode extends MemberNode {
     public final ArrayList<NamedType> arguments;
     public final BlockNode body;
 
-    public MethodNode(Token name, Type returnType, BlockNode body) {
+    public MethodNode(Token name, Type returnType, ArrayList<NamedType> arguments,BlockNode body) {
         super();
         this.name = name;
         this.returnType = returnType;
-        this.arguments = new ArrayList<>();
+        this.arguments = arguments;
         this.body = body;
     }
 

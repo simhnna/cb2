@@ -108,7 +108,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   ArrayList<NamedType> arguments;
     arguments = signature();
     body = blockStatement();
-    {if (true) return new MethodNode(name, type, body);}
+    {if (true) return new MethodNode(name, type, arguments, body);}
     throw new Error("Missing return statement in function");
   }
 
@@ -615,81 +615,6 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-/*
-ExpressionNode expression() :
-{
-  ExpressionNode n;
-  UnaryExpressionNode unary;
-}
-{
-  (
-    unary = unaryOperator() unary.child = expression()
-    {
-      return unary;
-    }
-  | n = atomicExpression() (n = expression_suffix(n))?
-  )
-  {
-    return n;
-  }
-}
-
-ExpressionNode expression_suffix(ExpressionNode prefix) :
-{
-  BinaryExpressionNode b;
-  MemberExpressionNode m = null;
-}
-{
-    b=binaryOperator() b.second = expression()
-	{
-	  b.first = prefix;
-	  b.balance();
-	  return b;
-	}
-	| < DOT >
-	  {
-	    Token identifier;
-	    ExpressionNode n=null;
-	  }
-	  identifier = < ID >
-	  (m=argumentList(identifier))?
-	  {
-	    if(m == null){
-	      m = new FieldMemberExpressionNode(identifier, prefix);
-	    }
-	  }
-	  (n=expression_suffix(m))?
-	  {
-	    if(n != null)
-	      return n;
-	    return m;
-	  }
-}
-UnaryExpressionNode unaryOperator() :
-{}
-{
-  < MINUS > { return new MinusUnaryExpressionNode(token); }
-| < NEGATION > { return new NegationUnaryExpressionNode(token); }
-}
-
-BinaryExpressionNode binaryOperator() :
-{}
-{
-  < PLUS > { return new PlusBinaryExpressionNode(token); }
-| < MINUS > { return new MinusBinaryExpressionNode(token); }
-| < MULTIPLY > { return new MultiplyBinaryExpressionNode(token); }
-| < DIVIDE > { return new DivideBinaryExpressionNode(token); }
-| < REMAINDER > { return new RemainderBinaryExpressionNode(token); }
-| < EQUAL > { return new EqBinaryExpressionNode(token); }
-| < NOTEQUAL > { return new NeqBinaryExpressionNode(token); }
-| < LESS_THAN_EQUAL > { return new LteBinaryExpressionNode(token); }
-| < GREATER_THAN_EQUAL > { return new GteBinaryExpressionNode(token); }
-| < LESS_THAN > { return new LtBinaryExpressionNode(token); }
-| < GREATER_THAN > { return new GtBinaryExpressionNode(token); }
-| < AND > { return new AndBinaryExpressionNode(token); }
-| < OR > { return new OrBinaryExpressionNode(token); }
-}
-*/
   final public ArrayList<ExpressionNode> argumentList() throws ParseException {
   ArrayList<ExpressionNode> arguments = new ArrayList<ExpressionNode>();
   ExpressionNode expr;

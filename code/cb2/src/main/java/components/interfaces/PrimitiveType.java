@@ -4,7 +4,7 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public abstract class PrimitiveType extends ExpressionNode {
-    public Token token;
+    public final Token token;
     
     public PrimitiveType(Token token) {
         this.token = token;

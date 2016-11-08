@@ -7,10 +7,7 @@ public abstract class BinaryExpressionNode extends ExpressionNode {
     public final ExpressionNode first;
     public final ExpressionNode second;
     public final Token operator;
-    public void balance(){
         
-    }
-    
     public abstract Integer precedence();
         
     
