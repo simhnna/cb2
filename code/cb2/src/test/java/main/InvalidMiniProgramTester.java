@@ -37,19 +37,20 @@ public class InvalidMiniProgramTester {
             try {
                 int lineNumber = Integer.parseInt(errorLine);
                 assertEquals("The error occurred in an unexpected line", lineNumber, e.getLineNumber());
-            } catch (NumberFormatException ne) {}
+            } catch (NumberFormatException ne) {
+            }
         }
 
     }
 
-    @Parameters(name="{1}")
+    @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();
         File validFolder = new File("res" + File.separator + "example_code" + File.separator + "invalid");
         File[] sourceFiles = validFolder.listFiles();
         for (File f : sourceFiles) {
             if (f.isFile() && f.getName().endsWith(".m")) {
-                data.add(new Object[] { f , f.getName()});
+                data.add(new Object[] { f, f.getName() });
             }
         }
         return data;

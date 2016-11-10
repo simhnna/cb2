@@ -39,7 +39,7 @@ public class ASTVisitor {
         bldr.append("class ").append(clsNode.name.image).append(" {");
         bldr.append("\n");
         openScope();
-        for(Node child : clsNode.children) {
+        for (Node child : clsNode.children) {
             child.accept(this);
         }
         closeScope();
@@ -55,13 +55,14 @@ public class ASTVisitor {
     public void visit(MethodNode methodNode) {
         this.writeIndent();
         String arglist = "";
-        for(int i = 0; i < methodNode.arguments.size(); i++) {
+        for (int i = 0; i < methodNode.arguments.size(); i++) {
             arglist = arglist + methodNode.arguments.get(i).type + " " + methodNode.arguments.get(i).name.image;
-            if(i+1 != methodNode.arguments.size()) {
+            if (i + 1 != methodNode.arguments.size()) {
                 arglist = arglist + ", ";
             }
         }
-        bldr.append(methodNode.returnType.baseType).append(" ").append(methodNode.name.image).append("(").append(arglist).append(") {");
+        bldr.append(methodNode.returnType.baseType).append(" ").append(methodNode.name.image).append("(")
+                .append(arglist).append(") {");
         bldr.append("\n");
         methodNode.body.accept(this);
         writeIndent();
@@ -84,7 +85,7 @@ public class ASTVisitor {
         bldr.append(") {");
         bldr.append("\n");
         ifNode.first.accept(this);
-        if(ifNode.hasSecond()) {
+        if (ifNode.hasSecond()) {
             this.writeIndent();
             bldr.append("} else {");
             bldr.append("\n");
@@ -107,7 +108,7 @@ public class ASTVisitor {
 
     public void visit(BlockNode blockNode) {
         openScope();
-        for(StatementNode stmntNode : blockNode.children) {
+        for (StatementNode stmntNode : blockNode.children) {
             stmntNode.accept(this);
         }
         closeScope();

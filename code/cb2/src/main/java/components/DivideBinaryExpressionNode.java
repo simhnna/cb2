@@ -9,8 +9,8 @@ public class DivideBinaryExpressionNode extends BinaryExpressionNode {
     public DivideBinaryExpressionNode(Token operator, ExpressionNode first, ExpressionNode second) {
         super(operator, first, second);
     }
-    
-    public Integer precedence(){
+
+    public Integer precedence() {
         return 2;
     }
 

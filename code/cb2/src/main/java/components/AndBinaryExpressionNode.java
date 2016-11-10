@@ -9,7 +9,8 @@ public class AndBinaryExpressionNode extends BinaryExpressionNode {
     public AndBinaryExpressionNode(Token operator, ExpressionNode first, ExpressionNode second) {
         super(operator, first, second);
     }
-    public Integer precedence(){
+
+    public Integer precedence() {
         return 6;
     }
 

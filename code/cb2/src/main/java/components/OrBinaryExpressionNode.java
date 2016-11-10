@@ -10,7 +10,7 @@ public class OrBinaryExpressionNode extends BinaryExpressionNode {
         super(operator, first, second);
     }
 
-    public Integer precedence(){
+    public Integer precedence() {
         return 7;
     }
 }

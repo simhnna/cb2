@@ -10,7 +10,7 @@ public class EqBinaryExpressionNode extends BinaryExpressionNode {
         super(operator, first, second);
     }
 
-    public Integer precedence(){
+    public Integer precedence() {
         return 5;
     }
 }

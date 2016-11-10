@@ -9,8 +9,8 @@ public class MinusBinaryExpressionNode extends BinaryExpressionNode {
     public MinusBinaryExpressionNode(Token operator, ExpressionNode first, ExpressionNode second) {
         super(operator, first, second);
     }
-    
-    public Integer precedence(){
+
+    public Integer precedence() {
         return 3;
     }
 

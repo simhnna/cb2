@@ -13,7 +13,7 @@ public abstract class UnaryExpressionNode extends ExpressionNode {
         this.operator = operator;
     }
 
-    public Integer precedence(){
+    public Integer precedence() {
         return 1;
     }
 

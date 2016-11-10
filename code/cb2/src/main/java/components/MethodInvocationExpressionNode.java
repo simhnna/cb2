@@ -10,7 +10,8 @@ import visitors.ASTVisitor;
 public class MethodInvocationExpressionNode extends MemberExpressionNode {
     public final ArrayList<ExpressionNode> arguments;
 
-    public MethodInvocationExpressionNode(ExpressionNode baseObject, Token identifier, ArrayList<ExpressionNode> arguments) {
+    public MethodInvocationExpressionNode(ExpressionNode baseObject, Token identifier,
+            ArrayList<ExpressionNode> arguments) {
         super(baseObject, identifier);
         this.arguments = arguments;
     }
