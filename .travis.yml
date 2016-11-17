@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 script:
   - cd code/cb2
-  - gradle check
+  - DEBUG=true gradle check
   - cd ../../
   - bash ./upload_report.sh
 notifications:

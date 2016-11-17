@@ -4,8 +4,8 @@ import parser.Token;
 import visitors.ASTVisitor;
 
 public abstract class PrimitiveType extends ExpressionNode {
-    public Token token;
-    
+    public final Token token;
+
     public PrimitiveType(Token token) {
         this.token = token;
     }
@@ -14,7 +14,7 @@ public abstract class PrimitiveType extends ExpressionNode {
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
     }
-    
+
     @Override
     public String toString() {
         return token.image;

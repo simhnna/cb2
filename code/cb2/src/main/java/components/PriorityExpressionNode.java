@@ -4,7 +4,12 @@ import components.interfaces.ExpressionNode;
 import visitors.ASTVisitor;
 
 public class PriorityExpressionNode extends ExpressionNode {
-    public ExpressionNode child;
+    public final ExpressionNode child;
+
+    public PriorityExpressionNode(ExpressionNode child) {
+        super();
+        this.child = child;
+    }
 
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
