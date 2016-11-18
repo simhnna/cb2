@@ -488,19 +488,14 @@ ExpressionNode expression0 () :
     {
 	  if (arguments != null) {
 		current = new MethodInvocationExpressionNode(current, name, arguments);
+		arguments = null;
 	  } else {
 		current = new FieldMemberExpressionNode(current, name);
-	  }
-	  if (base == null) {
-	    base = current;
 	  }
     }
   )*
   {
-    if (base == null) {
-      return current;
-    }
-    return base;
+    return current;
   }
 }
 
