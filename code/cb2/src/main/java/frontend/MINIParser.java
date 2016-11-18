@@ -23,7 +23,7 @@ public class MINIParser {
         try {
             ArrayList<String> output = new ArrayList<>();
             output.add(visitor.toString());
-            Files.write(in.toPath(), output, Charset.forName("UTF-8"));
+            Files.write(out.toPath(), output, Charset.forName("UTF-8"));
         } catch (IOException e) {
             System.err.println("File not writable.");
             e.printStackTrace();
