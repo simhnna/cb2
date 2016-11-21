@@ -336,7 +336,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       operator = jj_consume_token(OR);
       next = expression6();
-                                                               current = new OrBinaryExpressionNode(operator, current, next);
+                                                               current = new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -359,7 +359,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       operator = jj_consume_token(AND);
       next = expression5();
-                                                                current = new AndBinaryExpressionNode(operator, current, next);
+                                                                current = new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -385,12 +385,12 @@ public class MINIGrammar implements MINIGrammarConstants {
       case EQUAL:
         operator = jj_consume_token(EQUAL);
         next = expression4();
-                                               current= new EqBinaryExpressionNode(operator, current, next);
+                                               current= new BinaryExpressionNode(operator, current, next);
         break;
       case NOTEQUAL:
         operator = jj_consume_token(NOTEQUAL);
         next = expression4();
-                                                    current= new NeqBinaryExpressionNode(operator, current, next);
+                                                    current= new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[13] = jj_gen;
@@ -424,22 +424,22 @@ public class MINIGrammar implements MINIGrammarConstants {
       case LESS_THAN_EQUAL:
         operator = jj_consume_token(LESS_THAN_EQUAL);
         next = expression3();
-                                                       current = new LteBinaryExpressionNode(operator, current, next);
+                                                       current = new BinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN_EQUAL:
         operator = jj_consume_token(GREATER_THAN_EQUAL);
         next = expression3();
-                                                            current = new GteBinaryExpressionNode(operator, current, next);
+                                                            current = new BinaryExpressionNode(operator, current, next);
         break;
       case LESS_THAN:
         operator = jj_consume_token(LESS_THAN);
         next = expression3();
-                                                   current = new LtBinaryExpressionNode(operator, current, next);
+                                                   current = new BinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN:
         operator = jj_consume_token(GREATER_THAN);
         next = expression3();
-                                                      current = new GtBinaryExpressionNode(operator, current, next);
+                                                      current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[15] = jj_gen;
@@ -471,12 +471,12 @@ public class MINIGrammar implements MINIGrammarConstants {
       case PLUS:
         operator = jj_consume_token(PLUS);
         next = expression2();
-                                            current = new PlusBinaryExpressionNode(operator, current, next);
+                                            current = new BinaryExpressionNode(operator, current, next);
         break;
       case MINUS:
         operator = jj_consume_token(MINUS);
         next = expression2();
-                                               current = new MinusBinaryExpressionNode(operator, current, next);
+                                               current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[17] = jj_gen;
@@ -509,17 +509,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       case MULTIPLY:
         operator = jj_consume_token(MULTIPLY);
         next = expression1();
-                                                current = new MultiplyBinaryExpressionNode(operator, current, next);
+                                                current = new BinaryExpressionNode(operator, current, next);
         break;
       case DIVIDE:
         operator = jj_consume_token(DIVIDE);
         next = expression1();
-                                                current = new DivideBinaryExpressionNode(operator, current, next);
+                                                current = new BinaryExpressionNode(operator, current, next);
         break;
       case REMAINDER:
         operator = jj_consume_token(REMAINDER);
         next = expression1();
-                                                   current = new RemainderBinaryExpressionNode(operator, current, next);
+                                                   current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[19] = jj_gen;
@@ -541,12 +541,12 @@ public class MINIGrammar implements MINIGrammarConstants {
       case NEGATION:
         operator = jj_consume_token(NEGATION);
         current = expression1();
-                                                       current = new NegationUnaryExpressionNode(operator,current);
+                                                       current = new UnaryExpressionNode(operator,current);
         break;
       case MINUS:
         operator = jj_consume_token(MINUS);
         current = expression1();
-                                                      current = new MinusUnaryExpressionNode(operator, current);
+                                                      current = new UnaryExpressionNode(operator, current);
         break;
       default:
         jj_la1[20] = jj_gen;

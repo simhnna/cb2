@@ -1,12 +1,10 @@
 package visitors;
 
 import components.*;
-import components.interfaces.BinaryExpressionNode;
 import components.interfaces.MemberExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.PrimitiveType;
 import components.interfaces.StatementNode;
-import components.interfaces.UnaryExpressionNode;
 
 public class ASTVisitor {
     private int indent = 0;

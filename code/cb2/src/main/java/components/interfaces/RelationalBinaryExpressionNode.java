@@ -1,5 +1,6 @@
 package components.interfaces;
 
+import components.BinaryExpressionNode;
 import parser.Token;
 
 public abstract class RelationalBinaryExpressionNode extends BinaryExpressionNode {
