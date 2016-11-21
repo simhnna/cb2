@@ -557,7 +557,6 @@ ExpressionNode atomicExpression() :
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
-  Token position;
 }
 {
   (
@@ -576,9 +575,9 @@ ExpressionNode atomicExpression() :
   | < BOOL > { return new BoolAtomicExpressionNode(token); }
   | n = nullExpression()
   | n = newExpression()
-  | position=< PARAN_OPEN >
+  | < PARAN_OPEN >
     expression = expression7()
-    < PARAN_CLOSE > { return new PriorityExpressionNode(position, expression); }
+    < PARAN_CLOSE > { expression.setParenthesis(); return expression; }
   )
 {
   return n;

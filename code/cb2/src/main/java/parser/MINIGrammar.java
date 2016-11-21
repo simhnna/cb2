@@ -645,7 +645,6 @@ public class MINIGrammar implements MINIGrammarConstants {
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
-  Token position;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
       name = jj_consume_token(ID);
@@ -686,10 +685,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       n = newExpression();
       break;
     case PARAN_OPEN:
-      position = jj_consume_token(PARAN_OPEN);
+      jj_consume_token(PARAN_OPEN);
       expression = expression7();
       jj_consume_token(PARAN_CLOSE);
-                      {if (true) return new PriorityExpressionNode(position, expression);}
+                      expression.setParenthesis(); {if (true) return expression;}
       break;
     default:
       jj_la1[27] = jj_gen;
