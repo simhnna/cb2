@@ -13,7 +13,7 @@ public class MethodNode extends MemberNode {
     public final BlockNode body;
 
     public MethodNode(Token name, Type returnType, ArrayList<NamedType> arguments, BlockNode body) {
-        super();
+        super(name);
         this.name = name;
         this.returnType = returnType;
         this.arguments = arguments;

@@ -271,12 +271,13 @@ StatementNode statement() :
 StatementNode simpleStatement() :
 {
   ExpressionNode first, second;
+  Token position;
 }
 {
   first = expression7()
   (
-    < SEMICOLON > { return new SimpleStatementNode(first); }
-    | < ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
+    position=< SEMICOLON > { return new SimpleStatementNode(position, first); }
+    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, position, second); }
   )
 }
 
@@ -298,11 +299,11 @@ DeclarationStatementNode declaration() :
 
 BlockNode blockStatement() :
 {
-  BlockNode block = new BlockNode();
+  BlockNode block;
   StatementNode statement;
 }
 {
-  < BRACE_OPEN >
+  < BRACE_OPEN > { block = new BlockNode(token); }
   (
     statement=statement()
     {
@@ -319,15 +320,16 @@ IfNode ifStatement() :
 {
   ExpressionNode condition;
   BlockNode first, second = null;
+  Token position;
 }
 {
-  < IF > < PARAN_OPEN > condition = expression7()
+  position=< IF > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > first = blockStatement()
   (
     < ELSE > second = blockStatement()
   )?
   {
-    return new IfNode(condition, first, second);
+    return new IfNode(position, condition, first, second);
   }
 }
 
@@ -335,23 +337,25 @@ WhileNode whileStatement() :
 {
   ExpressionNode condition;
   BlockNode body;
+  Token position;
 }
 {
-  < WHILE > < PARAN_OPEN > condition = expression7()
+  position=< WHILE > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > body = blockStatement()
   {
-    return new WhileNode(condition, body);
+    return new WhileNode(position, condition, body);
   }
 }
 
 ReturnNode returnStatement() :
 {
   ExpressionNode returnValue;
+  Token position;
 }
 {
-  < RETURN > returnValue = expression7() < SEMICOLON >
+  position=< RETURN > returnValue = expression7() < SEMICOLON >
   {
-    return new ReturnNode(returnValue);
+    return new ReturnNode(position, returnValue);
   }
 }
 
@@ -553,6 +557,7 @@ ExpressionNode atomicExpression() :
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  Token position;
 }
 {
   (
@@ -571,9 +576,9 @@ ExpressionNode atomicExpression() :
   | < BOOL > { return new BoolAtomicExpressionNode(token); }
   | n = nullExpression()
   | n = newExpression()
-  | < PARAN_OPEN >
+  | position=< PARAN_OPEN >
     expression = expression7()
-    < PARAN_CLOSE > { return new PriorityExpressionNode(expression); }
+    < PARAN_CLOSE > { return new PriorityExpressionNode(position, expression); }
   )
 {
   return n;

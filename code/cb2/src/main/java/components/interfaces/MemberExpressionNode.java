@@ -9,7 +9,7 @@ public abstract class MemberExpressionNode extends ExpressionNode {
     public final ExpressionNode baseObject;
 
     public MemberExpressionNode(ExpressionNode baseObject, Token identifier) {
-        super();
+        super(identifier);
         this.baseObject = baseObject;
         this.identifier = identifier;
     }

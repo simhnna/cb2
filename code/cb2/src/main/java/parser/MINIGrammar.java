@@ -208,17 +208,18 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public StatementNode simpleStatement() throws ParseException {
   ExpressionNode first, second;
+  Token position;
     first = expression7();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SEMICOLON:
-      jj_consume_token(SEMICOLON);
-                    {if (true) return new SimpleStatementNode(first);}
+      position = jj_consume_token(SEMICOLON);
+                             {if (true) return new SimpleStatementNode(position, first);}
       break;
     case ASSIGNMENT:
-      jj_consume_token(ASSIGNMENT);
+      position = jj_consume_token(ASSIGNMENT);
       second = expression7();
       jj_consume_token(SEMICOLON);
-                                                             {if (true) return new AssignmentStatementNode(first, second);}
+                                                                      {if (true) return new AssignmentStatementNode(first, position, second);}
       break;
     default:
       jj_la1[7] = jj_gen;
@@ -242,9 +243,10 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public BlockNode blockStatement() throws ParseException {
-  BlockNode block = new BlockNode();
+  BlockNode block;
   StatementNode statement;
     jj_consume_token(BRACE_OPEN);
+                   block = new BlockNode(token);
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -280,7 +282,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public IfNode ifStatement() throws ParseException {
   ExpressionNode condition;
   BlockNode first, second = null;
-    jj_consume_token(IF);
+  Token position;
+    position = jj_consume_token(IF);
     jj_consume_token(PARAN_OPEN);
     condition = expression7();
     jj_consume_token(PARAN_CLOSE);
@@ -294,28 +297,30 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1[9] = jj_gen;
       ;
     }
-    {if (true) return new IfNode(condition, first, second);}
+    {if (true) return new IfNode(position, condition, first, second);}
     throw new Error("Missing return statement in function");
   }
 
   final public WhileNode whileStatement() throws ParseException {
   ExpressionNode condition;
   BlockNode body;
-    jj_consume_token(WHILE);
+  Token position;
+    position = jj_consume_token(WHILE);
     jj_consume_token(PARAN_OPEN);
     condition = expression7();
     jj_consume_token(PARAN_CLOSE);
     body = blockStatement();
-    {if (true) return new WhileNode(condition, body);}
+    {if (true) return new WhileNode(position, condition, body);}
     throw new Error("Missing return statement in function");
   }
 
   final public ReturnNode returnStatement() throws ParseException {
   ExpressionNode returnValue;
-    jj_consume_token(RETURN);
+  Token position;
+    position = jj_consume_token(RETURN);
     returnValue = expression7();
     jj_consume_token(SEMICOLON);
-    {if (true) return new ReturnNode(returnValue);}
+    {if (true) return new ReturnNode(position, returnValue);}
     throw new Error("Missing return statement in function");
   }
 
@@ -640,6 +645,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   ExpressionNode expression;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  Token position;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
       name = jj_consume_token(ID);
@@ -680,10 +686,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       n = newExpression();
       break;
     case PARAN_OPEN:
-      jj_consume_token(PARAN_OPEN);
+      position = jj_consume_token(PARAN_OPEN);
       expression = expression7();
       jj_consume_token(PARAN_CLOSE);
-                      {if (true) return new PriorityExpressionNode(expression);}
+                      {if (true) return new PriorityExpressionNode(position, expression);}
       break;
     default:
       jj_la1[27] = jj_gen;

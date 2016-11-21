@@ -7,7 +7,7 @@ public class NullExpressionNode extends ExpressionNode {
     public final Type type;
 
     public NullExpressionNode(Type type) {
-        super();
+        super(type.baseType);
         this.type = type;
     }
 

@@ -9,7 +9,7 @@ public class UnaryExpressionNode extends ExpressionNode {
     public final Token operator;
 
     public UnaryExpressionNode(Token operator, ExpressionNode child) {
-        super();
+        super(operator);
         this.child = child;
         this.operator = operator;
     }

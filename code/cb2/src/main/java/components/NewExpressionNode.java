@@ -11,7 +11,7 @@ public class NewExpressionNode extends ExpressionNode {
     public final ArrayList<Token> arguments;
 
     public NewExpressionNode(Type type) {
-        super();
+        super(type.baseType);
         this.type = type;
         this.arguments = new ArrayList<>();
     }

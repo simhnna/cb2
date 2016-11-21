@@ -12,7 +12,7 @@ public class ClassNode extends Node {
     public final ArrayList<MemberNode> children = new ArrayList<>();
 
     public ClassNode(Token name) {
-        super();
+        super(name);
         this.name = name;
     }
 

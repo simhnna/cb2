@@ -9,7 +9,7 @@ public class FieldNode extends MemberNode {
     public final Type type;
 
     public FieldNode(Token name, Type type) {
-        super();
+        super(name);
         this.name = name;
         this.type = type;
     }

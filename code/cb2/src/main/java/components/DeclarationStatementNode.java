@@ -10,7 +10,7 @@ public class DeclarationStatementNode extends StatementNode {
     public final ExpressionNode expression;
 
     public DeclarationStatementNode(Token name, ExpressionNode expression) {
-        super();
+        super(name);
         this.name = name;
         this.expression = expression;
     }
