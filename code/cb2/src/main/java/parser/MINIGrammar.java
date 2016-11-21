@@ -188,9 +188,9 @@ public class MINIGrammar implements MINIGrammarConstants {
     case NEW:
     case MINUS:
     case NEGATION:
+    case BOOL:
     case ID:
     case INT:
-    case BOOL:
     case STRING:
       s = simpleStatement();
       break;
@@ -259,9 +259,9 @@ public class MINIGrammar implements MINIGrammarConstants {
       case WHILE:
       case MINUS:
       case NEGATION:
+      case BOOL:
       case ID:
       case INT:
-      case BOOL:
       case STRING:
         ;
         break;
@@ -558,9 +558,9 @@ public class MINIGrammar implements MINIGrammarConstants {
     case THIS:
     case NULL:
     case NEW:
+    case BOOL:
     case ID:
     case INT:
-    case BOOL:
     case STRING:
       current = expression0();
       break;
@@ -621,9 +621,9 @@ public class MINIGrammar implements MINIGrammarConstants {
     case NEW:
     case MINUS:
     case NEGATION:
+    case BOOL:
     case ID:
     case INT:
-    case BOOL:
     case STRING:
       expr = expression7();
       arguments.add(expr);
@@ -777,7 +777,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1_0 = new int[] {0x400,0x0,0x82000,0x8000,0x40000,0x0,0x35f12800,0x8080000,0x35f12800,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x50000000,0x50000000,0x80000000,0x80000000,0x30000000,0x30312000,0x20000,0x2000,0x40000,0x30312000,0x2000,0x312000,0x40000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x400,0x0,0x0,0x0,0x400,0x3c00,0x0,0x3c00,0x0,0x200,0x100,0xc,0xc,0xf0,0xf0,0x0,0x0,0x3,0x3,0x0,0x3c00,0x0,0x0,0x0,0x3c00,0x0,0x3c00,0x0,0xc00,};
+      jj_la1_1 = new int[] {0x0,0x800,0x0,0x0,0x0,0x800,0x3c00,0x0,0x3c00,0x0,0x200,0x100,0xc,0xc,0xf0,0xf0,0x0,0x0,0x3,0x3,0x0,0x3c00,0x0,0x0,0x0,0x3c00,0x0,0x3c00,0x0,0x1800,};
    }
 
   /** Constructor with InputStream. */

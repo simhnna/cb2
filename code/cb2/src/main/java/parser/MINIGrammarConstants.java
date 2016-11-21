@@ -79,11 +79,11 @@ public interface MINIGrammarConstants {
   /** RegularExpression Id. */
   int OR = 41;
   /** RegularExpression Id. */
-  int ID = 42;
+  int BOOL = 42;
   /** RegularExpression Id. */
-  int INT = 43;
+  int ID = 43;
   /** RegularExpression Id. */
-  int BOOL = 44;
+  int INT = 44;
   /** RegularExpression Id. */
   int STRING = 45;
   /** RegularExpression Id. */
@@ -140,9 +140,9 @@ public interface MINIGrammarConstants {
     "\">\"",
     "\"&&\"",
     "\"||\"",
+    "<BOOL>",
     "<ID>",
     "<INT>",
-    "<BOOL>",
     "<STRING>",
     "<BAD_TOKEN>",
   };

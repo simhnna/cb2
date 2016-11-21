@@ -119,13 +119,13 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
-| < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < BOOL :
     (
       "true"
     | "false"
     ) >
+| < ID : ([ "a"-"z", "A"-"Z" ])+ >
+| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < STRING :
     "\""
     (
