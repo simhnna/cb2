@@ -391,9 +391,14 @@ ExpressionNode expression5 () :
   Token operator;
 }
 {
-  current=expression4()(
-    (operator=< EQUAL > next = expression4() { current= new BinaryExpressionNode(operator, current, next); })
-    | (operator=< NOTEQUAL > next = expression4() { current= new BinaryExpressionNode(operator, current, next); })
+  current=expression4()
+  (
+    (
+      operator=< EQUAL >
+    | operator=< NOTEQUAL >
+  	)
+    next = expression4()
+    { current= new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -408,11 +413,16 @@ ExpressionNode expression4 () :
   Token operator;
 }
 {
-  current=expression3()(
-    (operator=< LESS_THAN_EQUAL > next=expression3() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< GREATER_THAN_EQUAL > next=expression3() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< LESS_THAN > next=expression3() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< GREATER_THAN > next=expression3() { current = new BinaryExpressionNode(operator, current, next); })
+  current=expression3()
+  (
+    (
+      operator=< LESS_THAN_EQUAL >
+    | operator=< GREATER_THAN_EQUAL >
+    | operator=< LESS_THAN > 
+    | operator=< GREATER_THAN >
+  	)
+  	next=expression3()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -428,8 +438,12 @@ ExpressionNode expression3 () :
 }
 {
   current=expression2()(
-    (operator=< PLUS > next=expression2() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< MINUS > next=expression2() { current = new BinaryExpressionNode(operator, current, next); })
+    (
+      operator=< PLUS >
+    | operator=< MINUS >
+  	)
+  	next=expression2()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -444,10 +458,15 @@ ExpressionNode expression2 () :
   Token operator;
 }
 {
-  current=expression1()(
-    (operator=< MULTIPLY > next=expression1() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< DIVIDE > next=expression1() { current = new BinaryExpressionNode(operator, current, next); })
-    | (operator=< REMAINDER > next=expression1() { current = new BinaryExpressionNode(operator, current, next); })
+  current=expression1()
+  (
+    (
+      operator=< MULTIPLY >
+    | operator=< DIVIDE >
+    | operator=< REMAINDER >
+ 	)
+  	next=expression1()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -463,8 +482,12 @@ ExpressionNode expression1 () :
 {
   (    
     (
-      (operator=< NEGATION > current = expression1() { current = new UnaryExpressionNode(operator,current); })
-      | (operator=< MINUS > current = expression1() { current = new UnaryExpressionNode(operator, current); })
+      (
+        operator=< NEGATION >
+      | operator=< MINUS >
+      )
+      current = expression1()
+      { current = new UnaryExpressionNode(operator, current); }
     )
     | current = expression0()
   )

@@ -384,19 +384,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EQUAL:
         operator = jj_consume_token(EQUAL);
-        next = expression4();
-                                               current= new BinaryExpressionNode(operator, current, next);
         break;
       case NOTEQUAL:
         operator = jj_consume_token(NOTEQUAL);
-        next = expression4();
-                                                    current= new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      next = expression4();
+      current= new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -423,29 +421,23 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LESS_THAN_EQUAL:
         operator = jj_consume_token(LESS_THAN_EQUAL);
-        next = expression3();
-                                                       current = new BinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN_EQUAL:
         operator = jj_consume_token(GREATER_THAN_EQUAL);
-        next = expression3();
-                                                            current = new BinaryExpressionNode(operator, current, next);
         break;
       case LESS_THAN:
         operator = jj_consume_token(LESS_THAN);
-        next = expression3();
-                                                   current = new BinaryExpressionNode(operator, current, next);
         break;
       case GREATER_THAN:
         operator = jj_consume_token(GREATER_THAN);
-        next = expression3();
-                                                      current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      next = expression3();
+          current = new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -470,19 +462,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
         operator = jj_consume_token(PLUS);
-        next = expression2();
-                                            current = new BinaryExpressionNode(operator, current, next);
         break;
       case MINUS:
         operator = jj_consume_token(MINUS);
-        next = expression2();
-                                               current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[17] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      next = expression2();
+          current = new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -508,24 +498,20 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MULTIPLY:
         operator = jj_consume_token(MULTIPLY);
-        next = expression1();
-                                                current = new BinaryExpressionNode(operator, current, next);
         break;
       case DIVIDE:
         operator = jj_consume_token(DIVIDE);
-        next = expression1();
-                                                current = new BinaryExpressionNode(operator, current, next);
         break;
       case REMAINDER:
         operator = jj_consume_token(REMAINDER);
-        next = expression1();
-                                                   current = new BinaryExpressionNode(operator, current, next);
         break;
       default:
         jj_la1[19] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      next = expression1();
+          current = new BinaryExpressionNode(operator, current, next);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -540,19 +526,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NEGATION:
         operator = jj_consume_token(NEGATION);
-        current = expression1();
-                                                       current = new UnaryExpressionNode(operator,current);
         break;
       case MINUS:
         operator = jj_consume_token(MINUS);
-        current = expression1();
-                                                      current = new UnaryExpressionNode(operator, current);
         break;
       default:
         jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      current = expression1();
+        current = new UnaryExpressionNode(operator, current);
       break;
     case PARAN_OPEN:
     case THIS:
