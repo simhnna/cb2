@@ -2,7 +2,6 @@ package components.interfaces;
 
 import components.interfaces.ExpressionNode;
 import parser.Token;
-import visitors.PrettyPrinter;
 
 public abstract class MemberExpressionNode extends ExpressionNode {
     public final Token identifier;

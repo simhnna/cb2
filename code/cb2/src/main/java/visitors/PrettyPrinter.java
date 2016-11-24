@@ -1,7 +1,6 @@
 package visitors;
 
 import components.*;
-import components.interfaces.MemberExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.PrimitiveType;
 import components.interfaces.StatementNode;
