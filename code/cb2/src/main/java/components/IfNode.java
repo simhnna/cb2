@@ -3,7 +3,7 @@ package components;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class IfNode extends StatementNode {
     public final ExpressionNode condition;
@@ -21,7 +21,7 @@ public class IfNode extends StatementNode {
         return second != null;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

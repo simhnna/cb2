@@ -1,7 +1,7 @@
 package components;
 
 import components.interfaces.ExpressionNode;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class NullExpressionNode extends ExpressionNode {
     public final Type type;
@@ -11,7 +11,7 @@ public class NullExpressionNode extends ExpressionNode {
         this.type = type;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

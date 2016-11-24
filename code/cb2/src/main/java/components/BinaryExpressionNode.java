@@ -2,7 +2,7 @@ package components;
 
 import components.interfaces.ExpressionNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class BinaryExpressionNode extends ExpressionNode {
     public final ExpressionNode first;
@@ -16,7 +16,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         this.second = second;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import components.interfaces.MemberNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class MethodNode extends MemberNode {
     public final Token name;
@@ -21,7 +21,7 @@ public class MethodNode extends MemberNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

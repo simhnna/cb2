@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import components.interfaces.ExpressionNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class NewExpressionNode extends ExpressionNode {
     public final Type type;
@@ -16,7 +16,7 @@ public class NewExpressionNode extends ExpressionNode {
         this.arguments = new ArrayList<>();
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

@@ -2,7 +2,7 @@ package components.interfaces;
 
 import components.interfaces.ExpressionNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.PrettyPrinter;
 
 public abstract class MemberExpressionNode extends ExpressionNode {
     public final Token identifier;
@@ -12,9 +12,5 @@ public abstract class MemberExpressionNode extends ExpressionNode {
         super(identifier);
         this.baseObject = baseObject;
         this.identifier = identifier;
-    }
-
-    public void accept(ASTVisitor visitor) {
-        visitor.visit(this);
     }
 }

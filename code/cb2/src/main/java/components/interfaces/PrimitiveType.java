@@ -1,7 +1,7 @@
 package components.interfaces;
 
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public abstract class PrimitiveType extends ExpressionNode {
     public final Token token;
@@ -12,7 +12,7 @@ public abstract class PrimitiveType extends ExpressionNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 

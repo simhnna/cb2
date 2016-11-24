@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import components.ClassNode;
 import parser.MINIGrammar;
 import testsuite.MINIException;
-import visitors.ASTVisitor;
+import visitors.PrettyPrinter;
 
 public class MINIParser {
     public static void wortproblem(File in) throws MINIException {
@@ -18,7 +18,7 @@ public class MINIParser {
 
     public static void prettyPrinted(File in, File out) throws MINIException {
         ArrayList<ClassNode> classes = MINIGrammar.parse(in);
-        ASTVisitor visitor = new ASTVisitor();
+        PrettyPrinter visitor = new PrettyPrinter();
         classes.forEach((cls) -> cls.accept(visitor));
         try {
             ArrayList<String> output = new ArrayList<>();

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberExpressionNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class MethodInvocationExpressionNode extends MemberExpressionNode {
     public final ArrayList<ExpressionNode> arguments;
@@ -17,7 +17,7 @@ public class MethodInvocationExpressionNode extends MemberExpressionNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

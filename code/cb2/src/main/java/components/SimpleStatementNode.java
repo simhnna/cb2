@@ -3,7 +3,7 @@ package components;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public class SimpleStatementNode extends StatementNode {
     public final ExpressionNode expression;
@@ -13,7 +13,7 @@ public class SimpleStatementNode extends StatementNode {
         this.expression = expression;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

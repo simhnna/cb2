@@ -6,7 +6,7 @@ import components.interfaces.Node;
 import components.interfaces.PrimitiveType;
 import components.interfaces.StatementNode;
 
-public class ASTVisitor {
+public class PrettyPrinter implements Visitor {
 
     private int indent = 0;
 
@@ -134,7 +134,7 @@ public class ASTVisitor {
         bldr.append(";\n");
     }
 
-    public void visit(MemberExpressionNode memberExpression) {
+    public void visit(FieldMemberExpressionNode memberExpression) {
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this);
             bldr.append(".");
