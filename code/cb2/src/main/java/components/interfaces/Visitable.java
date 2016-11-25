@@ -1,7 +1,7 @@
 package components.interfaces;
 
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
 public interface Visitable {
-    void accept(ASTVisitor visitor);
+    void accept(Visitor visitor);
 }

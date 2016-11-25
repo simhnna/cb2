@@ -1,6 +1,7 @@
 class A {
   void firstFunction() {
-
+    var meh := true;
+    meh := false;
   }
 
   int returnsConstant() {
@@ -12,6 +13,7 @@ class A {
   }
 
   int returnArgument(int n) {
+    (-n).print();
     return n;
   }
 
@@ -55,6 +57,7 @@ class A {
   }
 
   int nonRecursiveFactorial(int n) {
+  {}
     var result := 1;
     while (n > 1) {
       result := result * n;
@@ -68,12 +71,19 @@ class A {
     print(nonRecursiveFactorial(otherFactorial(2)));
     print(args.length);
     var car := new <Car>;
+    var num := 1;
+    var cars := new <Car[][], 1, num>;
     print(car.name);
     car.name.print();
+    car.uselessMethod(1,2,3);
     car.setName("whhhhaaat");
     if (car.getName() != "whhhhaaat" || car.name != car.getName()) {
       "Noooo!".print();
     }
+    if (car.getName == "whhhhaaat" && car.name == car.getName()) {
+    }
+    (1 >= 2).print();
+    (!true).print();
     if (car.getName().length != car.name.length) {
       "Noo".print();
     } else {

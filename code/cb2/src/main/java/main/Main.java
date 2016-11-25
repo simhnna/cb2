@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import components.ClassNode;
 import parser.MINIGrammar;
 import testsuite.MINIException;
-import visitors.ASTVisitor;
+import visitors.PrettyPrinter;
 
 public class Main {
 
@@ -18,7 +18,7 @@ public class Main {
     }
 
     public static void printPretty(ArrayList<ClassNode> parse_result) {
-        ASTVisitor visitor = new ASTVisitor();
+        PrettyPrinter visitor = new PrettyPrinter();
         for (ClassNode cls : parse_result) {
             cls.accept(visitor);
         }

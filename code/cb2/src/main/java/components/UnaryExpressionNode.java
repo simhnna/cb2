@@ -1,23 +1,20 @@
-package components.interfaces;
+package components;
 
+import components.interfaces.ExpressionNode;
 import parser.Token;
-import visitors.ASTVisitor;
+import visitors.Visitor;
 
-public abstract class UnaryExpressionNode extends ExpressionNode {
+public class UnaryExpressionNode extends ExpressionNode {
     public final ExpressionNode child;
     public final Token operator;
 
     public UnaryExpressionNode(Token operator, ExpressionNode child) {
-        super();
+        super(operator);
         this.child = child;
         this.operator = operator;
     }
 
-    public Integer precedence() {
-        return 1;
-    }
-
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

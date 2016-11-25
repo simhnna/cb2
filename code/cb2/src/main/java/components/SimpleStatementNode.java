@@ -2,16 +2,18 @@ package components;
 
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
-import visitors.ASTVisitor;
+import parser.Token;
+import visitors.Visitor;
 
 public class SimpleStatementNode extends StatementNode {
     public final ExpressionNode expression;
 
-    public SimpleStatementNode(ExpressionNode expression) {
+    public SimpleStatementNode(Token position, ExpressionNode expression) {
+        super(position);
         this.expression = expression;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }

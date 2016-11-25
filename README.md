@@ -1,5 +1,7 @@
 # cb2
 [![Build Status](https://travis-ci.com/simonsmiley/cb2.svg?token=2QL4U6DTFcpMYPyy2Wyx&branch=master)](https://travis-ci.com/simonsmiley/cb2)
+[![codecov](https://codecov.io/gh/simonsmiley/cb2/branch/master/graph/badge.svg?token=cyKPtgOi8R)](https://codecov.io/gh/simonsmiley/cb2)
+
 
 ## Code
 `code/cb2` contains an eclipse project that is managed using gradle.

@@ -1,14 +1,12 @@
 package visitors;
 
 import components.*;
-import components.interfaces.BinaryExpressionNode;
-import components.interfaces.MemberExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.PrimitiveType;
 import components.interfaces.StatementNode;
-import components.interfaces.UnaryExpressionNode;
 
-public class ASTVisitor {
+public class PrettyPrinter implements Visitor {
+
     private int indent = 0;
 
     private StringBuilder bldr = new StringBuilder();
@@ -135,7 +133,7 @@ public class ASTVisitor {
         bldr.append(";\n");
     }
 
-    public void visit(MemberExpressionNode memberExpression) {
+    public void visit(FieldMemberExpressionNode memberExpression) {
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this);
             bldr.append(".");
@@ -176,19 +174,25 @@ public class ASTVisitor {
     }
 
     public void visit(BinaryExpressionNode binaryExpressionNode) {
+        if (binaryExpressionNode.inParenthesis()) {
+            bldr.append('(');
+        }
         binaryExpressionNode.first.accept(this);
         bldr.append(" ").append(binaryExpressionNode.operator.image).append(" ");
         binaryExpressionNode.second.accept(this);
+        if (binaryExpressionNode.inParenthesis()) {
+            bldr.append(')');
+        }
     }
 
     public void visit(UnaryExpressionNode unaryExpressionNode) {
+        if (unaryExpressionNode.inParenthesis()) {
+            bldr.append('(');
+        }
         bldr.append(unaryExpressionNode.operator);
         unaryExpressionNode.child.accept(this);
-    }
-
-    public void visit(PriorityExpressionNode priorityExpressionNode) {
-        bldr.append("(");
-        priorityExpressionNode.child.accept(this);
-        bldr.append(")");
+        if (unaryExpressionNode.inParenthesis()) {
+            bldr.append(')');
+        }
     }
 }

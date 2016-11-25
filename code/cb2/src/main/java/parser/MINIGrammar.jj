@@ -119,13 +119,13 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
-| < ID : ([ "a"-"z", "A"-"Z" ])+ >
-| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < BOOL :
     (
       "true"
     | "false"
     ) >
+| < ID : ([ "a"-"z", "A"-"Z" ])+ >
+| < INT : ([ "0"-"9" ]) { 1,8 } >
 | < STRING :
     "\""
     (
@@ -271,12 +271,13 @@ StatementNode statement() :
 StatementNode simpleStatement() :
 {
   ExpressionNode first, second;
+  Token position;
 }
 {
   first = expression7()
   (
-    < SEMICOLON > { return new SimpleStatementNode(first); }
-    | < ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, second); }
+    position=< SEMICOLON > { return new SimpleStatementNode(position, first); }
+    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, position, second); }
   )
 }
 
@@ -298,11 +299,11 @@ DeclarationStatementNode declaration() :
 
 BlockNode blockStatement() :
 {
-  BlockNode block = new BlockNode();
+  BlockNode block;
   StatementNode statement;
 }
 {
-  < BRACE_OPEN >
+  < BRACE_OPEN > { block = new BlockNode(token); }
   (
     statement=statement()
     {
@@ -319,15 +320,16 @@ IfNode ifStatement() :
 {
   ExpressionNode condition;
   BlockNode first, second = null;
+  Token position;
 }
 {
-  < IF > < PARAN_OPEN > condition = expression7()
+  position=< IF > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > first = blockStatement()
   (
     < ELSE > second = blockStatement()
   )?
   {
-    return new IfNode(condition, first, second);
+    return new IfNode(position, condition, first, second);
   }
 }
 
@@ -335,23 +337,25 @@ WhileNode whileStatement() :
 {
   ExpressionNode condition;
   BlockNode body;
+  Token position;
 }
 {
-  < WHILE > < PARAN_OPEN > condition = expression7()
+  position=< WHILE > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > body = blockStatement()
   {
-    return new WhileNode(condition, body);
+    return new WhileNode(position, condition, body);
   }
 }
 
 ReturnNode returnStatement() :
 {
   ExpressionNode returnValue;
+  Token position;
 }
 {
-  < RETURN > returnValue = expression7() < SEMICOLON >
+  position=< RETURN > returnValue = expression7() < SEMICOLON >
   {
-    return new ReturnNode(returnValue);
+    return new ReturnNode(position, returnValue);
   }
 }
 
@@ -363,7 +367,7 @@ ExpressionNode expression7 () :
   Token operator;
 }
 {
-  current=expression6() (operator=< OR >next = expression6() { current = new OrBinaryExpressionNode(operator, current, next); })*
+  current=expression6() (operator=< OR >next = expression6() { current = new BinaryExpressionNode(operator, current, next); })*
   {
     return current;
   }
@@ -377,7 +381,7 @@ ExpressionNode expression6 () :
   Token operator;
 }
 {
-  current= expression5()(operator=< AND >next = expression5() { current = new AndBinaryExpressionNode(operator, current, next); })*
+  current= expression5()(operator=< AND >next = expression5() { current = new BinaryExpressionNode(operator, current, next); })*
   {
     return current;
   }
@@ -391,9 +395,14 @@ ExpressionNode expression5 () :
   Token operator;
 }
 {
-  current=expression4()(
-    (operator=< EQUAL > next = expression4() { current= new EqBinaryExpressionNode(operator, current, next); })
-    | (operator=< NOTEQUAL > next = expression4() { current= new NeqBinaryExpressionNode(operator, current, next); })
+  current=expression4()
+  (
+    (
+      operator=< EQUAL >
+    | operator=< NOTEQUAL >
+  	)
+    next = expression4()
+    { current= new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -408,11 +417,16 @@ ExpressionNode expression4 () :
   Token operator;
 }
 {
-  current=expression3()(
-    (operator=< LESS_THAN_EQUAL > next=expression3() { current = new LteBinaryExpressionNode(operator, current, next); })
-    | (operator=< GREATER_THAN_EQUAL > next=expression3() { current = new GteBinaryExpressionNode(operator, current, next); })
-    | (operator=< LESS_THAN > next=expression3() { current = new LtBinaryExpressionNode(operator, current, next); })
-    | (operator=< GREATER_THAN > next=expression3() { current = new GtBinaryExpressionNode(operator, current, next); })
+  current=expression3()
+  (
+    (
+      operator=< LESS_THAN_EQUAL >
+    | operator=< GREATER_THAN_EQUAL >
+    | operator=< LESS_THAN > 
+    | operator=< GREATER_THAN >
+  	)
+  	next=expression3()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -428,8 +442,12 @@ ExpressionNode expression3 () :
 }
 {
   current=expression2()(
-    (operator=< PLUS > next=expression2() { current = new PlusBinaryExpressionNode(operator, current, next); })
-    | (operator=< MINUS > next=expression2() { current = new MinusBinaryExpressionNode(operator, current, next); })
+    (
+      operator=< PLUS >
+    | operator=< MINUS >
+  	)
+  	next=expression2()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -444,10 +462,15 @@ ExpressionNode expression2 () :
   Token operator;
 }
 {
-  current=expression1()(
-    (operator=< MULTIPLY > next=expression1() { current = new MultiplyBinaryExpressionNode(operator, current, next); })
-    | (operator=< DIVIDE > next=expression1() { current = new DivideBinaryExpressionNode(operator, current, next); })
-    | (operator=< REMAINDER > next=expression1() { current = new RemainderBinaryExpressionNode(operator, current, next); })
+  current=expression1()
+  (
+    (
+      operator=< MULTIPLY >
+    | operator=< DIVIDE >
+    | operator=< REMAINDER >
+ 	)
+  	next=expression1()
+  	{ current = new BinaryExpressionNode(operator, current, next); }
   )*
   {
     return current;
@@ -463,8 +486,12 @@ ExpressionNode expression1 () :
 {
   (    
     (
-      (operator=< NEGATION > current = expression1() { current = new NegationUnaryExpressionNode(operator,current); })
-      | (operator=< MINUS > current = expression1() { current = new MinusUnaryExpressionNode(operator, current); })
+      (
+        operator=< NEGATION >
+      | operator=< MINUS >
+      )
+      current = expression1()
+      { current = new UnaryExpressionNode(operator, current); }
     )
     | current = expression0()
   )
@@ -550,7 +577,7 @@ ExpressionNode atomicExpression() :
   | n = newExpression()
   | < PARAN_OPEN >
     expression = expression7()
-    < PARAN_CLOSE > { return new PriorityExpressionNode(expression); }
+    < PARAN_CLOSE > { expression.setParenthesis(); return expression; }
   )
 {
   return n;

@@ -2,15 +2,16 @@ package components;
 
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
-import visitors.ASTVisitor;
+import parser.Token;
+import visitors.Visitor;
 
 public class IfNode extends StatementNode {
     public final ExpressionNode condition;
     public final BlockNode first;
     public final BlockNode second;
 
-    public IfNode(ExpressionNode condition, BlockNode first, BlockNode second) {
-        super();
+    public IfNode(Token position, ExpressionNode condition, BlockNode first, BlockNode second) {
+        super(position);
         this.condition = condition;
         this.first = first;
         this.second = second;
@@ -20,7 +21,7 @@ public class IfNode extends StatementNode {
         return second != null;
     }
 
-    public void accept(ASTVisitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visit(this);
     }
 }
