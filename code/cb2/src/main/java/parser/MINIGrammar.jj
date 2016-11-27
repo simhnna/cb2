@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import components.*;
+import components.types.*;
+import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
@@ -178,9 +180,9 @@ ClassNode mini_class() :
 
 MemberNode classMember() :
 {
-  MethodNode m;
+  MethodDeclarationNode m;
   Token memberName;
-  Type type;
+  TypeNode type;
 }
 {
   type = type() memberName = < ID >
@@ -197,7 +199,7 @@ MemberNode classMember() :
 }
 
 
-MethodNode method(Token name, Type type) :
+MethodDeclarationNode method(Token name, TypeNode type) :
 {
   BlockNode body;
   ArrayList<NamedType> arguments;
@@ -205,11 +207,11 @@ MethodNode method(Token name, Type type) :
 {
   arguments = signature() body = blockStatement()
   {
-    return new MethodNode(name, type, arguments, body);
+    return new MethodDeclarationNode(name, type, arguments, body);
   }
 }
 
-Type type() :
+TypeNode type() :
 {
   Token type;
   int dimensions = 0;
@@ -217,14 +219,14 @@ Type type() :
 {
   type = < ID > (< ARRAY_DEF > { dimensions++; })*
   {
-    return new Type(type, dimensions);
+    return new TypeNode(type, dimensions);
   }
 }
 
 ArrayList < NamedType > signature() :
 {
   ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
-  Type type;
+  TypeNode type;
 }
 {
   < PARAN_OPEN >
@@ -570,9 +572,9 @@ ExpressionNode atomicExpression() :
 	  return new MethodInvocationExpressionNode(null, name, arguments);
     }
   | < THIS > { return new ThisAtomicExpressionNode(token); }
-  | < STRING > { return new StringAtomicExpressionNode(token); }
-  | < INT > { return new IntAtomicExpressionNode(token); }
-  | < BOOL > { return new BoolAtomicExpressionNode(token); }
+  | < STRING > { return new LiteralNode(token, StringType.INSTANCE); }
+  | < INT > { return new LiteralNode(token, IntegerType.INSTANCE); }
+  | < BOOL > { return new LiteralNode(token, BooleanType.INSTANCE); }
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
@@ -586,7 +588,7 @@ ExpressionNode atomicExpression() :
 
 NullExpressionNode nullExpression() :
 {
-  Type type;
+  TypeNode type;
 }
 {
   < NULL > < LESS_THAN > type = type() < GREATER_THAN >
@@ -598,7 +600,7 @@ NullExpressionNode nullExpression() :
 NewExpressionNode newExpression() :
 {
   NewExpressionNode n;
-  Type type;
+  TypeNode type;
 }
 {
   < NEW > < LESS_THAN > type = type() { n = new NewExpressionNode(type); }

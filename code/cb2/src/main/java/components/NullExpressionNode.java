@@ -4,10 +4,10 @@ import components.interfaces.ExpressionNode;
 import visitors.Visitor;
 
 public class NullExpressionNode extends ExpressionNode {
-    public final Type type;
+    public final TypeNode type;
 
-    public NullExpressionNode(Type type) {
-        super(type.baseType);
+    public NullExpressionNode(TypeNode type) {
+        super(type.position);
         this.type = type;
     }
 

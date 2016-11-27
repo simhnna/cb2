@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import components.*;
+import components.types.*;
+import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
@@ -81,9 +83,9 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public MemberNode classMember() throws ParseException {
-  MethodNode m;
+  MethodDeclarationNode m;
   Token memberName;
-  Type type;
+  TypeNode type;
     type = type();
     memberName = jj_consume_token(ID);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -103,16 +105,16 @@ public class MINIGrammar implements MINIGrammarConstants {
     throw new Error("Missing return statement in function");
   }
 
-  final public MethodNode method(Token name, Type type) throws ParseException {
+  final public MethodDeclarationNode method(Token name, TypeNode type) throws ParseException {
   BlockNode body;
   ArrayList<NamedType> arguments;
     arguments = signature();
     body = blockStatement();
-    {if (true) return new MethodNode(name, type, arguments, body);}
+    {if (true) return new MethodDeclarationNode(name, type, arguments, body);}
     throw new Error("Missing return statement in function");
   }
 
-  final public Type type() throws ParseException {
+  final public TypeNode type() throws ParseException {
   Token type;
   int dimensions = 0;
     type = jj_consume_token(ID);
@@ -129,13 +131,13 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_consume_token(ARRAY_DEF);
                                  dimensions++;
     }
-    {if (true) return new Type(type, dimensions);}
+    {if (true) return new TypeNode(type, dimensions);}
     throw new Error("Missing return statement in function");
   }
 
   final public ArrayList < NamedType > signature() throws ParseException {
   ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
-  Type type;
+  TypeNode type;
     jj_consume_token(PARAN_OPEN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
@@ -668,15 +670,15 @@ public class MINIGrammar implements MINIGrammarConstants {
       break;
     case STRING:
       jj_consume_token(STRING);
-                 {if (true) return new StringAtomicExpressionNode(token);}
+                 {if (true) return new LiteralNode(token, StringType.INSTANCE);}
       break;
     case INT:
       jj_consume_token(INT);
-              {if (true) return new IntAtomicExpressionNode(token);}
+              {if (true) return new LiteralNode(token, IntegerType.INSTANCE);}
       break;
     case BOOL:
       jj_consume_token(BOOL);
-               {if (true) return new BoolAtomicExpressionNode(token);}
+               {if (true) return new LiteralNode(token, BooleanType.INSTANCE);}
       break;
     case NULL:
       n = nullExpression();
@@ -700,7 +702,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
 
   final public NullExpressionNode nullExpression() throws ParseException {
-  Type type;
+  TypeNode type;
     jj_consume_token(NULL);
     jj_consume_token(LESS_THAN);
     type = type();
@@ -711,7 +713,7 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public NewExpressionNode newExpression() throws ParseException {
   NewExpressionNode n;
-  Type type;
+  TypeNode type;
     jj_consume_token(NEW);
     jj_consume_token(LESS_THAN);
     type = type();

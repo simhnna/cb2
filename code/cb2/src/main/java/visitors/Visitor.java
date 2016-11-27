@@ -1,7 +1,7 @@
 package visitors;
 
 import components.*;
-import components.interfaces.PrimitiveType;
+import components.interfaces.LiteralNode;
 
 public interface Visitor {
 
@@ -21,13 +21,13 @@ public interface Visitor {
 
     void visit(MethodInvocationExpressionNode methodInvocationExpressionNode);
 
-    void visit(MethodNode methodNode);
+    void visit(MethodDeclarationNode methodNode);
 
     void visit(NewExpressionNode newExpressionNode);
 
     void visit(NullExpressionNode nullExpressionNode);
 
-    void visit(PrimitiveType primitiveType);
+    void visit(LiteralNode primitiveType);
 
     void visit(ReturnNode returnNode);
 
@@ -38,4 +38,8 @@ public interface Visitor {
     void visit(WhileNode whileNode);
 
     void visit(FieldMemberExpressionNode fieldMemberExpressionNode);
+
+    void visit(NamedType namedType);
+
+    void visit(TypeNode typeNode);
 }

@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import components.*;
+import components.types.*;
+import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;

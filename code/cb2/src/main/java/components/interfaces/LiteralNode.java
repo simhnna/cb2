@@ -1,14 +1,15 @@
 package components.interfaces;
 
+import ir.Type;
 import parser.Token;
 import visitors.Visitor;
 
-public abstract class PrimitiveType extends ExpressionNode {
-    public final Token token;
+public class LiteralNode extends ExpressionNode{
+    public final Type type;
 
-    public PrimitiveType(Token token) {
+    public LiteralNode(Token token, Type type) {
         super(token);
-        this.token = token;
+        this.type = type;
     }
 
     @Override
@@ -18,6 +19,6 @@ public abstract class PrimitiveType extends ExpressionNode {
 
     @Override
     public String toString() {
-        return token.image;
+        return this.position.image;
     }
 }

@@ -7,11 +7,11 @@ import parser.Token;
 import visitors.Visitor;
 
 public class NewExpressionNode extends ExpressionNode {
-    public final Type type;
+    public final TypeNode type;
     public final ArrayList<Token> arguments;
 
-    public NewExpressionNode(Type type) {
-        super(type.baseType);
+    public NewExpressionNode(TypeNode type) {
+        super(type.position);
         this.type = type;
         this.arguments = new ArrayList<>();
     }
