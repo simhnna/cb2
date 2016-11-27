@@ -35,13 +35,16 @@ public class MethodDeclarationNode extends MemberNode implements Method {
 
     @Override
     public Type getReturnType() {
-        return null;
+        return returnType.type;
     }
 
     @Override
     public List<Type> getArgumentTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<Type> argumentTypes = new ArrayList<>(arguments.size());
+        for (NamedType type: arguments) {
+            argumentTypes.add(type.type.type);
+        }
+        return argumentTypes;
     }
 
     @Override
