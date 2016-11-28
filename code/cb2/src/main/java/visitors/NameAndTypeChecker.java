@@ -88,7 +88,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
                 BinaryExpressionNode.Operator op = binaryExpressionNode.operator;
                 switch(op) {
                     case PLUS:
-                        if (first != IntegerType.INSTANCE || first != StringType.INSTANCE) {
+                        if (first != IntegerType.INSTANCE && first != StringType.INSTANCE) {
                             throw new TypeException(path, binaryExpressionNode.position.beginLine, "Operator '" + binaryExpressionNode.operator + "' is undefined for type " + first.getName() + " (expected 'int' or 'string')");
                         }
                     default:
