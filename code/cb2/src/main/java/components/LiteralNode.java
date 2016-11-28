@@ -1,5 +1,6 @@
-package components.interfaces;
+package components;
 
+import components.interfaces.ExpressionNode;
 import ir.Type;
 import parser.Token;
 import visitors.Visitor;

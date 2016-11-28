@@ -1,7 +1,6 @@
 package visitors;
 
 import components.*;
-import components.interfaces.LiteralNode;
 
 public interface Visitor<R, E extends Throwable> {
 

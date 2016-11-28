@@ -1,6 +1,5 @@
 package components;
 
-import components.interfaces.LiteralNode;
 import parser.Token;
 
 public class ThisAtomicExpressionNode extends LiteralNode {

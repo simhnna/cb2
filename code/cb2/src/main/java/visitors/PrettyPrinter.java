@@ -2,7 +2,6 @@ package visitors;
 
 import components.*;
 import components.interfaces.Node;
-import components.interfaces.LiteralNode;
 import components.interfaces.StatementNode;
 import parser.Token;
 
