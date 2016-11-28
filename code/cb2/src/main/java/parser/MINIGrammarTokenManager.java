@@ -9,7 +9,7 @@ import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
-import errorHandling.ErrorHandler;
+import frontend.MINIParser;
 
 /** Token Manager. */
 public class MINIGrammarTokenManager implements MINIGrammarConstants

@@ -9,7 +9,7 @@ import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
-import errorHandling.ErrorHandler;
+import frontend.MINIParser;
 
 @SuppressWarnings("unused")
 public class MINIGrammar implements MINIGrammarConstants {
@@ -27,11 +27,11 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
     catch (ParseException e)
     {
-      ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
+      MINIParser.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
       return null;
     }
     catch (TokenMgrError e) {
-                ErrorHandler.handleTokenMgrError(in, e);
+                MINIParser.handleTokenMgrError(in, e);
                 return null;
     }
   }

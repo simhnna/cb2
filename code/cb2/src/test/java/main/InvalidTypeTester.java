@@ -34,7 +34,7 @@ public class InvalidTypeTester {
         try {
             result_node = MINIGrammar.parse(file);
             NameAndTypeChecker checker = new NameAndTypeChecker(file);
-            result_node.accept(checker);
+            result_node.accept(checker, null);
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
         } catch (ParseException e) {
             fail("Found Syntax Errors in file.");

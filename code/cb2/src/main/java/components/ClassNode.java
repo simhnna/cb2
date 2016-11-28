@@ -15,7 +15,7 @@ import visitors.Visitor;
 public class ClassNode extends Node implements Type {
     public final Token name;
     public final ArrayList<MemberNode> children = new ArrayList<>();
-
+    
     private HashSet<Method> methods;
     private HashSet<Field> fields;
 
@@ -25,8 +25,8 @@ public class ClassNode extends Node implements Type {
     }
 
     @Override
-    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
-        return visitor.visit(this);
+    public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
+        return visitor.visit(this, parameter);
     }
 
     @Override

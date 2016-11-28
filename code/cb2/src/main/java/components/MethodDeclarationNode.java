@@ -10,22 +10,20 @@ import parser.Token;
 import visitors.Visitor;
 
 public class MethodDeclarationNode extends MemberNode implements Method {
-    public final Token name;
     public final TypeNode returnType;
     public final ArrayList<NamedType> arguments;
     public final BlockNode body;
 
     public MethodDeclarationNode(Token name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body) {
-        super(name);
-        this.name = name;
+        super(name, name);
         this.returnType = returnType;
         this.arguments = arguments;
         this.body = body;
     }
 
     @Override
-    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
-        return visitor.visit(this);
+    public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
+        return visitor.visit(this, parameter);
     }
 
     @Override

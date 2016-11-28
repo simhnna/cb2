@@ -30,9 +30,10 @@ import components.types.BooleanType;
 import components.types.IntegerType;
 import components.types.VoidType;
 import ir.Type;
+import middleware.NameTable;
 import testsuite.TypeException;
 
-public class NameAndTypeChecker implements Visitor<Type, TypeException> {
+public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
 
     private HashMap<String, ClassNode> definedClasses = new HashMap<>();
     private final File path;
@@ -42,9 +43,9 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
     }
 
     @Override
-    public Type visit(AssignmentStatementNode assignmentStatementNode) throws TypeException {
-        Type first = assignmentStatementNode.first.accept(this);
-        Type second = assignmentStatementNode.second.accept(this);
+    public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
+        Type first = assignmentStatementNode.first.accept(this, nameTable);
+        Type second = assignmentStatementNode.second.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(path, assignmentStatementNode.position.beginLine,
                     "Types don't match: " + first.getName() + " != " + second.getName());
@@ -53,9 +54,9 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
     }
 
     @Override
-    public Type visit(BinaryExpressionNode binaryExpressionNode) throws TypeException {
-        Type first = binaryExpressionNode.first.accept(this);
-        Type second = binaryExpressionNode.second.accept(this);
+    public Type visit(BinaryExpressionNode binaryExpressionNode, NameTable nameTable) throws TypeException {
+        Type first = binaryExpressionNode.first.accept(this, nameTable);
+        Type second = binaryExpressionNode.second.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(path, binaryExpressionNode.position.beginLine,
                     "Types don't match: " + first.getName() + " != " + second.getName());
@@ -64,15 +65,15 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
     }
 
     @Override
-    public Type visit(BlockNode blockNode) throws TypeException {
+    public Type visit(BlockNode blockNode, NameTable nameTable) throws TypeException {
         for (StatementNode s: blockNode.children) {
-            s.accept(this);
+            s.accept(this, nameTable);
         }
         return null;
     }
 
     @Override
-    public Type visit(ClassNode classNode) throws TypeException {
+    public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         if (definedClasses.containsKey(classNode.getName())) {
             throw new TypeException(path, classNode.position.beginLine,
                     "class " + classNode.getName() + " was already defined");
@@ -80,41 +81,41 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
             definedClasses.put(classNode.getName(), classNode);
         }
         for (MemberNode n: classNode.children) {
-            n.accept(this);
+            n.accept(this, nameTable);
         }
         return null;
     }
 
     @Override
-    public Type visit(DeclarationStatementNode declarationStatementNode) throws TypeException {
-        Type declaredType = declarationStatementNode.expression.accept(this);
+    public Type visit(DeclarationStatementNode declarationStatementNode, NameTable nameTable) throws TypeException {
+        Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
         // TODO save type
         return null;
     }
 
     @Override
-    public Type visit(FieldNode fieldNode) throws TypeException {
+    public Type visit(FieldNode fieldNode, NameTable nameTable) throws TypeException {
         return null;
     }
 
     @Override
-    public Type visit(IfNode ifNode) throws TypeException {
-        Type type = ifNode.condition.accept(this);
+    public Type visit(IfNode ifNode, NameTable nameTable) throws TypeException {
+        Type type = ifNode.condition.accept(this, nameTable);
         if (type != BooleanType.INSTANCE) {
             throw new TypeException(path, ifNode.position.beginLine,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        ifNode.first.accept(this);
+        ifNode.first.accept(this, nameTable);
         if (ifNode.second != null) {
-            ifNode.second.accept(this);
+            ifNode.second.accept(this, nameTable);
         }
         return null;
     }
 
     @Override
-    public Type visit(MethodInvocationExpressionNode methodInvocationExpressionNode) throws TypeException {
+    public Type visit(MethodInvocationExpressionNode methodInvocationExpressionNode, NameTable nameTable) throws TypeException {
         for (ExpressionNode n: methodInvocationExpressionNode.arguments) {
-            n.accept(this);
+            n.accept(this, nameTable);
         }
         // TODO check for compatibility
         // TODO return type of method
@@ -122,41 +123,41 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
     }
 
     @Override
-    public Type visit(MethodDeclarationNode methodNode) throws TypeException {
-        methodNode.body.accept(this);
+    public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
+        methodNode.body.accept(this, nameTable);
         return null;
     }
 
     @Override
-    public Type visit(NewExpressionNode newExpressionNode) throws TypeException {
+    public Type visit(NewExpressionNode newExpressionNode, NameTable nameTable) throws TypeException {
         return newExpressionNode.type.type;
     }
 
     @Override
-    public Type visit(NullExpressionNode nullExpressionNode) throws TypeException {
+    public Type visit(NullExpressionNode nullExpressionNode, NameTable nameTable) throws TypeException {
         return nullExpressionNode.type.type;
     }
 
     @Override
-    public Type visit(LiteralNode primitiveType) throws TypeException {
+    public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         return primitiveType.type;
     }
 
     @Override
-    public Type visit(ReturnNode returnNode) throws TypeException {
-        returnNode.value.accept(this);
+    public Type visit(ReturnNode returnNode, NameTable nameTable) throws TypeException {
+        returnNode.value.accept(this, nameTable);
         return null;
     }
 
     @Override
-    public Type visit(SimpleStatementNode simpleStatementNode) throws TypeException {
-        simpleStatementNode.accept(this);
+    public Type visit(SimpleStatementNode simpleStatementNode, NameTable nameTable) throws TypeException {
+        simpleStatementNode.accept(this, nameTable);
         return null;
     }
 
     @Override
-    public Type visit(UnaryExpressionNode unaryExpressionNode) throws TypeException {
-        Type child_t = unaryExpressionNode.child.accept(this);
+    public Type visit(UnaryExpressionNode unaryExpressionNode, NameTable nameTable) throws TypeException {
+        Type child_t = unaryExpressionNode.child.accept(this, nameTable);
         if (child_t == BooleanType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.NEGATION) {
             throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '-' not compatible with type 'bool'");
         } else if (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.MINUS) {
@@ -166,37 +167,37 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
     }
 
     @Override
-    public Type visit(WhileNode whileNode) throws TypeException {
-        Type type = whileNode.condition.accept(this);
+    public Type visit(WhileNode whileNode, NameTable nameTable) throws TypeException {
+        Type type = whileNode.condition.accept(this, nameTable);
         if (type != BooleanType.INSTANCE) {
             throw new TypeException(path, whileNode.position.beginLine,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
         // TODO check type of condition
-        whileNode.body.accept(this);
+        whileNode.body.accept(this, nameTable);
         return null;
     }
 
     @Override
-    public Type visit(FieldMemberExpressionNode fieldMemberExpressionNode) throws TypeException {
+    public Type visit(FieldMemberExpressionNode fieldMemberExpressionNode, NameTable nameTable) throws TypeException {
         // TODO resolve names
         return VoidType.INSTANCE;
     }
 
     @Override
-    public Type visit(NamedType namedType) throws TypeException {
+    public Type visit(NamedType namedType, NameTable nameTable) throws TypeException {
         return namedType.type.type;
     }
 
     @Override
-    public Type visit(TypeNode typeNode) throws TypeException {
+    public Type visit(TypeNode typeNode, NameTable nameTable) throws TypeException {
         return typeNode.type;
     }
 
     @Override
-    public Type visit(FileNode fileNode) throws TypeException {
+    public Type visit(FileNode fileNode, NameTable nameTable) throws TypeException {
         for (ClassNode cls: fileNode.classes) {
-            cls.accept(this);
+            cls.accept(this, nameTable);
         }
         return null;
     }
