@@ -1,7 +1,9 @@
 package components.types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import ir.Field;
@@ -43,6 +45,48 @@ public class ArrayType implements Type {
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
         methods.add(PrintMethod.INSTANCE);
+        methods.add(new Method() {
+            
+            @Override
+            public String getName() {
+                return "set";
+            }
+            
+            @Override
+            public Type getReturnType() {
+                return VoidType.INSTANCE;
+            }
+            
+            @Override
+            public List<Type> getArgumentTypes() {
+                ArrayList<Type> args = new ArrayList<>();
+                args.add(baseType);
+                return args;
+            }
+            
+            @Override
+            public String toString() {
+                return getName();
+            }
+        });
+        
+        methods.add(new Method() {
+            
+            @Override
+            public String getName() {
+                return "get";
+            }
+            
+            @Override
+            public Type getReturnType() {
+                return baseType;
+            }
+            
+            @Override
+            public List<Type> getArgumentTypes() {
+                return new ArrayList<>();
+            }
+        });
         return methods;
     }
 
