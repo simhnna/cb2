@@ -10,6 +10,8 @@ public class BooleanType implements Type {
 
     public static final BooleanType INSTANCE = new BooleanType();
 
+    private BooleanType() {}
+
     @Override
     public String getName() {
         return "bool";

@@ -10,6 +10,8 @@ public class StringType implements Type {
 
     public static final StringType INSTANCE = new StringType();
 
+    private StringType() {}
+
     @Override
     public String getName() {
         return "string";

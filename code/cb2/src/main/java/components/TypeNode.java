@@ -44,7 +44,7 @@ public class TypeNode extends Node {
                 type = CompositeType.getOrCreateType(token.image);
         }
         if (dimensions > 0) {
-            type = new ArrayType(type, dimensions);
+            type = ArrayType.getOrCreateArrayType(type, dimensions);
         }
         return type;
     }

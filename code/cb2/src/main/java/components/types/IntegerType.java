@@ -10,6 +10,8 @@ public class IntegerType implements Type {
 
     public static final IntegerType INSTANCE = new IntegerType();
 
+    private IntegerType() {}
+
     @Override
     public String getName() {
         return "int";

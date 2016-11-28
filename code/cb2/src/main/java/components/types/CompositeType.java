@@ -16,19 +16,20 @@ public class CompositeType implements Type {
     private static HashMap<String, CompositeType> seenClasses = new HashMap<>();
     private static HashMap<String, CompositeType> declaredClasses = new HashMap<>();
 
-    public CompositeType(ClassNode cls) {
+    private CompositeType(ClassNode cls) {
         type = cls;
         className = cls.getName();
     }
 
-    public CompositeType(String className) {
+    private CompositeType(String className) {
         this.className = className;
     }
 
     public static CompositeType getOrCreateType(ClassNode cls) {
-        CompositeType type = seenClasses.get("name");
+        CompositeType type = seenClasses.get(cls.getName());
         if (type == null) {
             type = new CompositeType(cls);
+            seenClasses.put(cls.getName(), type);
         }
         return type;
     }
