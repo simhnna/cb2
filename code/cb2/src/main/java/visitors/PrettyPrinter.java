@@ -37,7 +37,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
         // classes need no indent
         bldr.append("class ").append(clsNode.name.image).append(" {\n");
         openScope();
-        for (Node child : clsNode.children) {
+        for (Node child : clsNode.getChildren()) {
             writeIndent();
             child.accept(this, null);
             bldr.append("\n");

@@ -25,18 +25,21 @@ public class CompositeType implements Type {
         this.className = className;
     }
 
-    public static CompositeType getOrCreateType(ClassNode cls) {
-        CompositeType type = seenClasses.get(cls.getName());
+    public static void createType(ClassNode cls) {
+        CompositeType type = declaredClasses.get(cls.getName());
         if (type == null) {
-            type = new CompositeType(cls);
-            seenClasses.put(cls.getName(), type);
+            type = seenClasses.get(cls.getName());
+            if (type == null) {
+                type = new CompositeType(cls);
+                declaredClasses.put(cls.getName(), type);
+            } else {
+               seenClasses.remove(cls.getName()); 
+            }
         }
-        return type;
     }
 
-    public static CompositeType getOrCreateType(String className) {
-        CompositeType type;
-        type = declaredClasses.get(className);
+    public static CompositeType getOrCreateTempType(String className) {
+        CompositeType type = declaredClasses.get(className);
         if (type == null) {
             type = seenClasses.get(className);
             if (type == null) {
@@ -45,6 +48,10 @@ public class CompositeType implements Type {
             }
         }
         return type;
+    }
+    
+    public static CompositeType getDeclaredType(String className) {
+        return declaredClasses.get(className);
     }
 
     @Override
@@ -60,5 +67,10 @@ public class CompositeType implements Type {
     @Override
     public Set<Field> getFields() {
         return type.getFields();
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
     }
 }

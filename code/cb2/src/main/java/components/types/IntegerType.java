@@ -1,5 +1,6 @@
 package components.types;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import ir.Field;
@@ -19,8 +20,9 @@ public class IntegerType implements Type {
 
     @Override
     public Set<Method> getMethods() {
-        // TODO Auto-generated method stub
-        return null;
+        HashSet<Method> methods = new HashSet<>();
+        methods.add(PrintMethod.INSTANCE);
+        return methods;
     }
 
     @Override
@@ -28,5 +30,9 @@ public class IntegerType implements Type {
         // TODO Auto-generated method stub
         return null;
     }
-
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

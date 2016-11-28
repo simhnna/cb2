@@ -41,7 +41,7 @@ public class TypeNode extends Node {
             type = VoidType.INSTANCE;
             break;
         default:
-                type = CompositeType.getOrCreateType(token.image);
+                type = CompositeType.getOrCreateTempType(token.image);
         }
         if (dimensions > 0) {
             type = ArrayType.getOrCreateArrayType(type, dimensions);

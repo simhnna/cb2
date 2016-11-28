@@ -30,6 +30,8 @@ import components.types.BooleanType;
 import components.types.IntegerType;
 import components.types.StringType;
 import components.types.VoidType;
+import ir.Field;
+import ir.Method;
 import ir.Type;
 import middleware.NameTable;
 import testsuite.TypeException;
@@ -95,26 +97,42 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             default:
                 break;
         }
-        return first;
+        switch(binaryExpressionNode.operator) {
+            case GT:
+            case GTE:
+            case LT:
+            case LTE:
+            case NOTSAME:
+            case SAME:
+                return BooleanType.INSTANCE;
+            default:
+                return first;
+        }
     }
 
     @Override
     public Type visit(BlockNode blockNode, NameTable nameTable) throws TypeException {
+        // Create a new NameTable since we are in a new scope
+        NameTable newTable = new NameTable(nameTable);
         for (StatementNode s: blockNode.children) {
-            s.accept(this, nameTable);
+            s.accept(this, newTable);
         }
         return null;
     }
 
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
+        nameTable = new NameTable(nameTable);
+        classNode.setNameTable(nameTable);
+        nameTable.addName("this", classNode);
         if (definedClasses.containsKey(classNode.getName())) {
             throw new TypeException(path, classNode.position.beginLine,
                     "class " + classNode.getName() + " was already defined");
         } else {
             definedClasses.put(classNode.getName(), classNode);
         }
-        for (MemberNode n: classNode.children) {
+
+        for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
         }
         return null;
@@ -122,13 +140,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(DeclarationStatementNode declarationStatementNode, NameTable nameTable) throws TypeException {
-        Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
-        // TODO save type
+        final Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
+        nameTable.addName(declarationStatementNode.name.image, declaredType);
         return null;
     }
 
     @Override
     public Type visit(FieldNode fieldNode, NameTable nameTable) throws TypeException {
+        // Fields are added in classes, so that they are defined in all methods regardless of order
         return null;
     }
 
@@ -148,17 +167,33 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(MethodInvocationExpressionNode methodInvocationExpressionNode, NameTable nameTable) throws TypeException {
-        for (ExpressionNode n: methodInvocationExpressionNode.arguments) {
-            n.accept(this, nameTable);
+        Type baseObject;
+        if (methodInvocationExpressionNode.baseObject != null) {
+            baseObject = methodInvocationExpressionNode.baseObject.accept(this, nameTable);
+        } else {
+            baseObject = nameTable.lookup("this", true);
         }
-        // TODO check for compatibility
-        // TODO return type of method
-        return VoidType.INSTANCE;
+        for (Method m: baseObject.getMethods()) {
+            if (m.getName().equals(methodInvocationExpressionNode.identifier.image)) {
+                for (ExpressionNode n: methodInvocationExpressionNode.arguments) {
+                    // TODO check for compatibility
+                    n.accept(this, nameTable);
+                }
+                return m.getReturnType();
+            }
+        }
+        throw new TypeException(path, methodInvocationExpressionNode.position.beginLine, "Method '" + methodInvocationExpressionNode.identifier + "' is not defined for Type '" + baseObject + "'");
     }
 
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
+        nameTable = new NameTable(nameTable);
+        for (NamedType namedType: methodNode.arguments) {
+            nameTable.addName(namedType.name.image, namedType.type.type);
+        }
         methodNode.body.accept(this, nameTable);
+        // set reference for NameTable of method
+        methodNode.setNameTable(nameTable);
         return null;
     }
 
@@ -185,7 +220,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(SimpleStatementNode simpleStatementNode, NameTable nameTable) throws TypeException {
-        simpleStatementNode.accept(this, nameTable);
+        simpleStatementNode.expression.accept(this, nameTable);
         return null;
     }
 
@@ -207,15 +242,26 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(path, whileNode.position.beginLine,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        // TODO check type of condition
         whileNode.body.accept(this, nameTable);
         return null;
     }
 
     @Override
     public Type visit(FieldMemberExpressionNode fieldMemberExpressionNode, NameTable nameTable) throws TypeException {
-        // TODO resolve names
-        return VoidType.INSTANCE;
+        if (fieldMemberExpressionNode.baseObject != null) {
+            Type baseObject = fieldMemberExpressionNode.baseObject.accept(this, nameTable);
+            for (Field f: baseObject.getFields()) {
+                if (f.getName().equals(fieldMemberExpressionNode.identifier.image)) {
+                    return f.getType();
+                }
+            }
+            throw new TypeException(path, fieldMemberExpressionNode.position.beginLine, "Field '" + fieldMemberExpressionNode.identifier.image + "' is not identified for type '" + baseObject.getName() + "'");
+        }
+        Type type = nameTable.lookup(fieldMemberExpressionNode.identifier.image, true);
+        if (type == null) {
+            // TODO unknown Type
+        }
+        return type;
     }
 
     @Override

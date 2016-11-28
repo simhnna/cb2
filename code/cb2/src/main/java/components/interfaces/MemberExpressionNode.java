@@ -12,4 +12,14 @@ public abstract class MemberExpressionNode extends ExpressionNode {
         this.baseObject = baseObject;
         this.identifier = identifier;
     }
+    
+    @Override
+    public String toString() {
+        if (baseObject == null) {
+            return identifier.image;
+
+        } else {
+            return baseObject + "." + identifier.image;
+        }
+    }
 }

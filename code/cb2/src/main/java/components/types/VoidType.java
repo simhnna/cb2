@@ -26,5 +26,9 @@ public class VoidType implements Type {
     public Set<Field> getFields() {
         return null;
     }
-
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

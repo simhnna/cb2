@@ -3,7 +3,6 @@ package components;
 import java.util.ArrayList;
 
 import components.interfaces.StatementNode;
-import middleware.NameTable;
 import parser.Token;
 import visitors.Visitor;
 

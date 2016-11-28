@@ -14,6 +14,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import components.FileNode;
+import middleware.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
 import testsuite.ParseException;
@@ -34,7 +35,8 @@ public class InvalidTypeTester {
         try {
             result_node = MINIGrammar.parse(file);
             NameAndTypeChecker checker = new NameAndTypeChecker(file);
-            result_node.accept(checker, null);
+            NameTable globalNameTable = new NameTable(null);
+            result_node.accept(checker, globalNameTable);
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
         } catch (ParseException e) {
             fail("Found Syntax Errors in file.");

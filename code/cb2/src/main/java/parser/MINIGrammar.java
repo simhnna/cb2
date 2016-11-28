@@ -75,7 +75,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         break label_2;
       }
       classMember = classMember();
-      cls.children.add(classMember);
+      cls.addChild(classMember);
     }
     jj_consume_token(BRACE_CLOSE);
     {if (true) return cls;}

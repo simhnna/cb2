@@ -6,6 +6,7 @@ import java.util.List;
 import components.interfaces.MemberNode;
 import ir.Method;
 import ir.Type;
+import middleware.NameTable;
 import parser.Token;
 import visitors.Visitor;
 
@@ -13,6 +14,8 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     public final TypeNode returnType;
     public final ArrayList<NamedType> arguments;
     public final BlockNode body;
+    
+    private NameTable nameTable = null;
 
     public MethodDeclarationNode(Token name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body) {
         super(name, name);
@@ -43,6 +46,10 @@ public class MethodDeclarationNode extends MemberNode implements Method {
             argumentTypes.add(type.type.type);
         }
         return argumentTypes;
+    }
+    
+    public void setNameTable(NameTable nameTable) {
+        this.nameTable = nameTable;
     }
 
     @Override

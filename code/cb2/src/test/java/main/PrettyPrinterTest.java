@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import org.junit.Test;
 
+import static lib.FileComparator.assertFilesAreEqual;
 import frontend.MINIParser;
 import testsuite.MINIException;
 
@@ -24,9 +24,9 @@ public class PrettyPrinterTest {
             out1.deleteOnExit();
             out2.deleteOnExit();
             MINIParser.prettyPrinted(in, out1);
-            assertEquals(Files.readAllLines(in.toPath()), Files.readAllLines(out1.toPath()));
+            assertFilesAreEqual(in, out1);
             MINIParser.prettyPrinted(out1, out2);
-            assertEquals(Files.readAllLines(out1.toPath()), Files.readAllLines(out2.toPath()));
+            assertFilesAreEqual(out1, out2);
 
         } catch (IOException e) {
             fail("Failed to create temporary File");

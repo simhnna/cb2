@@ -170,7 +170,7 @@ ClassNode mini_class() :
   (
     classMember = classMember()
     {
-      cls.children.add(classMember);
+      cls.addChild(classMember);
     }
   )*
   < BRACE_CLOSE >

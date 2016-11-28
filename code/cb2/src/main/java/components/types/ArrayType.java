@@ -1,6 +1,7 @@
 package components.types;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import ir.Field;
@@ -40,12 +41,37 @@ public class ArrayType implements Type {
 
     @Override
     public Set<Method> getMethods() {
-        return null;
+        HashSet<Method> methods = new HashSet<>();
+        methods.add(PrintMethod.INSTANCE);
+        return methods;
     }
 
     @Override
     public Set<Field> getFields() {
-        return null;
+        HashSet<Field> fields = new HashSet<>();
+        fields.add(new Field() {
+            
+            @Override
+            public Type getType() {
+                return IntegerType.INSTANCE;
+            }
+            
+            @Override
+            public String getName() {
+                return "length";
+            }
+            
+            @Override
+            public String toString() {
+                return getName();
+            }
+        });
+        return fields;
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }
