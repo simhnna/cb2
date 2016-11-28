@@ -22,7 +22,7 @@ import errorHandling.ErrorHandler;
 @SuppressWarnings("unused")
 public class MINIGrammar
 {
-  public static ArrayList < ClassNode > parse(File in) throws MINIException
+  public static FileNode parse(File in) throws MINIException
   {
     try
     {
@@ -139,21 +139,21 @@ TOKEN : /* Reserved keywords and such */
 | < BAD_TOKEN : ~[ ] >
 }
 
-ArrayList < ClassNode > file() :
+FileNode file() :
 {
-  ArrayList < ClassNode > classes = new ArrayList < ClassNode > ();
+  FileNode f = new FileNode();
   ClassNode cls;
 }
 {
   (
     cls = mini_class()
     {
-      classes.add(cls);
+      f.classes.add(cls);
     }
   )*
   < EOF >
   {
-    return classes;
+    return f;
   }
 }
 

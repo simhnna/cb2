@@ -6,7 +6,7 @@ import components.interfaces.LiteralNode;
 import components.interfaces.StatementNode;
 import parser.Token;
 
-public class PrettyPrinter implements Visitor {
+public class PrettyPrinter implements Visitor<Void, IllegalArgumentException> {
 
     private int indent = 0;
 
@@ -33,7 +33,7 @@ public class PrettyPrinter implements Visitor {
         this.indent = this.indent + 2;
     }
 
-    public void visit(ClassNode clsNode) {
+    public Void visit(ClassNode clsNode) {
         // classes need no indent
         bldr.append("class ").append(clsNode.name.image).append(" {\n");
         openScope();
@@ -44,14 +44,16 @@ public class PrettyPrinter implements Visitor {
         }
         closeScope();
         bldr.append("}\n");
+        return null;
     }
 
-    public void visit(FieldNode fieldNode) {
+    public Void visit(FieldNode fieldNode) {
         fieldNode.type.accept(this);
         bldr.append(" ").append(fieldNode.name.image).append(";");
+        return null;
     }
 
-    public void visit(MethodDeclarationNode methodNode) {
+    public Void visit(MethodDeclarationNode methodNode) {
         methodNode.returnType.accept(this);
         bldr.append(" ").append(methodNode.name.image).append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
@@ -62,37 +64,42 @@ public class PrettyPrinter implements Visitor {
         }
         bldr.append(") ");
         methodNode.body.accept(this);
+        return null;
     }
 
-    public void visit(AssignmentStatementNode assignmentStatementNode) {
+    public Void visit(AssignmentStatementNode assignmentStatementNode) {
         assignmentStatementNode.first.accept(this);
         bldr.append(" := ");
         assignmentStatementNode.second.accept(this);
         bldr.append(";");
+        return null;
     }
 
-    public void visit(IfNode ifNode) {
+    public Void visit(IfNode ifNode) {
         bldr.append("if (");
         ifNode.condition.accept(this);
         bldr.append(") ");
         ifNode.first.accept(this);
-        if (ifNode.hasSecond()) {
+        if (ifNode.second != null) {
             bldr.append(" else ");
             ifNode.second.accept(this);
         }
+        return null;
     }
 
-    public void visit(ReturnNode returnNode) {
+    public Void visit(ReturnNode returnNode) {
         bldr.append("return ");
         returnNode.value.accept(this);
         bldr.append(";");
+        return null;
     }
 
-    public void visit(LiteralNode type) {
+    public Void visit(LiteralNode type) {
         bldr.append(type);
+        return null;
     }
 
-    public void visit(BlockNode blockNode) {
+    public Void visit(BlockNode blockNode) {
         bldr.append("{\n");
         openScope();
         for (StatementNode stmntNode : blockNode.children) {
@@ -103,39 +110,45 @@ public class PrettyPrinter implements Visitor {
         closeScope();
         writeIndent();
         bldr.append("}");
+        return null;
     }
 
-    public void visit(WhileNode whileNode) {
+    public Void visit(WhileNode whileNode) {
         bldr.append("while (");
         whileNode.condition.accept(this);
         bldr.append(") ");
         whileNode.body.accept(this);
+        return null;
     }
 
-    public void visit(NullExpressionNode nullExpression) {
+    public Void visit(NullExpressionNode nullExpression) {
         bldr.append("null<").append(nullExpression.type).append(">");
+        return null;
     }
 
-    public void visit(DeclarationStatementNode declarationStatementNode) {
+    public Void visit(DeclarationStatementNode declarationStatementNode) {
         bldr.append("var ").append(declarationStatementNode.name).append(" := ");
         declarationStatementNode.expression.accept(this);
         bldr.append(";");
+        return null;
     }
 
-    public void visit(FieldMemberExpressionNode memberExpression) {
+    public Void visit(FieldMemberExpressionNode memberExpression) {
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this);
             bldr.append(".");
         }
         bldr.append(memberExpression.identifier);
+        return null;
     }
 
-    public void visit(SimpleStatementNode simpleStatementNode) {
+    public Void visit(SimpleStatementNode simpleStatementNode) {
         simpleStatementNode.expression.accept(this);
         bldr.append(";");
+        return null;
     }
 
-    public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
+    public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
         if (methodMemberExpressionNode.baseObject != null) {
             methodMemberExpressionNode.baseObject.accept(this);
             bldr.append(".");
@@ -148,17 +161,19 @@ public class PrettyPrinter implements Visitor {
             }
         }
         bldr.append(")");
+        return null;
     }
 
-    public void visit(NewExpressionNode newExpressionNode) {
+    public Void visit(NewExpressionNode newExpressionNode) {
         bldr.append("new <").append(newExpressionNode.type);
         for (Token t: newExpressionNode.arguments) {
             bldr.append(", ").append(t.image);
         }
         bldr.append(">");
+        return null;
     }
 
-    public void visit(BinaryExpressionNode binaryExpressionNode) {
+    public Void visit(BinaryExpressionNode binaryExpressionNode) {
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
@@ -168,9 +183,10 @@ public class PrettyPrinter implements Visitor {
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
+        return null;
     }
 
-    public void visit(UnaryExpressionNode unaryExpressionNode) {
+    public Void visit(UnaryExpressionNode unaryExpressionNode) {
         if (unaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
@@ -179,16 +195,27 @@ public class PrettyPrinter implements Visitor {
         if (unaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
+        return null;
     }
 
     @Override
-    public void visit(NamedType namedType) {
+    public Void visit(NamedType namedType) {
         namedType.type.accept(this);
         bldr.append(" ").append(namedType.name.image);
+        return null;
     }
 
     @Override
-    public void visit(TypeNode typeNode) {
+    public Void visit(TypeNode typeNode) {
         bldr.append(typeNode);
+        return null;
+    }
+
+    @Override
+    public Void visit(FileNode fileNode) throws IllegalArgumentException {
+        for (ClassNode cls: fileNode.classes) {
+            cls.accept(this);
+        }
+        return null;
     }
 }

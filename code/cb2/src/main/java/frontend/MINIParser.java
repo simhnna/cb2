@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
-import components.ClassNode;
+import components.FileNode;
 import parser.MINIGrammar;
 import testsuite.MINIException;
 import visitors.PrettyPrinter;
@@ -17,9 +17,9 @@ public class MINIParser {
     }
 
     public static void prettyPrinted(File in, File out) throws MINIException {
-        ArrayList<ClassNode> classes = MINIGrammar.parse(in);
+        FileNode classes = MINIGrammar.parse(in);
         PrettyPrinter visitor = new PrettyPrinter();
-        classes.forEach((cls) -> cls.accept(visitor));
+        classes.accept(visitor);
         try {
             ArrayList<String> output = new ArrayList<>();
             output.add(visitor.toString());

@@ -1,29 +1,25 @@
 package main;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import components.ClassNode;
+import components.FileNode;
 import parser.MINIGrammar;
 import testsuite.MINIException;
+import visitors.NameAndTypeChecker;
 import visitors.PrettyPrinter;
 
 public class Main {
 
-    public static void printPretty(ArrayList<ClassNode> parse_result) {
-        PrettyPrinter visitor = new PrettyPrinter();
-        for (ClassNode cls : parse_result) {
-            cls.accept(visitor);
-        }
-        System.out.println(visitor.toString());
-    }
-
     public static void main(String... args) {
-        ArrayList<ClassNode> classes;
         try {
-            classes = MINIGrammar.parse(new File("res" + File.separator + "example_code" + File.separator + "valid"
-                    + File.separator + "pretty_much_everything.m"));
-            printPretty(classes);
+            File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
+                    + File.separator + "pretty_much_everything.m");
+            FileNode classes = MINIGrammar.parse(sourceFile);
+            PrettyPrinter prettyPrinter = new PrettyPrinter();
+            classes.accept(prettyPrinter);
+            System.out.println(prettyPrinter.toString());
+            NameAndTypeChecker checker = new NameAndTypeChecker(sourceFile);
+            classes.accept(checker);
         } catch (MINIException e) {
             e.printStackTrace();
         }

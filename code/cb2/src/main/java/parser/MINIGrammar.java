@@ -13,7 +13,7 @@ import errorHandling.ErrorHandler;
 
 @SuppressWarnings("unused")
 public class MINIGrammar implements MINIGrammarConstants {
-  public static ArrayList < ClassNode > parse(File in) throws MINIException
+  public static FileNode parse(File in) throws MINIException
   {
     try
     {
@@ -36,8 +36,8 @@ public class MINIGrammar implements MINIGrammarConstants {
     }
   }
 
-  final public ArrayList < ClassNode > file() throws ParseException {
-  ArrayList < ClassNode > classes = new ArrayList < ClassNode > ();
+  final public FileNode file() throws ParseException {
+  FileNode f = new FileNode();
   ClassNode cls;
     label_1:
     while (true) {
@@ -50,10 +50,10 @@ public class MINIGrammar implements MINIGrammarConstants {
         break label_1;
       }
       cls = mini_class();
-      classes.add(cls);
+      f.classes.add(cls);
     }
     jj_consume_token(0);
-    {if (true) return classes;}
+    {if (true) return f;}
     throw new Error("Missing return statement in function");
   }
 

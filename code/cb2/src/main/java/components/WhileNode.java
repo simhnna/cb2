@@ -15,7 +15,7 @@ public class WhileNode extends StatementNode {
         this.body = body;
     }
 
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
+        return visitor.visit(this);
     }
 }

@@ -3,43 +3,45 @@ package visitors;
 import components.*;
 import components.interfaces.LiteralNode;
 
-public interface Visitor {
+public interface Visitor<R, E extends Throwable> {
 
-    void visit(AssignmentStatementNode assignmentStatementNode);
+    R visit(AssignmentStatementNode assignmentStatementNode) throws E;
 
-    void visit(BinaryExpressionNode binaryExpressionNode);
+    R visit(BinaryExpressionNode binaryExpressionNode) throws E;
 
-    void visit(BlockNode blockNode);
+    R visit(BlockNode blockNode) throws E;
 
-    void visit(ClassNode classNode);
+    R visit(ClassNode classNode) throws E;
 
-    void visit(DeclarationStatementNode declarationStatementNode);
+    R visit(DeclarationStatementNode declarationStatementNode) throws E;
 
-    void visit(FieldNode fieldNode);
+    R visit(FieldNode fieldNode) throws E;
 
-    void visit(IfNode ifNode);
+    R visit(IfNode ifNode) throws E;
 
-    void visit(MethodInvocationExpressionNode methodInvocationExpressionNode);
+    R visit(MethodInvocationExpressionNode methodInvocationExpressionNode) throws E;
 
-    void visit(MethodDeclarationNode methodNode);
+    R visit(MethodDeclarationNode methodNode) throws E;
 
-    void visit(NewExpressionNode newExpressionNode);
+    R visit(NewExpressionNode newExpressionNode) throws E;
 
-    void visit(NullExpressionNode nullExpressionNode);
+    R visit(NullExpressionNode nullExpressionNode) throws E;
 
-    void visit(LiteralNode primitiveType);
+    R visit(LiteralNode primitiveType) throws E;
 
-    void visit(ReturnNode returnNode);
+    R visit(ReturnNode returnNode) throws E;
 
-    void visit(SimpleStatementNode simpleStatementNode);
+    R visit(SimpleStatementNode simpleStatementNode) throws E;
 
-    void visit(UnaryExpressionNode unaryExpressionNode);
+    R visit(UnaryExpressionNode unaryExpressionNode) throws E;
 
-    void visit(WhileNode whileNode);
+    R visit(WhileNode whileNode) throws E;
 
-    void visit(FieldMemberExpressionNode fieldMemberExpressionNode);
+    R visit(FieldMemberExpressionNode fieldMemberExpressionNode) throws E;
 
-    void visit(NamedType namedType);
+    R visit(NamedType namedType) throws E;
 
-    void visit(TypeNode typeNode);
+    R visit(TypeNode typeNode) throws E;
+
+    R visit(FileNode fileNode) throws E;
 }

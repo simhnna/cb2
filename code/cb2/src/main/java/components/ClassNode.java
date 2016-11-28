@@ -25,8 +25,8 @@ public class ClassNode extends Node implements Type {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
+        return visitor.visit(this);
     }
 
     @Override

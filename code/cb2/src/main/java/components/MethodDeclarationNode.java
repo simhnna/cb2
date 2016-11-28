@@ -24,8 +24,8 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     }
 
     @Override
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
+        return visitor.visit(this);
     }
 
     @Override

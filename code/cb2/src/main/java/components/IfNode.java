@@ -17,11 +17,7 @@ public class IfNode extends StatementNode {
         this.second = second;
     }
 
-    public boolean hasSecond() {
-        return second != null;
-    }
-
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
+        return visitor.visit(this);
     }
 }
