@@ -121,15 +121,16 @@ public class MINIGrammar implements MINIGrammarConstants {
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case ARRAY_DEF:
+      case ARRAY_BEGIN:
         ;
         break;
       default:
         jj_la1[3] = jj_gen;
         break label_3;
       }
-      jj_consume_token(ARRAY_DEF);
-                                 dimensions++;
+      jj_consume_token(ARRAY_BEGIN);
+      jj_consume_token(ARRAY_END);
+                                                 dimensions++;
     }
     {if (true) return new TypeNode(type, dimensions);}
     throw new Error("Missing return statement in function");
@@ -765,10 +766,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x400,0x0,0x82000,0x8000,0x40000,0x0,0x35f12800,0x8080000,0x35f12800,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x50000000,0x50000000,0x80000000,0x80000000,0x30000000,0x30312000,0x20000,0x2000,0x40000,0x30312000,0x2000,0x312000,0x40000,0x0,};
+      jj_la1_0 = new int[] {0x400,0x0,0x102000,0x8000,0x80000,0x0,0x6be22800,0x10100000,0x6be22800,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000000,0xa0000000,0x0,0x0,0x60000000,0x60622000,0x40000,0x2000,0x80000,0x60622000,0x2000,0x622000,0x80000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x800,0x0,0x0,0x0,0x800,0x3c00,0x0,0x3c00,0x0,0x200,0x100,0xc,0xc,0xf0,0xf0,0x0,0x0,0x3,0x3,0x0,0x3c00,0x0,0x0,0x0,0x3c00,0x0,0x3c00,0x0,0x1800,};
+      jj_la1_1 = new int[] {0x0,0x1000,0x0,0x0,0x0,0x1000,0x7800,0x0,0x7800,0x0,0x400,0x200,0x18,0x18,0x1e0,0x1e0,0x0,0x0,0x7,0x7,0x0,0x7800,0x0,0x0,0x0,0x7800,0x0,0x7800,0x0,0x3000,};
    }
 
   /** Constructor with InputStream. */
@@ -885,7 +886,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[47];
+    boolean[] la1tokens = new boolean[48];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -902,7 +903,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         }
       }
     }
-    for (int i = 0; i < 47; i++) {
+    for (int i = 0; i < 48; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

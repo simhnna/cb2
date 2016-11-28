@@ -94,7 +94,8 @@ TOKEN : /* Reserved keywords and such */
 | < BRACE_CLOSE : "}" >
 | < PARAN_OPEN : "(" >
 | < PARAN_CLOSE : ")" >
-| < ARRAY_DEF : "[]" >
+| < ARRAY_BEGIN: "[" >
+| < ARRAY_END: "]" >
 | < THIS : "this" >
 | < DOT : "." >
 | < COMMA : "," >
@@ -217,7 +218,7 @@ TypeNode type() :
   int dimensions = 0;
 }
 {
-  type = < ID > (< ARRAY_DEF > { dimensions++; })*
+  type = < ID > (< ARRAY_BEGIN > < ARRAY_END > { dimensions++; })*
   {
     return new TypeNode(type, dimensions);
   }
