@@ -42,7 +42,7 @@ class FunWithInt {
 class FunWithInteger {
   int int;
   void main(string[] args) {
-    var x := new<FunWithInt>;
+    var x := new<FunWithInteger>;
     x.get().int := 7;
     x.int.print();
   }
