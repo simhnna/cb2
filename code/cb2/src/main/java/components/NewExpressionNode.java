@@ -19,4 +19,9 @@ public class NewExpressionNode extends ExpressionNode {
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
         return visitor.visit(this, parameter);
     }
+    
+    @Override
+    public String toString() {
+        return "<new " + type + ">";
+    }
 }

@@ -69,4 +69,9 @@ public class ClassNode extends Node implements Type {
         }
         children.add(member);
     }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
