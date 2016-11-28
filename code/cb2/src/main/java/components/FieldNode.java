@@ -7,18 +7,16 @@ import parser.Token;
 import visitors.Visitor;
 
 public class FieldNode extends MemberNode implements Field {
-    public final Token name;
     public final TypeNode type;
 
     public FieldNode(Token name, TypeNode type) {
-        super(name);
-        this.name = name;
+        super(name, name);
         this.type = type;
     }
 
     @Override
-    public <R, E extends Throwable> R accept(Visitor<R, E> visitor) throws E {
-        return visitor.visit(this);
+    public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
+        return visitor.visit(this, parameter);
     }
 
     @Override

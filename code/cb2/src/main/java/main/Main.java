@@ -16,10 +16,10 @@ public class Main {
                     + File.separator + "pretty_much_everything.m");
             FileNode classes = MINIGrammar.parse(sourceFile);
             PrettyPrinter prettyPrinter = new PrettyPrinter();
-            classes.accept(prettyPrinter);
+            classes.accept(prettyPrinter, null);
             System.out.println(prettyPrinter.toString());
             NameAndTypeChecker checker = new NameAndTypeChecker(sourceFile);
-            classes.accept(checker);
+            classes.accept(checker, null);
         } catch (MINIException e) {
             e.printStackTrace();
         }
