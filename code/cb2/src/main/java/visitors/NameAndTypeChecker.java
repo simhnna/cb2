@@ -28,6 +28,7 @@ import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
 import components.types.BooleanType;
 import components.types.IntegerType;
+import components.types.StringType;
 import components.types.VoidType;
 import ir.Type;
 import testsuite.TypeException;
@@ -54,11 +55,44 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
 
     @Override
     public Type visit(BinaryExpressionNode binaryExpressionNode) throws TypeException {
+        /*
+         * + --> both are of type string
+         * +, -, *, /, %, <=, >=, <, > --> both are of type int
+         * ==, != --> both are of the same type, both have same value if they're of the same primitive type
+         * &&, || --> both are of type bool
+         * 
+         */
         Type first = binaryExpressionNode.first.accept(this);
         Type second = binaryExpressionNode.second.accept(this);
         if (first != second) {
-            throw new TypeException(path, binaryExpressionNode.position.beginLine,
-                    "Types don't match: " + first.getName() + " != " + second.getName());
+            throw new TypeException(path, binaryExpressionNode.position.beginLine, "Types don't match: " + first.getName() + " != " + second.getName());
+        }
+        BinaryExpressionNode.Operator op_type = binaryExpressionNode.operator.getParent();
+        switch(op_type) {
+            case ANY_OP:
+                break;
+            case INT_OP:
+                if (first != IntegerType.INSTANCE) {
+                    throw new TypeException(path, binaryExpressionNode.position.beginLine, "Operator '" + binaryExpressionNode.operator + "' is undefined for type " + first.getName() + " (expected 'int')");
+                }
+                break;
+            case BOOL_OP:
+                if (first != BooleanType.INSTANCE) {
+                    throw new TypeException(path, binaryExpressionNode.position.beginLine, "Operator '" + binaryExpressionNode.operator + "' is undefined for type " + first.getName() + " (expected 'bool')");
+                }
+                break;
+            case MULTI_TYPE_OP:
+                BinaryExpressionNode.Operator op = binaryExpressionNode.operator;
+                switch(op) {
+                    case PLUS:
+                        if (first != IntegerType.INSTANCE || first != StringType.INSTANCE) {
+                            throw new TypeException(path, binaryExpressionNode.position.beginLine, "Operator '" + binaryExpressionNode.operator + "' is undefined for type " + first.getName() + " (expected 'int' or 'string')");
+                        }
+                    default:
+                        break;
+                }
+            default:
+                break;
         }
         return first;
     }

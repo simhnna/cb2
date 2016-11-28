@@ -177,7 +177,7 @@ public class PrettyPrinter implements Visitor<Void, IllegalArgumentException> {
             bldr.append('(');
         }
         binaryExpressionNode.first.accept(this);
-        bldr.append(" ").append(binaryExpressionNode.operator.image).append(" ");
+        bldr.append(" ").append(binaryExpressionNode.operator).append(" ");
         binaryExpressionNode.second.accept(this);
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');

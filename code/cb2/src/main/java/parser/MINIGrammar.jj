@@ -367,10 +367,15 @@ ExpressionNode expression7 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
-  current=expression6() (operator=< OR >next = expression6() { current = new BinaryExpressionNode(operator, current, next); })*
+  current=expression6()
+  (
+    position=< OR > { operator = BinaryExpressionNode.Operator.OR; }
+    next = expression6() { current = new BinaryExpressionNode(position, current, next, operator); }
+  )*
   {
     return current;
   }
@@ -381,10 +386,15 @@ ExpressionNode expression6 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
-  current= expression5()(operator=< AND >next = expression5() { current = new BinaryExpressionNode(operator, current, next); })*
+  current= expression5()
+  (
+    position=< AND > { operator = BinaryExpressionNode.Operator.AND; }
+    next = expression5() { current = new BinaryExpressionNode(position, current, next, operator); }
+  )*
   {
     return current;
   }
@@ -395,17 +405,18 @@ ExpressionNode expression5 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression4()
   (
     (
-      operator=< EQUAL >
-    | operator=< NOTEQUAL >
-  	)
+      position=< EQUAL > { operator = BinaryExpressionNode.Operator.SAME; }
+    | position=< NOTEQUAL > { operator = BinaryExpressionNode.Operator.NOTSAME; }
+    )
     next = expression4()
-    { current= new BinaryExpressionNode(operator, current, next); }
+    { current= new BinaryExpressionNode(position, current, next, operator); }
   )*
   {
     return current;
@@ -417,19 +428,20 @@ ExpressionNode expression4 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression3()
   (
     (
-      operator=< LESS_THAN_EQUAL >
-    | operator=< GREATER_THAN_EQUAL >
-    | operator=< LESS_THAN > 
-    | operator=< GREATER_THAN >
+      position=< LESS_THAN_EQUAL > { operator = BinaryExpressionNode.Operator.LTE; }
+    | position=< GREATER_THAN_EQUAL > { operator = BinaryExpressionNode.Operator.GTE; }
+    | position=< LESS_THAN > { operator = BinaryExpressionNode.Operator.LT; }
+    | position=< GREATER_THAN > { operator = BinaryExpressionNode.Operator.GT; }
   	)
   	next=expression3()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(position, current, next, operator); }
   )*
   {
     return current;
@@ -441,16 +453,17 @@ ExpressionNode expression3 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression2()(
     (
-      operator=< PLUS >
-    | operator=< MINUS >
+      position=< PLUS > { operator = BinaryExpressionNode.Operator.PLUS; }
+    | position=< MINUS > { operator = BinaryExpressionNode.Operator.SUB; }
   	)
   	next=expression2()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(position, current, next, operator); }
   )*
   {
     return current;
@@ -462,18 +475,19 @@ ExpressionNode expression2 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression1()
   (
     (
-      operator=< MULTIPLY >
-    | operator=< DIVIDE >
-    | operator=< REMAINDER >
+      position=< MULTIPLY > { operator = BinaryExpressionNode.Operator.MUL; }
+    | position=< DIVIDE > { operator = BinaryExpressionNode.Operator.DIV; }
+    | position=< REMAINDER > { operator = BinaryExpressionNode.Operator.MOD; }
  	)
   	next=expression1()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(position, current, next, operator); }
   )*
   {
     return current;

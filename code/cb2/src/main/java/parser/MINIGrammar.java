@@ -330,7 +330,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression7() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression6();
     label_6:
     while (true) {
@@ -342,9 +343,10 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[10] = jj_gen;
         break label_6;
       }
-      operator = jj_consume_token(OR);
+      position = jj_consume_token(OR);
+                      operator = BinaryExpressionNode.Operator.OR;
       next = expression6();
-                                                               current = new BinaryExpressionNode(operator, current, next);
+                           current = new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -353,7 +355,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression6() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression5();
     label_7:
     while (true) {
@@ -365,9 +368,10 @@ public class MINIGrammar implements MINIGrammarConstants {
         jj_la1[11] = jj_gen;
         break label_7;
       }
-      operator = jj_consume_token(AND);
+      position = jj_consume_token(AND);
+                       operator = BinaryExpressionNode.Operator.AND;
       next = expression5();
-                                                                current = new BinaryExpressionNode(operator, current, next);
+                           current = new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -376,7 +380,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression5() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression4();
     label_8:
     while (true) {
@@ -391,10 +396,12 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case EQUAL:
-        operator = jj_consume_token(EQUAL);
+        position = jj_consume_token(EQUAL);
+                           operator = BinaryExpressionNode.Operator.SAME;
         break;
       case NOTEQUAL:
-        operator = jj_consume_token(NOTEQUAL);
+        position = jj_consume_token(NOTEQUAL);
+                              operator = BinaryExpressionNode.Operator.NOTSAME;
         break;
       default:
         jj_la1[13] = jj_gen;
@@ -402,7 +409,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         throw new ParseException();
       }
       next = expression4();
-      current= new BinaryExpressionNode(operator, current, next);
+      current= new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -411,7 +418,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression4() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression3();
     label_9:
     while (true) {
@@ -428,16 +436,20 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LESS_THAN_EQUAL:
-        operator = jj_consume_token(LESS_THAN_EQUAL);
+        position = jj_consume_token(LESS_THAN_EQUAL);
+                                     operator = BinaryExpressionNode.Operator.LTE;
         break;
       case GREATER_THAN_EQUAL:
-        operator = jj_consume_token(GREATER_THAN_EQUAL);
+        position = jj_consume_token(GREATER_THAN_EQUAL);
+                                        operator = BinaryExpressionNode.Operator.GTE;
         break;
       case LESS_THAN:
-        operator = jj_consume_token(LESS_THAN);
+        position = jj_consume_token(LESS_THAN);
+                               operator = BinaryExpressionNode.Operator.LT;
         break;
       case GREATER_THAN:
-        operator = jj_consume_token(GREATER_THAN);
+        position = jj_consume_token(GREATER_THAN);
+                                  operator = BinaryExpressionNode.Operator.GT;
         break;
       default:
         jj_la1[15] = jj_gen;
@@ -445,7 +457,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         throw new ParseException();
       }
       next = expression3();
-          current = new BinaryExpressionNode(operator, current, next);
+          current = new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -454,7 +466,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression3() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression2();
     label_10:
     while (true) {
@@ -469,10 +482,12 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case PLUS:
-        operator = jj_consume_token(PLUS);
+        position = jj_consume_token(PLUS);
+                          operator = BinaryExpressionNode.Operator.PLUS;
         break;
       case MINUS:
-        operator = jj_consume_token(MINUS);
+        position = jj_consume_token(MINUS);
+                           operator = BinaryExpressionNode.Operator.SUB;
         break;
       default:
         jj_la1[17] = jj_gen;
@@ -480,7 +495,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         throw new ParseException();
       }
       next = expression2();
-          current = new BinaryExpressionNode(operator, current, next);
+          current = new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -489,7 +504,8 @@ public class MINIGrammar implements MINIGrammarConstants {
   final public ExpressionNode expression2() throws ParseException {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
     current = expression1();
     label_11:
     while (true) {
@@ -505,13 +521,16 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case MULTIPLY:
-        operator = jj_consume_token(MULTIPLY);
+        position = jj_consume_token(MULTIPLY);
+                              operator = BinaryExpressionNode.Operator.MUL;
         break;
       case DIVIDE:
-        operator = jj_consume_token(DIVIDE);
+        position = jj_consume_token(DIVIDE);
+                            operator = BinaryExpressionNode.Operator.DIV;
         break;
       case REMAINDER:
-        operator = jj_consume_token(REMAINDER);
+        position = jj_consume_token(REMAINDER);
+                               operator = BinaryExpressionNode.Operator.MOD;
         break;
       default:
         jj_la1[19] = jj_gen;
@@ -519,7 +538,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         throw new ParseException();
       }
       next = expression1();
-          current = new BinaryExpressionNode(operator, current, next);
+          current = new BinaryExpressionNode(position, current, next, operator);
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
