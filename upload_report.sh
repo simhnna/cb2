@@ -12,8 +12,8 @@ REPO=`git config remote.origin.url`
 git clone $REPO out
 cd out
 git checkout $TARGET_BRANCH || git checkout --orphan $TARGET_BRANCH
-git config user.name "Travis CI"
-git config user.email "$COMMIT_AUTHOR_EMAIL"
+git config --global user.name "Travis CI"
+git config --global user.email "$COMMIT_AUTHOR_EMAIL"
 mkdir -p "builds/"
 mv ../code/cb2/build/reports/tests/ "builds/$TRAVIS_JOB_NUMBER"
 
