@@ -527,16 +527,19 @@ public class MINIGrammar implements MINIGrammarConstants {
 
   final public ExpressionNode expression1() throws ParseException {
   ExpressionNode current;
-  Token operator;
+  Token position;
+  UnaryExpressionNode.Operator operator;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case MINUS:
     case NEGATION:
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NEGATION:
-        operator = jj_consume_token(NEGATION);
+        position = jj_consume_token(NEGATION);
+                                operator = UnaryExpressionNode.Operator.NEGATION;
         break;
       case MINUS:
-        operator = jj_consume_token(MINUS);
+        position = jj_consume_token(MINUS);
+                             operator = UnaryExpressionNode.Operator.MINUS;
         break;
       default:
         jj_la1[20] = jj_gen;
@@ -544,7 +547,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         throw new ParseException();
       }
       current = expression1();
-        current = new UnaryExpressionNode(operator, current);
+        current = new UnaryExpressionNode(position, current, operator);
       break;
     case PARAN_OPEN:
     case THIS:

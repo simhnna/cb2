@@ -27,6 +27,7 @@ import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
 import components.types.BooleanType;
+import components.types.IntegerType;
 import components.types.VoidType;
 import ir.Type;
 import testsuite.TypeException;
@@ -155,12 +156,13 @@ public class NameAndTypeChecker implements Visitor<Type, TypeException> {
 
     @Override
     public Type visit(UnaryExpressionNode unaryExpressionNode) throws TypeException {
-        if (unaryExpressionNode.child.accept(this) == BooleanType.INSTANCE) {
-
-        } else {
-
+        Type child_t = unaryExpressionNode.child.accept(this);
+        if (child_t == BooleanType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.NEGATION) {
+            throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '-' not compatible with type 'bool'");
+        } else if (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.MINUS) {
+            throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '!' not compatible with type 'int'");
         }
-        return null;
+        return child_t;
     }
 
     @Override

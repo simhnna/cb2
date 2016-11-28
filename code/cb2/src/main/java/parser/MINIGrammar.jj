@@ -484,17 +484,18 @@ ExpressionNode expression1 () :
 //unary
 {
   ExpressionNode current;
-  Token operator;
+  Token position;
+  UnaryExpressionNode.Operator operator;
 }
 {
   (    
     (
       (
-        operator=< NEGATION >
-      | operator=< MINUS >
+        position=< NEGATION > { operator = UnaryExpressionNode.Operator.NEGATION; }
+      | position=< MINUS > { operator = UnaryExpressionNode.Operator.MINUS; }
       )
       current = expression1()
-      { current = new UnaryExpressionNode(operator, current); }
+      { current = new UnaryExpressionNode(position, current, operator); }
     )
     | current = expression0()
   )

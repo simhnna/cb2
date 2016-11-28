@@ -6,10 +6,14 @@ import visitors.Visitor;
 
 public class UnaryExpressionNode extends ExpressionNode {
     public final ExpressionNode child;
-    public final Token operator;
 
-    public UnaryExpressionNode(Token operator, ExpressionNode child) {
-        super(operator);
+    public enum Operator {
+        MINUS, NEGATION;
+    }
+    public final Operator operator;
+
+    public UnaryExpressionNode(Token position, ExpressionNode child, Operator operator) {
+        super(position);
         this.child = child;
         this.operator = operator;
     }
