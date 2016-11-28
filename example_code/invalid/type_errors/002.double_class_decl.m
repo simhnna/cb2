@@ -1,0 +1,2 @@
+class meh {}
+class meh {}

@@ -15,11 +15,11 @@ import parser.MINIGrammar;
 import testsuite.MINIException;
 
 @RunWith(Parameterized.class)
-public class ValidMiniProgramTester {
+public class ValidSyntaxTester {
 
     private File file;
 
-    public ValidMiniProgramTester(File file, String filename) {
+    public ValidSyntaxTester(File file, String filename) {
         this.file = file;
     }
 
