@@ -9,6 +9,13 @@ public class UnaryExpressionNode extends ExpressionNode {
 
     public enum Operator {
         MINUS, NEGATION;
+        public String toString() {
+            if(name().equals("MINUS")) {
+                return "-";
+            } else {
+                return "!";
+            }
+        }
     }
     public final Operator operator;
 
