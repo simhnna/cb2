@@ -19,7 +19,6 @@ import components.NewExpressionNode;
 import components.NullExpressionNode;
 import components.ReturnNode;
 import components.SimpleStatementNode;
-import components.ThisAtomicExpressionNode;
 import components.TypeNode;
 import components.UnaryExpressionNode;
 import components.WhileNode;

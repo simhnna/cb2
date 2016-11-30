@@ -690,7 +690,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       break;
     case THIS:
       jj_consume_token(THIS);
-               {if (true) return new ThisAtomicExpressionNode(token);}
+               {if (true) return new LiteralNode(token, null);}
       break;
     case STRING:
       jj_consume_token(STRING);

@@ -588,7 +588,7 @@ ExpressionNode atomicExpression() :
 	  }
 	  return new MethodInvocationExpressionNode(null, name, arguments);
     }
-  | < THIS > { return new ThisAtomicExpressionNode(token); }
+  | < THIS > { return new LiteralNode(token, null); }
   | < STRING > { return new LiteralNode(token, StringType.INSTANCE); }
   | < INT > { return new LiteralNode(token, IntegerType.INSTANCE); }
   | < BOOL > { return new LiteralNode(token, BooleanType.INSTANCE); }
