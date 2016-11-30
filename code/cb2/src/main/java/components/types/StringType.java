@@ -49,8 +49,7 @@ public class StringType implements Type {
 
     @Override
     public Set<Field> getFields() {
-        // TODO Auto-generated method stub
-        return null;
+        return new HashSet<>();
     }
     
     @Override
