@@ -1,6 +1,8 @@
 package visitors;
 
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 import components.AssignmentStatementNode;
 import components.BinaryExpressionNode;
@@ -167,9 +169,16 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         }
         for (Method m: baseObject.getMethods()) {
             if (m.getName().equals(methodInvocationExpressionNode.identifier.image)) {
-                for (ExpressionNode n: methodInvocationExpressionNode.arguments) {
-                    // TODO check for compatibility
-                    n.accept(this, nameTable);
+                ArrayList<ExpressionNode> invocationArguments = methodInvocationExpressionNode.arguments;
+                List<Type> declaredMethodArguments = m.getArgumentTypes();
+                if (invocationArguments.size() != declaredMethodArguments.size()) {
+                    throw new TypeException(path, methodInvocationExpressionNode.position.beginLine, "Expected " + declaredMethodArguments.size() + " arguments but found " + invocationArguments.size() + " instead");
+                }
+                for (int i = 0; i < declaredMethodArguments.size(); ++i) {
+                    Type invokedType = invocationArguments.get(i).accept(this, nameTable);
+                    if (invokedType != declaredMethodArguments.get(i)) {
+                        throw new TypeException(path, invocationArguments.get(i).position.beginLine, "Expected type '" + declaredMethodArguments.get(i).getName() + "' but found '" + invokedType.getName() + "' instead");
+                    }
                 }
                 return m.getReturnType();
             }
@@ -257,7 +266,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         }
         Type type = nameTable.lookup(fieldMemberExpressionNode.identifier.image, true);
         if (type == null) {
-            // TODO unknown Type
+            throw new TypeException(path, fieldMemberExpressionNode.position.beginLine, "The variable '" + fieldMemberExpressionNode.identifier.image + "' was not defined");
         }
         return type;
     }
