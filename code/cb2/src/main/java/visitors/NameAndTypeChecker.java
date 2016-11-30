@@ -19,6 +19,7 @@ import components.NewExpressionNode;
 import components.NullExpressionNode;
 import components.ReturnNode;
 import components.SimpleStatementNode;
+import components.ThisAtomicExpressionNode;
 import components.TypeNode;
 import components.UnaryExpressionNode;
 import components.WhileNode;
@@ -201,6 +202,9 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
+        if (primitiveType.type == null) {
+            return nameTable.lookup(primitiveType.position.image, true);
+        }
         return primitiveType.type;
     }
 
