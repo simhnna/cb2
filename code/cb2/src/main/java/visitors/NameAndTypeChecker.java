@@ -1,7 +1,6 @@
 package visitors;
 
 import java.io.File;
-import java.util.HashMap;
 
 import components.AssignmentStatementNode;
 import components.BinaryExpressionNode;
@@ -27,9 +26,9 @@ import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
 import components.types.BooleanType;
+import components.types.CompositeType;
 import components.types.IntegerType;
 import components.types.StringType;
-import components.types.VoidType;
 import ir.Field;
 import ir.Method;
 import ir.Type;
@@ -38,7 +37,6 @@ import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
 
-    private HashMap<String, ClassNode> definedClasses = new HashMap<>();
     private final File path;
 
     public NameAndTypeChecker(File path) {
@@ -125,12 +123,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         nameTable = new NameTable(nameTable);
         classNode.setNameTable(nameTable);
         nameTable.addName("this", classNode);
-        if (definedClasses.containsKey(classNode.getName())) {
-            throw new TypeException(path, classNode.position.beginLine,
-                    "class " + classNode.getName() + " was already defined");
-        } else {
-            definedClasses.put(classNode.getName(), classNode);
-        }
 
         for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
@@ -276,8 +268,17 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(FileNode fileNode, NameTable nameTable) throws TypeException {
-        for (ClassNode cls: fileNode.classes) {
-            cls.accept(this, nameTable);
+        // make sure classes are defined
+        for (ClassNode classNode: fileNode.classes) {
+            if (!CompositeType.createType(classNode)) {
+                throw new TypeException(path, classNode.position.beginLine,
+                        "A class with name '" + classNode.getName() + "' was already defined");
+            }
+        }
+        
+        // now we can process classes knowing all types are defined
+        for (ClassNode classNode: fileNode.classes) {
+            classNode.accept(this, nameTable);
         }
         return null;
     }

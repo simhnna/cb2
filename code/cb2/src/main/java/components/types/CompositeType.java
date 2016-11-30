@@ -25,7 +25,7 @@ public class CompositeType implements Type {
         this.className = className;
     }
 
-    public static void createType(ClassNode cls) {
+    public static boolean createType(ClassNode cls) {
         CompositeType type = declaredClasses.get(cls.getName());
         if (type == null) {
             type = seenClasses.get(cls.getName());
@@ -35,7 +35,10 @@ public class CompositeType implements Type {
             } else {
                seenClasses.remove(cls.getName()); 
             }
+            type.type = cls;
+            return true;
         }
+        return false;
     }
 
     public static CompositeType getOrCreateTempType(String className) {

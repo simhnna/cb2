@@ -6,7 +6,6 @@ import java.util.Set;
 
 import components.interfaces.MemberNode;
 import components.interfaces.Node;
-import components.types.CompositeType;
 import components.types.PrintMethod;
 import ir.Field;
 import ir.Method;
@@ -27,7 +26,6 @@ public class ClassNode extends Node implements Type {
     public ClassNode(Token name) {
         super(name);
         this.name = name;
-        CompositeType.createType(this);
         methods = new HashSet<>();
         fields = new HashSet<>();
         methods.add(PrintMethod.INSTANCE);
