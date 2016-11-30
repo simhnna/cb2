@@ -68,11 +68,11 @@ class A {
     if (car.getName() != "whhhhaaat" || car.name != car.getName()) {
       "Noooo!".print();
     }
-    if (car.getName == "whhhhaaat" && car.name == car.getName()) {
+    if (car.getName() == "whhhhaaat" && car.name == car.getName()) {
     }
     (1 >= 2).print();
     (!true).print();
-    if (car.getName().length != car.name.length) {
+    if (car.getName().size() != car.name.size()) {
       "Noo".print();
     } else {
       "Yeeees".print();
