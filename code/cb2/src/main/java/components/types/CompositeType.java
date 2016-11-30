@@ -76,4 +76,9 @@ public class CompositeType implements Type {
     public String toString() {
         return getName();
     }
+    
+    public static void clear() {
+        seenClasses.clear();
+        declaredClasses.clear();
+    }
 }

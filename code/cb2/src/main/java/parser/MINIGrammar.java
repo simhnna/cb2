@@ -15,6 +15,7 @@ import frontend.MINIParser;
 public class MINIGrammar implements MINIGrammarConstants {
   public static FileNode parse(File in) throws MINIException
   {
+    CompositeType.clear();
     try
     {
       MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
