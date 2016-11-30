@@ -55,13 +55,13 @@ class A {
     return result;
   }
   void main(string[] args) {
-    print(nonRecursiveFactorial(1));
-    print(nonRecursiveFactorial(otherFactorial(2)));
-    print(args.length);
+    nonRecursiveFactorial(1).print();
+    nonRecursiveFactorial(otherFactorial(2)).print();
+    args.length.print();
     var car := new <Car>;
     var num := 1;
     var cars := new <Car[][], 1, num>;
-    print(car.name);
+    car.name.print();
     car.name.print();
     car.uselessMethod(1, 2, 3);
     car.setName("whhhhaaat");
@@ -77,7 +77,7 @@ class A {
     } else {
       "Yeeees".print();
     }
-    print(car.velocityTimesConstant(100));
+    car.velocityTimesConstant(100).print();
     var nothing := null<Car>;
   }
 }
