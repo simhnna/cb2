@@ -180,6 +180,9 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
+        if (methodNode.name.image.equals("print")) {
+            throw new TypeException(path, methodNode.position.beginLine, "It is not allowed to define 'print' methods");
+        }
         nameTable = new NameTable(nameTable);
         for (NamedType namedType: methodNode.arguments) {
             nameTable.addName(namedType.name.image, namedType.type.type);
