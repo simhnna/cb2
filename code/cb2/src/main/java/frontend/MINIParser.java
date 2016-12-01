@@ -53,7 +53,6 @@ public class MINIParser {
             output.add(visitor.toString());
             Files.write(out.toPath(), output, Charset.forName("UTF-8"));
         } catch (IOException e) {
-            System.err.println("File not writable.");
             e.printStackTrace();
         }
     }

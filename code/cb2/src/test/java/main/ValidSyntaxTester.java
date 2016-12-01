@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import parser.MINIGrammar;
+import frontend.MINIParser;
 import testsuite.MINIException;
 
 @RunWith(Parameterized.class)
@@ -26,7 +26,7 @@ public class ValidSyntaxTester {
     @Test
     public void testFile() {
         try {
-            MINIGrammar.parse(this.file);
+            MINIParser.wortproblem(this.file);
         } catch (MINIException e) {
             // TEST FAILURE
             e.printStackTrace();
