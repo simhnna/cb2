@@ -135,7 +135,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(DeclarationStatementNode declarationStatementNode, NameTable nameTable) throws TypeException {
         final Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
-        nameTable.addName(declarationStatementNode.name.image, declaredType);
+        try {
+            nameTable.addName(declarationStatementNode.name.image, declaredType);
+        } catch (IllegalArgumentException e) {
+            // Duplicate identifier
+            throw new TypeException(path, declarationStatementNode.position.beginLine, e.getMessage());
+        }
         return null;
     }
 
@@ -188,12 +193,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
-        if (methodNode.name.image.equals("print")) {
-            throw new TypeException(path, methodNode.position.beginLine, "It is not allowed to define 'print' methods");
-        }
         nameTable = new NameTable(nameTable);
         for (NamedType namedType: methodNode.arguments) {
-            nameTable.addName(namedType.name.image, namedType.type.type);
+            try {
+                nameTable.addName(namedType.name.image, namedType.type.type);
+            } catch (IllegalArgumentException e) {
+                // Duplicate names used in Method declaration
+                throw new TypeException(path, namedType.position.beginLine, e.getMessage());
+            }
         }
         methodNode.body.accept(this, nameTable);
         // set reference for NameTable of method
@@ -285,6 +292,21 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(FileNode fileNode, NameTable nameTable) throws TypeException {
         // make sure classes are defined
         for (ClassNode classNode: fileNode.classes) {
+            for (MemberNode member: classNode.getChildren()) {
+                if (member instanceof FieldNode) {
+                    try {
+                        classNode.addField((Field) member);
+                    } catch (IllegalArgumentException e) {
+                       throw new TypeException(path, member.position.beginLine, "The field '" + member.getName() + "' has already been defined") ;
+                    }
+                } else {
+                    try {
+                        classNode.addMethod((Method) member);
+                    } catch (IllegalArgumentException e) {
+                        throw new TypeException(path, member.position.beginLine, "The method '" + member.getName() + "' has already been defined") ;
+                    }
+                }
+            }
             if (!CompositeType.createType(classNode)) {
                 throw new TypeException(path, classNode.position.beginLine,
                         "A class with name '" + classNode.getName() + "' was already defined");

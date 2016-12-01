@@ -59,13 +59,36 @@ public class ClassNode extends Node implements Type {
         return children;
     }
     
-    public void addChild(MemberNode member) {
-        if (member instanceof FieldNode) {
-            fields.add((Field) member);
-        } else {
-            methods.add((Method) member);
+    private boolean containsName(String name) {
+        for (Field field: fields) {
+            if (name.equals(field.getName())) {
+                return true;
+            }
         }
+        for (Method method: methods) {
+            if (name.equals(method.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void addChild(MemberNode member) {
         children.add(member);
+    }
+    
+    public void addField(Field field) {
+        if (containsName(field.getName())) {
+            throw new IllegalArgumentException();
+        }
+        fields.add(field);
+    }
+    
+    public void addMethod(Method method) {
+        if (containsName(method.getName())) {
+            throw new IllegalArgumentException();
+        }
+        methods.add(method);
     }
     
     @Override
