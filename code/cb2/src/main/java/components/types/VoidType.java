@@ -1,5 +1,6 @@
 package components.types;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import ir.Field;
@@ -19,12 +20,12 @@ public class VoidType implements Type {
 
     @Override
     public Set<Method> getMethods() {
-        return null;
+        return new HashSet<>();
     }
 
     @Override
     public Set<Field> getFields() {
-        return null;
+        return new HashSet<>();
     }
     
     @Override
