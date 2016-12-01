@@ -15,14 +15,6 @@ public class NameTable {
         names = new HashMap<>();
     }
     
-    public Type getName(String id) {
-        Type name = names.get(id);
-        if (name == null) {
-            // TODO Unknown name
-        }
-        return name;
-    }
-    
     public Type lookup(String id, boolean cascade) {
         Type name = names.get(id);
         if (name == null && cascade && parent != null) {
@@ -31,9 +23,9 @@ public class NameTable {
         return name;
     }
     
-    public void addName(String name, Type type) {
-        if (names.put(name, type) != null) {
-            // TODO Duplicate name
+    public void addName(String id, Type type) {
+        if (names.put(id, type) != null) {
+            throw new IllegalArgumentException("The identifier '" + id + "' was already declared in this scope");
         }
     }
     
