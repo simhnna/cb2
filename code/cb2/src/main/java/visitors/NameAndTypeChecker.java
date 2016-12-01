@@ -146,7 +146,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(FieldNode fieldNode, NameTable nameTable) throws TypeException {
-        // Fields are added in classes, so that they are defined in all methods regardless of order
+        /*
+         *  Fields are added in classes, so that they are defined in all methods regardless of order
+         *  We are however adding this field to the nameTable of the class
+         */
+        nameTable.addName(fieldNode.getName(), fieldNode.getType());
+        
         return null;
     }
 
@@ -193,6 +198,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
+
         nameTable = new NameTable(nameTable);
         for (NamedType namedType: methodNode.arguments) {
             try {
