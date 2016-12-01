@@ -247,12 +247,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(UnaryExpressionNode unaryExpressionNode, NameTable nameTable) throws TypeException {
         Type child_t = unaryExpressionNode.child.accept(this, nameTable);
-        if (child_t == BooleanType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.NEGATION) {
-            throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '-' not compatible with type 'bool'");
-        } else if (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator != UnaryExpressionNode.Operator.MINUS) {
-            throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '!' not compatible with type 'int'");
+        if ((child_t == BooleanType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.NEGATION)
+        ||  (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS)) {
+            return child_t;
         }
-        return child_t;
+        throw new TypeException(path, unaryExpressionNode.position.beginLine, "UnaryOperator '" + unaryExpressionNode.operator + "' not compatible with type '" + child_t.getName() + "'");
+
     }
 
     @Override
