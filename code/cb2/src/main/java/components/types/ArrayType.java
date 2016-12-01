@@ -85,7 +85,9 @@ public class ArrayType implements Type {
             
             @Override
             public List<Type> getArgumentTypes() {
-                return new ArrayList<>();
+                ArrayList<Type> args = new ArrayList<>();
+                args.add(IntegerType.INSTANCE);
+                return args;
             }
         });
         return methods;
