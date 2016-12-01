@@ -52,10 +52,6 @@ public class CompositeType implements Type {
         }
         return type;
     }
-    
-    public static CompositeType getDeclaredType(String className) {
-        return declaredClasses.get(className);
-    }
 
     @Override
     public String getName() {
