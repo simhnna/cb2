@@ -60,6 +60,7 @@ public class ArrayType implements Type {
             @Override
             public List<Type> getArgumentTypes() {
                 ArrayList<Type> args = new ArrayList<>();
+                args.add(IntegerType.INSTANCE);
                 args.add(baseType);
                 return args;
             }
