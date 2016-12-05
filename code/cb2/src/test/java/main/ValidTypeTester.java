@@ -29,7 +29,7 @@ public class ValidTypeTester {
     public void testFile() {
         try {
             FileNode classes = MINIGrammar.parse(file);
-            NameAndTypeChecker checker = new NameAndTypeChecker(file);
+            NameAndTypeChecker checker = new NameAndTypeChecker();
             classes.accept(checker, null);
         } catch (MINIException e) {
             // TEST FAILURE

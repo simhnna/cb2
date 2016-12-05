@@ -21,7 +21,7 @@ public class Main {
             PrettyPrinter prettyPrinter = new PrettyPrinter();
             classes.accept(prettyPrinter, null);
             System.out.println(prettyPrinter.toString());
-            NameAndTypeChecker checker = new NameAndTypeChecker(sourceFile);
+            NameAndTypeChecker checker = new NameAndTypeChecker();
             classes.accept(checker, globalNameTable);
             System.out.println(globalNameTable);
         } catch (MINIException e) {
