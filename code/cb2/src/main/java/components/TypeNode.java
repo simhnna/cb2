@@ -9,14 +9,13 @@ import components.types.IntegerType;
 import components.types.StringType;
 import components.types.VoidType;
 import ir.Type;
-import parser.Token;
 import visitors.Visitor;
 
 public class TypeNode extends Node {
 
     public final Type type;
 
-    public TypeNode(Token type, int dimensions, Position position) {
+    public TypeNode(String type, int dimensions, Position position) {
         super(position);
         this.type = createType(type, dimensions);
     }
@@ -26,9 +25,9 @@ public class TypeNode extends Node {
         return visitor.visit(this, parameter);
     }
 
-    private static Type createType(Token token, int dimensions) {
+    private static Type createType(String token, int dimensions) {
         Type type = null;
-        switch(token.image) {
+        switch(token) {
         case "int":
             type = IntegerType.INSTANCE;
             break;
@@ -42,7 +41,7 @@ public class TypeNode extends Node {
             type = VoidType.INSTANCE;
             break;
         default:
-                type = CompositeType.getOrCreateTempType(token.image);
+                type = CompositeType.getOrCreateTempType(token);
         }
         if (dimensions > 0) {
             type = ArrayType.getOrCreateArrayType(type, dimensions);

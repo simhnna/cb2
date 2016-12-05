@@ -4,13 +4,12 @@ import components.helpers.Position;
 import components.interfaces.MemberNode;
 import ir.Field;
 import ir.Type;
-import parser.Token;
 import visitors.Visitor;
 
 public class FieldNode extends MemberNode implements Field {
     public final TypeNode type;
 
-    public FieldNode(Token name, TypeNode type, Position position) {
+    public FieldNode(String name, TypeNode type, Position position) {
         super(position, name);
         this.type = type;
     }
@@ -27,7 +26,7 @@ public class FieldNode extends MemberNode implements Field {
 
     @Override
     public String getName() {
-        return name.image;
+        return name;
     }
 
     @Override

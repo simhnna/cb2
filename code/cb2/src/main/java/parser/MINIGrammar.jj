@@ -11,6 +11,7 @@ package parser;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import components.*;
 import components.types.*;
 import components.helpers.Position;
@@ -24,9 +25,18 @@ import frontend.MINIParser;
 public class MINIGrammar
 {
   private static File currentFile;
+  private static HashMap<String, String> tokenTable = new HashMap<String, String>();
   private static Position generatePosition(Token t) {
 	Position p = new Position(currentFile, t.beginLine);
 	return p;
+  }
+  private static String tokenify(Token t) {
+	String token = tokenTable.get(t.image);
+	if (token == null) {
+	  token = t.image;
+	  tokenTable.put(token, token);
+	}
+	return token;
   }
   public static FileNode parse(File in) throws MINIException
   {
@@ -173,7 +183,7 @@ ClassNode mini_class() :
 }
 {
   < CLASS >
-  < ID > { cls = new ClassNode(token, generatePosition(token)); }
+  < ID > { cls = new ClassNode(tokenify(token), generatePosition(token)); }
   < BRACE_OPEN >
   (
     classMember = classMember()
@@ -198,7 +208,7 @@ MemberNode classMember() :
   (
     < SEMICOLON >
     {
-      return new FieldNode(memberName, type, generatePosition(memberName));
+      return new FieldNode(tokenify(memberName), type, generatePosition(memberName));
     }
   | m = method(memberName, type)
   {
@@ -216,7 +226,7 @@ MethodDeclarationNode method(Token name, TypeNode type) :
 {
   arguments = signature() body = blockStatement()
   {
-    return new MethodDeclarationNode(name, type, arguments, body, generatePosition(name));
+    return new MethodDeclarationNode(tokenify(name), type, arguments, body, generatePosition(name));
   }
 }
 
@@ -228,7 +238,7 @@ TypeNode type() :
 {
   type = < ID > (< ARRAY_BEGIN > < ARRAY_END > { dimensions++; })*
   {
-    return new TypeNode(type, dimensions, generatePosition(type));
+    return new TypeNode(tokenify(type), dimensions, generatePosition(type));
   }
 }
 
@@ -243,14 +253,14 @@ ArrayList < NamedType > signature() :
     type = type()
     < ID >
 	{
-      arguments.add(new NamedType(token, type, generatePosition(token)));
+      arguments.add(new NamedType(tokenify(token), type, generatePosition(token)));
     }
     (
       < COMMA >
       type = type()
       < ID >
       {
-        arguments.add(new NamedType(token, type, generatePosition(token)));
+        arguments.add(new NamedType(tokenify(token), type, generatePosition(token)));
       }
     )*
  
@@ -304,7 +314,7 @@ DeclarationStatementNode declaration() :
   expression = expression7()
   < SEMICOLON >
   {
-    return new DeclarationStatementNode(name, expression, generatePosition(name));
+    return new DeclarationStatementNode(tokenify(name), expression, generatePosition(name));
   }
 }
 
@@ -540,10 +550,10 @@ ExpressionNode expression0 () :
     < DOT > name=< ID >(arguments=argumentList())?
     {
 	  if (arguments != null) {
-		current = new MethodInvocationExpressionNode(current, name, arguments, generatePosition(name));
+		current = new MethodInvocationExpressionNode(current, tokenify(name), arguments, generatePosition(name));
 		arguments = null;
 	  } else {
-		current = new FieldMemberExpressionNode(current, name, generatePosition(name));
+		current = new FieldMemberExpressionNode(current, tokenify(name), generatePosition(name));
 	  }
     }
   )*
@@ -591,14 +601,14 @@ ExpressionNode atomicExpression() :
     {
       // baseObject is null because it doesn't exist here
       if(arguments == null){
-        return new FieldMemberExpressionNode(null, name, generatePosition(name));
+        return new FieldMemberExpressionNode(null, tokenify(name), generatePosition(name));
 	  }
-	  return new MethodInvocationExpressionNode(null, name, arguments, generatePosition(name));
+	  return new MethodInvocationExpressionNode(null, tokenify(name), arguments, generatePosition(name));
     }
-  | < THIS > { return new LiteralNode(token, null, generatePosition(token)); }
-  | < STRING > { return new LiteralNode(token, StringType.INSTANCE, generatePosition(token)); }
-  | < INT > { return new LiteralNode(token, IntegerType.INSTANCE, generatePosition(token)); }
-  | < BOOL > { return new LiteralNode(token, BooleanType.INSTANCE, generatePosition(token)); }
+  | < THIS > { return new LiteralNode(tokenify(token), null, generatePosition(token)); }
+  | < STRING > { return new LiteralNode(tokenify(token), StringType.INSTANCE, generatePosition(token)); }
+  | < INT > { return new LiteralNode(tokenify(token), IntegerType.INSTANCE, generatePosition(token)); }
+  | < BOOL > { return new LiteralNode(tokenify(token), BooleanType.INSTANCE, generatePosition(token)); }
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
@@ -635,7 +645,7 @@ NewExpressionNode newExpression() :
     | < ID >
     )
     {
-      n.arguments.add(token);
+      n.arguments.add(tokenify(token));
     }
   )*
   < GREATER_THAN >

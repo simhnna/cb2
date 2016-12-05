@@ -8,7 +8,6 @@ import components.interfaces.MemberNode;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
-import parser.Token;
 import visitors.Visitor;
 
 public class MethodDeclarationNode extends MemberNode implements Method {
@@ -18,7 +17,7 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     
     private NameTable nameTable = null;
 
-    public MethodDeclarationNode(Token name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body, Position position) {
+    public MethodDeclarationNode(String name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body, Position position) {
         super(position, name);
         this.returnType = returnType;
         this.arguments = arguments;
@@ -32,7 +31,7 @@ public class MethodDeclarationNode extends MemberNode implements Method {
 
     @Override
     public String getName() {
-        return name.image;
+        return name;
     }
 
     @Override

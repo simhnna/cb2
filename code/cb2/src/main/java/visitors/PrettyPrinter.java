@@ -3,7 +3,6 @@ package visitors;
 import components.*;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
-import parser.Token;
 
 public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentException> {
 
@@ -35,7 +34,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
     public Void visit(ClassNode clsNode, Void parameter) {
         // classes need no indent
-        bldr.append("class ").append(clsNode.name.image).append(" {\n");
+        bldr.append("class ").append(clsNode.name).append(" {\n");
         openScope();
         for (Node child : clsNode.getChildren()) {
             writeIndent();
@@ -50,14 +49,14 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
         fieldNode.type.accept(this, null);
-        bldr.append(" ").append(fieldNode.name.image).append(";");
+        bldr.append(" ").append(fieldNode.name).append(";");
         return null;
     }
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
         methodNode.returnType.accept(this, null);
-        bldr.append(" ").append(methodNode.name.image).append("(");
+        bldr.append(" ").append(methodNode.name).append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
             methodNode.arguments.get(i).accept(this, null);
             if (i + 1 != methodNode.arguments.size()) {
@@ -180,8 +179,8 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
         bldr.append("new <").append(newExpressionNode.type);
-        for (Token t: newExpressionNode.arguments) {
-            bldr.append(", ").append(t.image);
+        for (String arg: newExpressionNode.arguments) {
+            bldr.append(", ").append(arg);
         }
         bldr.append(">");
         return null;
@@ -217,7 +216,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
     public Void visit(NamedType namedType, Void parameter) {
         namedType.type.accept(this, null);
-        bldr.append(" ").append(namedType.name.image);
+        bldr.append(" ").append(namedType.name);
         return null;
     }
 

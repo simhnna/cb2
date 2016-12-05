@@ -3,14 +3,13 @@ package components;
 import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class DeclarationStatementNode extends StatementNode {
-    public final Token name;
+    public final String name;
     public final ExpressionNode expression;
 
-    public DeclarationStatementNode(Token name, ExpressionNode expression, Position position) {
+    public DeclarationStatementNode(String name, ExpressionNode expression, Position position) {
         super(position);
         this.name = name;
         this.expression = expression;

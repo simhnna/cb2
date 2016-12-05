@@ -2,7 +2,6 @@ package components;
 
 import components.helpers.Position;
 import components.interfaces.ExpressionNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class UnaryExpressionNode extends ExpressionNode {

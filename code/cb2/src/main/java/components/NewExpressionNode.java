@@ -3,12 +3,11 @@ package components;
 import java.util.ArrayList;
 
 import components.interfaces.ExpressionNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class NewExpressionNode extends ExpressionNode {
     public final TypeNode type;
-    public final ArrayList<Token> arguments;
+    public final ArrayList<String> arguments;
 
     public NewExpressionNode(TypeNode type) {
         super(type.position);

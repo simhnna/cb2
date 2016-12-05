@@ -3,14 +3,13 @@ package components;
 import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import ir.Type;
-import parser.Token;
 import visitors.Visitor;
 
 public class LiteralNode extends ExpressionNode{
     public final Type type;
-    public final Token token;
+    public final String token;
 
-    public LiteralNode(Token token, Type type, Position position) {
+    public LiteralNode(String token, Type type, Position position) {
         super(position);
         this.type = type;
         this.token = token;
@@ -23,6 +22,6 @@ public class LiteralNode extends ExpressionNode{
 
     @Override
     public String toString() {
-        return token.image;
+        return token;
     }
 }

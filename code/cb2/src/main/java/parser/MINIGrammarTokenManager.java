@@ -3,6 +3,7 @@ package parser;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import components.*;
 import components.types.*;
 import components.helpers.Position;

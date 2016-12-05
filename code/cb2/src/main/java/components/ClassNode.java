@@ -12,11 +12,10 @@ import ir.Field;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
-import parser.Token;
 import visitors.Visitor;
 
 public class ClassNode extends Node implements Type {
-    public final Token name;
+    public final String name;
     private final ArrayList<MemberNode> children = new ArrayList<>();
     
     private HashSet<Method> methods;
@@ -24,7 +23,7 @@ public class ClassNode extends Node implements Type {
     
     private NameTable nameTable = null;
 
-    public ClassNode(Token name, Position position) {
+    public ClassNode(String name, Position position) {
         super(position);
         this.name = name;
         methods = new HashSet<>();
@@ -39,7 +38,7 @@ public class ClassNode extends Node implements Type {
 
     @Override
     public String getName() {
-        return this.name.image;
+        return name;
     }
 
     @Override
