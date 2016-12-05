@@ -1,12 +1,12 @@
 package components.interfaces;
 
-import parser.Token;
+import components.helpers.Position;
 
 public abstract class ExpressionNode extends Node {
 
     private boolean inParenthesis;
 
-    public ExpressionNode(Token position) {
+    public ExpressionNode(Position position) {
         super(position);
         inParenthesis = false;
     }

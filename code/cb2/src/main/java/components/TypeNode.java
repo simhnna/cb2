@@ -1,5 +1,6 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.Node;
 import components.types.ArrayType;
 import components.types.BooleanType;
@@ -15,8 +16,8 @@ public class TypeNode extends Node {
 
     public final Type type;
 
-    public TypeNode(Token type, int dimensions) {
-        super(type);
+    public TypeNode(Token type, int dimensions, Position position) {
+        super(position);
         this.type = createType(type, dimensions);
     }
 

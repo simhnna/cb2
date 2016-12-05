@@ -1,7 +1,7 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class BinaryExpressionNode extends ExpressionNode {
@@ -73,11 +73,8 @@ public class BinaryExpressionNode extends ExpressionNode {
     }
     public final Operator operator;
 
-    public final Token position;
-
-    public BinaryExpressionNode(Token position, ExpressionNode first, ExpressionNode second, Operator operator) {
+    public BinaryExpressionNode(Position position, ExpressionNode first, ExpressionNode second, Operator operator) {
         super(position);
-        this.position = position;
         this.first = first;
         this.second = second;
         this.operator = operator;

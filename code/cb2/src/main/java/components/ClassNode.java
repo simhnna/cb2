@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import components.helpers.Position;
 import components.interfaces.MemberNode;
 import components.interfaces.Node;
 import components.types.PrintMethod;
@@ -23,8 +24,8 @@ public class ClassNode extends Node implements Type {
     
     private NameTable nameTable = null;
 
-    public ClassNode(Token name) {
-        super(name);
+    public ClassNode(Token name, Position position) {
+        super(position);
         this.name = name;
         methods = new HashSet<>();
         fields = new HashSet<>();

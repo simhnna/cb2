@@ -1,5 +1,6 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
 import parser.Token;
@@ -9,8 +10,8 @@ public class DeclarationStatementNode extends StatementNode {
     public final Token name;
     public final ExpressionNode expression;
 
-    public DeclarationStatementNode(Token name, ExpressionNode expression) {
-        super(name);
+    public DeclarationStatementNode(Token name, ExpressionNode expression, Position position) {
+        super(position);
         this.name = name;
         this.expression = expression;
     }

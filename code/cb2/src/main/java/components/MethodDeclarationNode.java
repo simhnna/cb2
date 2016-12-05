@@ -3,6 +3,7 @@ package components;
 import java.util.ArrayList;
 import java.util.List;
 
+import components.helpers.Position;
 import components.interfaces.MemberNode;
 import ir.Method;
 import ir.Type;
@@ -17,8 +18,8 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     
     private NameTable nameTable = null;
 
-    public MethodDeclarationNode(Token name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body) {
-        super(name, name);
+    public MethodDeclarationNode(Token name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body, Position position) {
+        super(position, name);
         this.returnType = returnType;
         this.arguments = arguments;
         this.body = body;

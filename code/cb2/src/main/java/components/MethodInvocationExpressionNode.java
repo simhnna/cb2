@@ -2,6 +2,7 @@ package components;
 
 import java.util.ArrayList;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberExpressionNode;
 import parser.Token;
@@ -11,8 +12,8 @@ public class MethodInvocationExpressionNode extends MemberExpressionNode {
     public final ArrayList<ExpressionNode> arguments;
 
     public MethodInvocationExpressionNode(ExpressionNode baseObject, Token identifier,
-            ArrayList<ExpressionNode> arguments) {
-        super(baseObject, identifier);
+            ArrayList<ExpressionNode> arguments, Position position) {
+        super(baseObject, identifier, position);
         this.arguments = arguments;
     }
 

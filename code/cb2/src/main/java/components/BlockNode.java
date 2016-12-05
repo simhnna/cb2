@@ -2,13 +2,13 @@ package components;
 
 import java.util.ArrayList;
 
+import components.helpers.Position;
 import components.interfaces.StatementNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class BlockNode extends StatementNode {
     
-    public BlockNode(Token position) {
+    public BlockNode(Position position) {
         super(position);
     }
 

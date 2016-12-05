@@ -1,11 +1,11 @@
 package components.interfaces;
 
-import parser.Token;
+import components.helpers.Position;
 
 public abstract class Node implements Visitable {
-    public final Token position;
+    public final Position position;
     
-    public Node(Token position) {
+    public Node(Position position) {
         this.position = position;
     }
 }

@@ -1,5 +1,6 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import ir.Type;
 import parser.Token;
@@ -7,10 +8,12 @@ import visitors.Visitor;
 
 public class LiteralNode extends ExpressionNode{
     public final Type type;
+    public final Token token;
 
-    public LiteralNode(Token token, Type type) {
-        super(token);
+    public LiteralNode(Token token, Type type, Position position) {
+        super(position);
         this.type = type;
+        this.token = token;
     }
 
     @Override
@@ -20,6 +23,6 @@ public class LiteralNode extends ExpressionNode{
 
     @Override
     public String toString() {
-        return this.position.image;
+        return token.image;
     }
 }

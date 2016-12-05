@@ -1,14 +1,14 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class ReturnNode extends StatementNode {
     public final ExpressionNode value;
 
-    public ReturnNode(Token position, ExpressionNode value) {
+    public ReturnNode(Position position, ExpressionNode value) {
         super(position);
         this.value = value;
     }

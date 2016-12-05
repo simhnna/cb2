@@ -1,5 +1,6 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import parser.Token;
 import visitors.Visitor;
@@ -19,7 +20,7 @@ public class UnaryExpressionNode extends ExpressionNode {
     }
     public final Operator operator;
 
-    public UnaryExpressionNode(Token position, ExpressionNode child, Operator operator) {
+    public UnaryExpressionNode(Position position, ExpressionNode child, Operator operator) {
         super(position);
         this.child = child;
         this.operator = operator;

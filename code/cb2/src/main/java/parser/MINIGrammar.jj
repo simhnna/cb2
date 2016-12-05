@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import components.*;
 import components.types.*;
+import components.helpers.Position;
 import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
@@ -22,8 +23,14 @@ import frontend.MINIParser;
 @SuppressWarnings("unused")
 public class MINIGrammar
 {
+  private static File currentFile;
+  private static Position generatePosition(Token t) {
+	Position p = new Position(currentFile, t.beginLine);
+	return p;
+  }
   public static FileNode parse(File in) throws MINIException
   {
+    currentFile = in;
     CompositeType.clear();
     try
     {
@@ -166,7 +173,7 @@ ClassNode mini_class() :
 }
 {
   < CLASS >
-  < ID > { cls = new ClassNode(token); }
+  < ID > { cls = new ClassNode(token, generatePosition(token)); }
   < BRACE_OPEN >
   (
     classMember = classMember()
@@ -191,7 +198,7 @@ MemberNode classMember() :
   (
     < SEMICOLON >
     {
-      return new FieldNode(memberName, type);
+      return new FieldNode(memberName, type, generatePosition(memberName));
     }
   | m = method(memberName, type)
   {
@@ -209,7 +216,7 @@ MethodDeclarationNode method(Token name, TypeNode type) :
 {
   arguments = signature() body = blockStatement()
   {
-    return new MethodDeclarationNode(name, type, arguments, body);
+    return new MethodDeclarationNode(name, type, arguments, body, generatePosition(name));
   }
 }
 
@@ -221,7 +228,7 @@ TypeNode type() :
 {
   type = < ID > (< ARRAY_BEGIN > < ARRAY_END > { dimensions++; })*
   {
-    return new TypeNode(type, dimensions);
+    return new TypeNode(type, dimensions, generatePosition(type));
   }
 }
 
@@ -236,14 +243,14 @@ ArrayList < NamedType > signature() :
     type = type()
     < ID >
 	{
-      arguments.add(new NamedType(token, type));
+      arguments.add(new NamedType(token, type, generatePosition(token)));
     }
     (
       < COMMA >
       type = type()
       < ID >
       {
-        arguments.add(new NamedType(token, type));
+        arguments.add(new NamedType(token, type, generatePosition(token)));
       }
     )*
  
@@ -280,8 +287,8 @@ StatementNode simpleStatement() :
 {
   first = expression7()
   (
-    position=< SEMICOLON > { return new SimpleStatementNode(position, first); }
-    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, position, second); }
+    position=< SEMICOLON > { return new SimpleStatementNode(generatePosition(position), first); }
+    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
   )
 }
 
@@ -297,7 +304,7 @@ DeclarationStatementNode declaration() :
   expression = expression7()
   < SEMICOLON >
   {
-    return new DeclarationStatementNode(name, expression);
+    return new DeclarationStatementNode(name, expression, generatePosition(name));
   }
 }
 
@@ -307,7 +314,7 @@ BlockNode blockStatement() :
   StatementNode statement;
 }
 {
-  < BRACE_OPEN > { block = new BlockNode(token); }
+  < BRACE_OPEN > { block = new BlockNode(generatePosition(token)); }
   (
     statement=statement()
     {
@@ -333,7 +340,7 @@ IfNode ifStatement() :
     < ELSE > second = blockStatement()
   )?
   {
-    return new IfNode(position, condition, first, second);
+    return new IfNode(generatePosition(position), condition, first, second);
   }
 }
 
@@ -347,7 +354,7 @@ WhileNode whileStatement() :
   position=< WHILE > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > body = blockStatement()
   {
-    return new WhileNode(position, condition, body);
+    return new WhileNode(generatePosition(position), condition, body);
   }
 }
 
@@ -359,7 +366,7 @@ ReturnNode returnStatement() :
 {
   position=< RETURN > returnValue = expression7() < SEMICOLON >
   {
-    return new ReturnNode(position, returnValue);
+    return new ReturnNode(generatePosition(position), returnValue);
   }
 }
 
@@ -375,7 +382,7 @@ ExpressionNode expression7 () :
   current=expression6()
   (
     position=< OR > { operator = BinaryExpressionNode.Operator.OR; }
-    next = expression6() { current = new BinaryExpressionNode(position, current, next, operator); }
+    next = expression6() { current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -394,7 +401,7 @@ ExpressionNode expression6 () :
   current= expression5()
   (
     position=< AND > { operator = BinaryExpressionNode.Operator.AND; }
-    next = expression5() { current = new BinaryExpressionNode(position, current, next, operator); }
+    next = expression5() { current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -417,7 +424,7 @@ ExpressionNode expression5 () :
     | position=< NOTEQUAL > { operator = BinaryExpressionNode.Operator.NOTSAME; }
     )
     next = expression4()
-    { current= new BinaryExpressionNode(position, current, next, operator); }
+    { current= new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -442,7 +449,7 @@ ExpressionNode expression4 () :
     | position=< GREATER_THAN > { operator = BinaryExpressionNode.Operator.GT; }
   	)
   	next=expression3()
-  	{ current = new BinaryExpressionNode(position, current, next, operator); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -464,7 +471,7 @@ ExpressionNode expression3 () :
     | position=< MINUS > { operator = BinaryExpressionNode.Operator.SUB; }
   	)
   	next=expression2()
-  	{ current = new BinaryExpressionNode(position, current, next, operator); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -488,7 +495,7 @@ ExpressionNode expression2 () :
     | position=< REMAINDER > { operator = BinaryExpressionNode.Operator.MOD; }
  	)
   	next=expression1()
-  	{ current = new BinaryExpressionNode(position, current, next, operator); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -510,7 +517,7 @@ ExpressionNode expression1 () :
       | position=< MINUS > { operator = UnaryExpressionNode.Operator.MINUS; }
       )
       current = expression1()
-      { current = new UnaryExpressionNode(position, current, operator); }
+      { current = new UnaryExpressionNode(generatePosition(position), current, operator); }
     )
     | current = expression0()
   )
@@ -533,10 +540,10 @@ ExpressionNode expression0 () :
     < DOT > name=< ID >(arguments=argumentList())?
     {
 	  if (arguments != null) {
-		current = new MethodInvocationExpressionNode(current, name, arguments);
+		current = new MethodInvocationExpressionNode(current, name, arguments, generatePosition(name));
 		arguments = null;
 	  } else {
-		current = new FieldMemberExpressionNode(current, name);
+		current = new FieldMemberExpressionNode(current, name, generatePosition(name));
 	  }
     }
   )*
@@ -584,14 +591,14 @@ ExpressionNode atomicExpression() :
     {
       // baseObject is null because it doesn't exist here
       if(arguments == null){
-        return new FieldMemberExpressionNode(null, name);
+        return new FieldMemberExpressionNode(null, name, generatePosition(name));
 	  }
-	  return new MethodInvocationExpressionNode(null, name, arguments);
+	  return new MethodInvocationExpressionNode(null, name, arguments, generatePosition(name));
     }
-  | < THIS > { return new LiteralNode(token, null); }
-  | < STRING > { return new LiteralNode(token, StringType.INSTANCE); }
-  | < INT > { return new LiteralNode(token, IntegerType.INSTANCE); }
-  | < BOOL > { return new LiteralNode(token, BooleanType.INSTANCE); }
+  | < THIS > { return new LiteralNode(token, null, generatePosition(token)); }
+  | < STRING > { return new LiteralNode(token, StringType.INSTANCE, generatePosition(token)); }
+  | < INT > { return new LiteralNode(token, IntegerType.INSTANCE, generatePosition(token)); }
+  | < BOOL > { return new LiteralNode(token, BooleanType.INSTANCE, generatePosition(token)); }
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
