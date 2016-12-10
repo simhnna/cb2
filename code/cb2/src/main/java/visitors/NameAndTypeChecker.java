@@ -128,6 +128,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(DeclarationStatementNode declarationStatementNode, NameTable nameTable) throws TypeException {
         final Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
+        declarationStatementNode.setType(declaredType);
         try {
             nameTable.addName(declarationStatementNode.name, declaredType);
         } catch (IllegalArgumentException e) {

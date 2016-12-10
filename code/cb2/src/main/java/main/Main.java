@@ -6,8 +6,8 @@ import components.FileNode;
 import middleware.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
+import visitors.JavaCodeGenerator;
 import visitors.NameAndTypeChecker;
-import visitors.PrettyPrinter;
 
 public class Main {
 
@@ -18,16 +18,14 @@ public class Main {
             File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
                     + File.separator + "pretty_much_everything.m");
             classes = MINIGrammar.parse(sourceFile);
-            PrettyPrinter prettyPrinter = new PrettyPrinter();
-            classes.accept(prettyPrinter, null);
-            System.out.println(prettyPrinter.toString());
             NameAndTypeChecker checker = new NameAndTypeChecker();
             classes.accept(checker, globalNameTable);
-            System.out.println(globalNameTable);
+            JavaCodeGenerator javaPrinter = new JavaCodeGenerator();
+            classes.accept(javaPrinter, null);
+            System.out.println(javaPrinter.toString());
         } catch (MINIException e) {
             e.printStackTrace();
         }
-        System.out.println(globalNameTable);
 
     }
 }
