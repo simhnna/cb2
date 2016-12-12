@@ -190,7 +190,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
         // TODO: fix for arrays?
-        bldr.append("new ").append(newExpressionNode.type); // TODO: call visit here
+        bldr.append("new ");
+        newExpressionNode.type.accept(this, null);
         bldr.append("(");
         for (String arg: newExpressionNode.arguments) {
             bldr.append(" ").append(arg);
