@@ -46,7 +46,7 @@ class FunWithInteger {
     x.get().int := 7;
     x.int.print();
   }
-  FunWithInt get() {
+  FunWithInteger get() {
     return this;
   }
 }
