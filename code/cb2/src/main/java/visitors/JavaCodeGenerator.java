@@ -7,7 +7,9 @@ import components.interfaces.Node;
 import components.interfaces.StatementNode;
 import components.types.ArrayType;
 import components.types.BooleanType;
+import components.types.IntegerType;
 import components.types.StringType;
+import components.types.VoidType;
 import ir.Type;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
@@ -29,6 +31,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         bldr.append(new String(new char[this.indent]).replace('\0', ' '));
     }
 
+    private void writePaddedName(String name) {
+        bldr.append("_").append(name);
+    }
+
     private void closeScope() {
         this.indent = this.indent - 2;
     }
@@ -40,7 +46,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(ClassNode clsNode, Void parameter) {
         // classes need no indent
-        bldr.append("class ").append(clsNode.name).append(" {\n");
+        bldr.append("class ");
+        writePaddedName(clsNode.name);
+        bldr.append(" {\n");
         openScope();
         for (Node child : clsNode.getChildren()) {
             writeIndent();
@@ -55,7 +63,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
         fieldNode.type.accept(this, null);
-        bldr.append(" ").append(fieldNode.name).append(";");
+        bldr.append(" ");
+        writePaddedName(fieldNode.name);
+        bldr.append(";");
         return null;
     }
 
@@ -65,7 +75,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             bldr.append("public static ");
         }
         methodNode.returnType.accept(this, null);
-        bldr.append(" ").append(methodNode.name).append("(");
+        bldr.append(" ");
+        if(methodNode.name.equals("main")) {
+            bldr.append(methodNode.name);
+        } else {
+            writePaddedName(methodNode.name);
+        }
+        bldr.append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
             methodNode.arguments.get(i).accept(this, null);
             if (i + 1 != methodNode.arguments.size()) {
@@ -145,7 +161,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(DeclarationStatementNode declarationStatementNode, Void parameter) {
-        bldr.append(getTypeRepresentation(declarationStatementNode.getType())).append(" ").append(declarationStatementNode.name).append(" = ");
+        bldr.append(getTypeRepresentation(declarationStatementNode.getType())).append(" ");
+        writePaddedName(declarationStatementNode.name);
+        bldr.append(" = ");
         declarationStatementNode.expression.accept(this, null);
         bldr.append(";");
         return null;
@@ -157,7 +175,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             memberExpression.baseObject.accept(this, null);
             bldr.append(".");
         }
-        bldr.append(memberExpression.identifier);
+        writePaddedName(memberExpression.identifier);
         return null;
     }
 
@@ -199,7 +217,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append(".");
             }
-            bldr.append(methodMemberExpressionNode.identifier).append("(");
+            writePaddedName(methodMemberExpressionNode.identifier);
+            bldr.append("(");
             for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
                 methodMemberExpressionNode.arguments.get(i).accept(this, null);
                 if (i != methodMemberExpressionNode.arguments.size() - 1) {
@@ -260,7 +279,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(NamedType namedType, Void parameter) {
         namedType.type.accept(this, null);
-        bldr.append(" ").append(namedType.name);
+        bldr.append(" ");
+        writePaddedName(namedType.name);
         return null;
     }
 
@@ -284,6 +304,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             return "String";
         } else if (type == BooleanType.INSTANCE) {
             return "boolean";
+        } else if (type == IntegerType.INSTANCE) {
+            return "int";
+        } else if (type == VoidType.INSTANCE) {
+            return "void";
         } else if (type instanceof ArrayType) {
             String type_str = getTypeRepresentation(((ArrayType) type).getBasicDataType());
             do {
@@ -292,7 +316,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             } while (type instanceof ArrayType);
             return type_str;
         } else {
-            return type.toString();
+            return "_" + type.toString();
         }
     }
 }
