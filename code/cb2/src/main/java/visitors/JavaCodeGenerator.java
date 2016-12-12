@@ -1,6 +1,7 @@
 package visitors;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 
 import components.*;
 import components.interfaces.Node;
@@ -8,6 +9,7 @@ import components.interfaces.StatementNode;
 import components.types.ArrayType;
 import components.types.BooleanType;
 import components.types.StringType;
+import ir.Field;
 import ir.Type;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
@@ -39,6 +41,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(ClassNode clsNode, Void parameter) {
+        String[] keywords = {"abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while" };
+        for(String kw : keywords) {
+            Predicate<Field> p = f -> !f.getName().equals(kw);
+            if (clsNode.getFields().stream().allMatch(p)) {
+
+            };
+        }
         // classes need no indent
         bldr.append("class ").append(clsNode.name).append(" {\n");
         openScope();
