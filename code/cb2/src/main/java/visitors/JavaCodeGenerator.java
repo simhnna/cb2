@@ -58,6 +58,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        // TODO: fix main here
+        if(methodNode.name.equals("main")) {
+            bldr.append("// FIXME: main method\n");
+            this.writeIndent();
+        }
         methodNode.returnType.accept(this, null);
         bldr.append(" ").append(methodNode.name).append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
@@ -164,6 +169,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
+        // TODO: make print work here
+        if (methodMemberExpressionNode.identifier.equals("print")) {
+            bldr.append("// FIXME: print statement\n");
+            this.writeIndent();
+        }
         if (methodMemberExpressionNode.baseObject != null) {
             methodMemberExpressionNode.baseObject.accept(this, null);
             bldr.append(".");
@@ -181,6 +191,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
+        // TODO: fix for arrays?
         bldr.append("new ").append(newExpressionNode.type);
         bldr.append("(");
         for (String arg: newExpressionNode.arguments) {

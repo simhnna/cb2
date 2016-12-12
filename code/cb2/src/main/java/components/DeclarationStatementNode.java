@@ -32,6 +32,7 @@ public class DeclarationStatementNode extends StatementNode {
         if (type == null) {
             type = declaredType;
         }
+        // TODO: add warning
     }
     
     public Type getType() {
