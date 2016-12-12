@@ -106,8 +106,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(BlockNode blockNode, NameTable nameTable) throws TypeException {
         // Create a new NameTable since we are in a new scope
-        NameTable newTable = new NameTable(nameTable);
+        NameTable newTable = new NameTable(nameTable, blockNode);
         for (StatementNode s: blockNode.children) {
+            if (blockNode.getReturnType() != null) {
+                throw new TypeException(s.position.path, s.position.line, "Unreachable code");
+            }
             s.accept(this, newTable);
         }
         return null;
@@ -115,7 +118,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
-        nameTable = new NameTable(nameTable);
+        nameTable = new NameTable(nameTable, null);
         classNode.setNameTable(nameTable);
         nameTable.addName("this", classNode);
 
@@ -193,7 +196,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
 
-        nameTable = new NameTable(nameTable);
+        nameTable = new NameTable(nameTable, methodNode.body);
         for (NamedType namedType: methodNode.arguments) {
             try {
                 nameTable.addName(namedType.name, namedType.type.type);
@@ -228,8 +231,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(ReturnNode returnNode, NameTable nameTable) throws TypeException {
-        returnNode.value.accept(this, nameTable);
-        return null;
+        Type returnType = returnNode.value.accept(this, nameTable);
+        try {
+            nameTable.owner.setReturnType(returnType);
+        } catch (IllegalArgumentException e) {
+            throw new TypeException(returnNode.position.path, returnNode.position.line, e.getMessage());
+        }
+        return returnType;
     }
 
     @Override

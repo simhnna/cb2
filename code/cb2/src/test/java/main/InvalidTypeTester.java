@@ -35,7 +35,7 @@ public class InvalidTypeTester {
         try {
             result_node = MINIGrammar.parse(file);
             NameAndTypeChecker checker = new NameAndTypeChecker();
-            NameTable globalNameTable = new NameTable(null);
+            NameTable globalNameTable = new NameTable(null, null);
             result_node.accept(checker, globalNameTable);
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
         } catch (ParseException e) {
