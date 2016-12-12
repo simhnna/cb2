@@ -1,8 +1,11 @@
 package visitors;
 
+import java.util.Iterator;
+
 import components.*;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
+import components.types.ArrayType;
 import components.types.BooleanType;
 import components.types.StringType;
 import ir.Type;
@@ -189,14 +192,24 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
-        // TODO: fix for arrays?
         bldr.append("new ");
-        newExpressionNode.type.accept(this, null);
-        bldr.append("(");
-        for (String arg: newExpressionNode.arguments) {
-            bldr.append(" ").append(arg);
+        if (newExpressionNode.type.type instanceof ArrayType) {
+            bldr.append(((ArrayType) newExpressionNode.type.type).getBasicDataType());
+            for (String dimension: newExpressionNode.arguments) {
+                bldr.append("[").append(dimension).append("]");
+            }
+        } else {
+            newExpressionNode.type.accept(this, null);
+            bldr.append("(");
+            Iterator<String> argument_iter = newExpressionNode.arguments.iterator();
+            while (argument_iter.hasNext()) {
+                bldr.append(" ").append(argument_iter.next());
+                if (argument_iter.hasNext()) {
+                    bldr.append(", ");
+                }
+            }
+            bldr.append(")");
         }
-        bldr.append(")");
         return null;
     }
 
