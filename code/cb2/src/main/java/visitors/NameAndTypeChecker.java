@@ -30,6 +30,7 @@ import components.types.BooleanType;
 import components.types.CompositeType;
 import components.types.IntegerType;
 import components.types.StringType;
+import components.types.VoidType;
 import ir.Field;
 import ir.Method;
 import ir.Type;
@@ -37,6 +38,9 @@ import middleware.NameTable;
 import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
+    
+    // Used to hold the current method to check for return types
+    private MethodDeclarationNode currentMethod;
 
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
@@ -107,12 +111,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(BlockNode blockNode, NameTable nameTable) throws TypeException {
         // Create a new NameTable since we are in a new scope
         NameTable newTable = new NameTable(nameTable, blockNode);
-        blockNode.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         for (StatementNode s: blockNode.children) {
-            if (blockNode.getReturnType() != null) {
+            if (blockNode.containsReturn()) {
                 throw new TypeException(s.position.path, s.position.line, "Unreachable code");
             }
             s.accept(this, newTable);
+        }
+        if (blockNode.containsReturn()) {
+            nameTable.owner.setContainsReturn();
         }
         return null;
     }
@@ -160,11 +166,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(ifNode.position.path, ifNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        ifNode.first.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         ifNode.first.accept(this, nameTable);
         if (ifNode.second != null) {
-            ifNode.second.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
             ifNode.second.accept(this, nameTable);
+        } 
+        if (ifNode.second == null || !ifNode.second.containsReturn()) {
+            // clear return in parent block
+            nameTable.owner.clearReturn();
         }
         return null;
     }
@@ -198,9 +206,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
-
+        currentMethod = methodNode;
         methodNode.returnType.accept(this, nameTable);
-        methodNode.body.setExpectedReturnType(methodNode.getReturnType());
         nameTable = new NameTable(nameTable, methodNode.body);
         for (NamedType namedType: methodNode.arguments) {
             namedType.accept(this, nameTable);
@@ -214,6 +221,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         methodNode.body.accept(this, nameTable);
         // set reference for NameTable of method
         methodNode.setNameTable(nameTable);
+        
+        // check if a return statement is present
+        if (methodNode.returnType.type != VoidType.INSTANCE && !methodNode.body.containsReturn()) {
+            throw new TypeException(methodNode.position.path, methodNode.position.line, "Method is missing a return statement");
+        }
         return null;
     }
 
@@ -238,11 +250,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ReturnNode returnNode, NameTable nameTable) throws TypeException {
         Type returnType = returnNode.value.accept(this, nameTable);
-        try {
-            nameTable.owner.setReturnType(returnType);
-        } catch (IllegalArgumentException e) {
-            throw new TypeException(returnNode.position.path, returnNode.position.line, e.getMessage());
+        if (currentMethod.getReturnType() == VoidType.INSTANCE) {
+            throw new TypeException(returnNode.position.path, returnNode.position.line, "Unexpected return found");
+        } else if (returnType != currentMethod.getReturnType()) {
+            throw new TypeException(returnNode.position.path, returnNode.position.line, "Expected return type '" +  "' but found '" + returnType + "' instead" );
         }
+        nameTable.owner.setContainsReturn();
         return returnType;
     }
 
@@ -270,8 +283,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(whileNode.position.path, whileNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        whileNode.body.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         whileNode.body.accept(this, nameTable);
+        
+        // clear possible return Value in parent block
+        nameTable.owner.clearReturn();
         return null;
     }
 

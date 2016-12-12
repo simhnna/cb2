@@ -4,13 +4,11 @@ import java.util.ArrayList;
 
 import components.helpers.Position;
 import components.interfaces.StatementNode;
-import ir.Type;
 import visitors.Visitor;
 
 public class BlockNode extends StatementNode {
     
-    private Type returnType;
-    private Type expectedReturnType;
+    private boolean returnStatementPresent = false;
     
     public BlockNode(Position position) {
         super(position);
@@ -23,24 +21,16 @@ public class BlockNode extends StatementNode {
         return visitor.visit(this, parameter);
     }
 
-    public void setExpectedReturnType(Type expectedReturnType) {
-        this.expectedReturnType = expectedReturnType;
+    
+    public void setContainsReturn() {
+        returnStatementPresent = true;
     }
     
-    public void setReturnType(Type returnType) {
-        if (this.returnType != null) {
-            throw new IllegalArgumentException("Second return statement found");
-        } else if (returnType != expectedReturnType) {
-            throw new IllegalArgumentException("Expected return type '" + expectedReturnType.getName() + "' but found '" + returnType + "' instead" );
-        }
-        this.returnType = returnType;
+    public void clearReturn() {
+        returnStatementPresent = false;
     }
     
-    public Type getReturnType() {
-        return returnType;
-    }
-
-    public Type getExpectedReturnType() {
-        return expectedReturnType;
+    public boolean containsReturn() {
+        return returnStatementPresent;
     }
 }
