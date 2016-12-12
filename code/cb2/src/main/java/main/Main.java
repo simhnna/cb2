@@ -1,39 +1,31 @@
 package main;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import components.ClassNode;
+import components.FileNode;
+import middleware.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
-import visitors.PrettyPrinter;
+import visitors.JavaCodeGenerator;
+import visitors.NameAndTypeChecker;
 
 public class Main {
 
-    public static void printClassesAndMembers(ArrayList<ClassNode> parse_result) {
-        for (ClassNode cls : parse_result) {
-            System.out.println(cls);
-            cls.children.forEach(System.out::println);
-        }
-    }
-
-    public static void printPretty(ArrayList<ClassNode> parse_result) {
-        PrettyPrinter visitor = new PrettyPrinter();
-        for (ClassNode cls : parse_result) {
-            cls.accept(visitor);
-        }
-        System.out.println(visitor.toString());
-    }
-
     public static void main(String... args) {
-        ArrayList<ClassNode> classes;
+        NameTable globalNameTable = new NameTable(null);
+        FileNode classes = null;
         try {
-            classes = MINIGrammar.parse(new File("res" + File.separator + "example_code" + File.separator + "valid"
-                    + File.separator + "pretty_much_everything.m"));
-            // printClassesAndMembers(classes);
-            printPretty(classes);
+            File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
+                    + File.separator + "pretty_much_everything.m");
+            classes = MINIGrammar.parse(sourceFile);
+            NameAndTypeChecker checker = new NameAndTypeChecker();
+            classes.accept(checker, globalNameTable);
+            JavaCodeGenerator javaPrinter = new JavaCodeGenerator();
+            classes.accept(javaPrinter, null);
+            System.out.println(javaPrinter.toString());
         } catch (MINIException e) {
             e.printStackTrace();
         }
+
     }
 }

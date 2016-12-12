@@ -11,17 +11,37 @@ package parser;
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import components.*;
+import components.types.*;
+import components.helpers.Position;
+import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
-import errorHandling.ErrorHandler;
+import frontend.MINIParser;
 
 @SuppressWarnings("unused")
 public class MINIGrammar
 {
-  public static ArrayList < ClassNode > parse(File in) throws MINIException
+  private static File currentFile;
+  private static HashMap<String, String> tokenTable = new HashMap<String, String>();
+  private static Position generatePosition(Token t) {
+	Position p = new Position(currentFile, t.beginLine);
+	return p;
+  }
+  private static String tokenify(Token t) {
+	String token = tokenTable.get(t.image);
+	if (token == null) {
+	  token = t.image;
+	  tokenTable.put(token, token);
+	}
+	return token;
+  }
+  public static FileNode parse(File in) throws MINIException
   {
+    currentFile = in;
+    CompositeType.clear();
     try
     {
       MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
@@ -34,11 +54,11 @@ public class MINIGrammar
     }
     catch (ParseException e)
     {
-      ErrorHandler.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
+      MINIParser.handleParseError(in, e.currentToken, e.tokenImage, e.expectedTokenSequences);
       return null;
     }
     catch (TokenMgrError e) {
-		ErrorHandler.handleTokenMgrError(in, e);
+		MINIParser.handleTokenMgrError(in, e);
 		return null;
     }
   }
@@ -92,7 +112,8 @@ TOKEN : /* Reserved keywords and such */
 | < BRACE_CLOSE : "}" >
 | < PARAN_OPEN : "(" >
 | < PARAN_CLOSE : ")" >
-| < ARRAY_DEF : "[]" >
+| < ARRAY_BEGIN: "[" >
+| < ARRAY_END: "]" >
 | < THIS : "this" >
 | < DOT : "." >
 | < COMMA : "," >
@@ -137,21 +158,21 @@ TOKEN : /* Reserved keywords and such */
 | < BAD_TOKEN : ~[ ] >
 }
 
-ArrayList < ClassNode > file() :
+FileNode file() :
 {
-  ArrayList < ClassNode > classes = new ArrayList < ClassNode > ();
+  FileNode f = new FileNode();
   ClassNode cls;
 }
 {
   (
     cls = mini_class()
     {
-      classes.add(cls);
+      f.classes.add(cls);
     }
   )*
   < EOF >
   {
-    return classes;
+    return f;
   }
 }
 
@@ -162,12 +183,12 @@ ClassNode mini_class() :
 }
 {
   < CLASS >
-  < ID > { cls = new ClassNode(token); }
+  < ID > { cls = new ClassNode(tokenify(token), generatePosition(token)); }
   < BRACE_OPEN >
   (
     classMember = classMember()
     {
-      cls.children.add(classMember);
+      cls.addChild(classMember);
     }
   )*
   < BRACE_CLOSE >
@@ -178,16 +199,16 @@ ClassNode mini_class() :
 
 MemberNode classMember() :
 {
-  MethodNode m;
+  MethodDeclarationNode m;
   Token memberName;
-  Type type;
+  TypeNode type;
 }
 {
   type = type() memberName = < ID >
   (
     < SEMICOLON >
     {
-      return new FieldNode(memberName, type);
+      return new FieldNode(tokenify(memberName), type, generatePosition(memberName));
     }
   | m = method(memberName, type)
   {
@@ -197,7 +218,7 @@ MemberNode classMember() :
 }
 
 
-MethodNode method(Token name, Type type) :
+MethodDeclarationNode method(Token name, TypeNode type) :
 {
   BlockNode body;
   ArrayList<NamedType> arguments;
@@ -205,26 +226,26 @@ MethodNode method(Token name, Type type) :
 {
   arguments = signature() body = blockStatement()
   {
-    return new MethodNode(name, type, arguments, body);
+    return new MethodDeclarationNode(tokenify(name), type, arguments, body, generatePosition(name));
   }
 }
 
-Type type() :
+TypeNode type() :
 {
   Token type;
   int dimensions = 0;
 }
 {
-  type = < ID > (< ARRAY_DEF > { dimensions++; })*
+  type = < ID > (< ARRAY_BEGIN > < ARRAY_END > { dimensions++; })*
   {
-    return new Type(type, dimensions);
+    return new TypeNode(tokenify(type), dimensions, generatePosition(type));
   }
 }
 
 ArrayList < NamedType > signature() :
 {
   ArrayList < NamedType > arguments = new ArrayList < NamedType > ();
-  Type type;
+  TypeNode type;
 }
 {
   < PARAN_OPEN >
@@ -232,14 +253,14 @@ ArrayList < NamedType > signature() :
     type = type()
     < ID >
 	{
-      arguments.add(new NamedType(token, type));
+      arguments.add(new NamedType(tokenify(token), type, generatePosition(token)));
     }
     (
       < COMMA >
       type = type()
       < ID >
       {
-        arguments.add(new NamedType(token, type));
+        arguments.add(new NamedType(tokenify(token), type, generatePosition(token)));
       }
     )*
  
@@ -276,8 +297,8 @@ StatementNode simpleStatement() :
 {
   first = expression7()
   (
-    position=< SEMICOLON > { return new SimpleStatementNode(position, first); }
-    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, position, second); }
+    position=< SEMICOLON > { return new SimpleStatementNode(generatePosition(position), first); }
+    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
   )
 }
 
@@ -293,7 +314,7 @@ DeclarationStatementNode declaration() :
   expression = expression7()
   < SEMICOLON >
   {
-    return new DeclarationStatementNode(name, expression);
+    return new DeclarationStatementNode(tokenify(name), expression, generatePosition(name));
   }
 }
 
@@ -303,7 +324,7 @@ BlockNode blockStatement() :
   StatementNode statement;
 }
 {
-  < BRACE_OPEN > { block = new BlockNode(token); }
+  < BRACE_OPEN > { block = new BlockNode(generatePosition(token)); }
   (
     statement=statement()
     {
@@ -329,7 +350,7 @@ IfNode ifStatement() :
     < ELSE > second = blockStatement()
   )?
   {
-    return new IfNode(position, condition, first, second);
+    return new IfNode(generatePosition(position), condition, first, second);
   }
 }
 
@@ -343,7 +364,7 @@ WhileNode whileStatement() :
   position=< WHILE > < PARAN_OPEN > condition = expression7()
   < PARAN_CLOSE > body = blockStatement()
   {
-    return new WhileNode(position, condition, body);
+    return new WhileNode(generatePosition(position), condition, body);
   }
 }
 
@@ -355,7 +376,7 @@ ReturnNode returnStatement() :
 {
   position=< RETURN > returnValue = expression7() < SEMICOLON >
   {
-    return new ReturnNode(position, returnValue);
+    return new ReturnNode(generatePosition(position), returnValue);
   }
 }
 
@@ -364,10 +385,15 @@ ExpressionNode expression7 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
-  current=expression6() (operator=< OR >next = expression6() { current = new BinaryExpressionNode(operator, current, next); })*
+  current=expression6()
+  (
+    position=< OR > { operator = BinaryExpressionNode.Operator.OR; }
+    next = expression6() { current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
+  )*
   {
     return current;
   }
@@ -378,10 +404,15 @@ ExpressionNode expression6 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
-  current= expression5()(operator=< AND >next = expression5() { current = new BinaryExpressionNode(operator, current, next); })*
+  current= expression5()
+  (
+    position=< AND > { operator = BinaryExpressionNode.Operator.AND; }
+    next = expression5() { current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
+  )*
   {
     return current;
   }
@@ -392,17 +423,18 @@ ExpressionNode expression5 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression4()
   (
     (
-      operator=< EQUAL >
-    | operator=< NOTEQUAL >
-  	)
+      position=< EQUAL > { operator = BinaryExpressionNode.Operator.SAME; }
+    | position=< NOTEQUAL > { operator = BinaryExpressionNode.Operator.NOTSAME; }
+    )
     next = expression4()
-    { current= new BinaryExpressionNode(operator, current, next); }
+    { current= new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -414,19 +446,20 @@ ExpressionNode expression4 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression3()
   (
     (
-      operator=< LESS_THAN_EQUAL >
-    | operator=< GREATER_THAN_EQUAL >
-    | operator=< LESS_THAN > 
-    | operator=< GREATER_THAN >
+      position=< LESS_THAN_EQUAL > { operator = BinaryExpressionNode.Operator.LTE; }
+    | position=< GREATER_THAN_EQUAL > { operator = BinaryExpressionNode.Operator.GTE; }
+    | position=< LESS_THAN > { operator = BinaryExpressionNode.Operator.LT; }
+    | position=< GREATER_THAN > { operator = BinaryExpressionNode.Operator.GT; }
   	)
   	next=expression3()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -438,16 +471,17 @@ ExpressionNode expression3 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression2()(
     (
-      operator=< PLUS >
-    | operator=< MINUS >
+      position=< PLUS > { operator = BinaryExpressionNode.Operator.PLUS; }
+    | position=< MINUS > { operator = BinaryExpressionNode.Operator.SUB; }
   	)
   	next=expression2()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -459,18 +493,19 @@ ExpressionNode expression2 () :
 {
   ExpressionNode current;
   ExpressionNode next;
-  Token operator;
+  Token position;
+  BinaryExpressionNode.Operator operator;
 }
 {
   current=expression1()
   (
     (
-      operator=< MULTIPLY >
-    | operator=< DIVIDE >
-    | operator=< REMAINDER >
+      position=< MULTIPLY > { operator = BinaryExpressionNode.Operator.MUL; }
+    | position=< DIVIDE > { operator = BinaryExpressionNode.Operator.DIV; }
+    | position=< REMAINDER > { operator = BinaryExpressionNode.Operator.MOD; }
  	)
   	next=expression1()
-  	{ current = new BinaryExpressionNode(operator, current, next); }
+  	{ current = new BinaryExpressionNode(generatePosition(position), current, next, operator); }
   )*
   {
     return current;
@@ -481,17 +516,18 @@ ExpressionNode expression1 () :
 //unary
 {
   ExpressionNode current;
-  Token operator;
+  Token position;
+  UnaryExpressionNode.Operator operator;
 }
 {
   (    
     (
       (
-        operator=< NEGATION >
-      | operator=< MINUS >
+        position=< NEGATION > { operator = UnaryExpressionNode.Operator.NEGATION; }
+      | position=< MINUS > { operator = UnaryExpressionNode.Operator.MINUS; }
       )
       current = expression1()
-      { current = new UnaryExpressionNode(operator, current); }
+      { current = new UnaryExpressionNode(generatePosition(position), current, operator); }
     )
     | current = expression0()
   )
@@ -514,10 +550,10 @@ ExpressionNode expression0 () :
     < DOT > name=< ID >(arguments=argumentList())?
     {
 	  if (arguments != null) {
-		current = new MethodInvocationExpressionNode(current, name, arguments);
+		current = new MethodInvocationExpressionNode(current, tokenify(name), arguments, generatePosition(name));
 		arguments = null;
 	  } else {
-		current = new FieldMemberExpressionNode(current, name);
+		current = new FieldMemberExpressionNode(current, tokenify(name), generatePosition(name));
 	  }
     }
   )*
@@ -565,14 +601,14 @@ ExpressionNode atomicExpression() :
     {
       // baseObject is null because it doesn't exist here
       if(arguments == null){
-        return new FieldMemberExpressionNode(null, name);
+        return new FieldMemberExpressionNode(null, tokenify(name), generatePosition(name));
 	  }
-	  return new MethodInvocationExpressionNode(null, name, arguments);
+	  return new MethodInvocationExpressionNode(null, tokenify(name), arguments, generatePosition(name));
     }
-  | < THIS > { return new ThisAtomicExpressionNode(token); }
-  | < STRING > { return new StringAtomicExpressionNode(token); }
-  | < INT > { return new IntAtomicExpressionNode(token); }
-  | < BOOL > { return new BoolAtomicExpressionNode(token); }
+  | < THIS > { return new LiteralNode(tokenify(token), null, generatePosition(token)); }
+  | < STRING > { return new LiteralNode(tokenify(token), StringType.INSTANCE, generatePosition(token)); }
+  | < INT > { return new LiteralNode(tokenify(token), IntegerType.INSTANCE, generatePosition(token)); }
+  | < BOOL > { return new LiteralNode(tokenify(token), BooleanType.INSTANCE, generatePosition(token)); }
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
@@ -586,7 +622,7 @@ ExpressionNode atomicExpression() :
 
 NullExpressionNode nullExpression() :
 {
-  Type type;
+  TypeNode type;
 }
 {
   < NULL > < LESS_THAN > type = type() < GREATER_THAN >
@@ -598,7 +634,7 @@ NullExpressionNode nullExpression() :
 NewExpressionNode newExpression() :
 {
   NewExpressionNode n;
-  Type type;
+  TypeNode type;
 }
 {
   < NEW > < LESS_THAN > type = type() { n = new NewExpressionNode(type); }
@@ -609,7 +645,7 @@ NewExpressionNode newExpression() :
     | < ID >
     )
     {
-      n.arguments.add(token);
+      n.arguments.add(tokenify(token));
     }
   )*
   < GREATER_THAN >

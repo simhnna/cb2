@@ -1,41 +1,46 @@
 package visitors;
 
 import components.*;
-import components.interfaces.PrimitiveType;
 
-public interface Visitor {
+public interface Visitor<R, P, E extends Throwable> {
 
-    void visit(AssignmentStatementNode assignmentStatementNode);
+    R visit(AssignmentStatementNode assignmentStatementNode, P parameter) throws E;
 
-    void visit(BinaryExpressionNode binaryExpressionNode);
+    R visit(BinaryExpressionNode binaryExpressionNode, P parameter) throws E;
 
-    void visit(BlockNode blockNode);
+    R visit(BlockNode blockNode, P parameter) throws E;
 
-    void visit(ClassNode classNode);
+    R visit(ClassNode classNode, P parameter) throws E;
 
-    void visit(DeclarationStatementNode declarationStatementNode);
+    R visit(DeclarationStatementNode declarationStatementNode, P parameter) throws E;
 
-    void visit(FieldNode fieldNode);
+    R visit(FieldNode fieldNode, P parameter) throws E;
 
-    void visit(IfNode ifNode);
+    R visit(IfNode ifNode, P parameter) throws E;
 
-    void visit(MethodInvocationExpressionNode methodInvocationExpressionNode);
+    R visit(MethodInvocationExpressionNode methodInvocationExpressionNode, P parameter) throws E;
 
-    void visit(MethodNode methodNode);
+    R visit(MethodDeclarationNode methodNode, P parameter) throws E;
 
-    void visit(NewExpressionNode newExpressionNode);
+    R visit(NewExpressionNode newExpressionNode, P parameter) throws E;
 
-    void visit(NullExpressionNode nullExpressionNode);
+    R visit(NullExpressionNode nullExpressionNode, P parameter) throws E;
 
-    void visit(PrimitiveType primitiveType);
+    R visit(LiteralNode primitiveType, P parameter) throws E;
 
-    void visit(ReturnNode returnNode);
+    R visit(ReturnNode returnNode, P parameter) throws E;
 
-    void visit(SimpleStatementNode simpleStatementNode);
+    R visit(SimpleStatementNode simpleStatementNode, P parameter) throws E;
 
-    void visit(UnaryExpressionNode unaryExpressionNode);
+    R visit(UnaryExpressionNode unaryExpressionNode, P parameter) throws E;
 
-    void visit(WhileNode whileNode);
+    R visit(WhileNode whileNode, P parameter) throws E;
 
-    void visit(FieldMemberExpressionNode fieldMemberExpressionNode);
+    R visit(FieldMemberExpressionNode fieldMemberExpressionNode, P parameter) throws E;
+
+    R visit(NamedType namedType, P parameter) throws E;
+
+    R visit(TypeNode typeNode, P parameter) throws E;
+
+    R visit(FileNode fileNode, P parameter) throws E;
 }

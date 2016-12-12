@@ -25,69 +25,71 @@ public interface MINIGrammarConstants {
   /** RegularExpression Id. */
   int PARAN_CLOSE = 14;
   /** RegularExpression Id. */
-  int ARRAY_DEF = 15;
+  int ARRAY_BEGIN = 15;
   /** RegularExpression Id. */
-  int THIS = 16;
+  int ARRAY_END = 16;
   /** RegularExpression Id. */
-  int DOT = 17;
+  int THIS = 17;
   /** RegularExpression Id. */
-  int COMMA = 18;
+  int DOT = 18;
   /** RegularExpression Id. */
-  int SEMICOLON = 19;
+  int COMMA = 19;
   /** RegularExpression Id. */
-  int NULL = 20;
+  int SEMICOLON = 20;
   /** RegularExpression Id. */
-  int NEW = 21;
+  int NULL = 21;
   /** RegularExpression Id. */
-  int RETURN = 22;
+  int NEW = 22;
   /** RegularExpression Id. */
-  int VAR = 23;
+  int RETURN = 23;
   /** RegularExpression Id. */
-  int IF = 24;
+  int VAR = 24;
   /** RegularExpression Id. */
-  int ELSE = 25;
+  int IF = 25;
   /** RegularExpression Id. */
-  int WHILE = 26;
+  int ELSE = 26;
   /** RegularExpression Id. */
-  int ASSIGNMENT = 27;
+  int WHILE = 27;
   /** RegularExpression Id. */
-  int MINUS = 28;
+  int ASSIGNMENT = 28;
   /** RegularExpression Id. */
-  int NEGATION = 29;
+  int MINUS = 29;
   /** RegularExpression Id. */
-  int PLUS = 30;
+  int NEGATION = 30;
   /** RegularExpression Id. */
-  int MULTIPLY = 31;
+  int PLUS = 31;
   /** RegularExpression Id. */
-  int DIVIDE = 32;
+  int MULTIPLY = 32;
   /** RegularExpression Id. */
-  int REMAINDER = 33;
+  int DIVIDE = 33;
   /** RegularExpression Id. */
-  int EQUAL = 34;
+  int REMAINDER = 34;
   /** RegularExpression Id. */
-  int NOTEQUAL = 35;
+  int EQUAL = 35;
   /** RegularExpression Id. */
-  int LESS_THAN_EQUAL = 36;
+  int NOTEQUAL = 36;
   /** RegularExpression Id. */
-  int GREATER_THAN_EQUAL = 37;
+  int LESS_THAN_EQUAL = 37;
   /** RegularExpression Id. */
-  int LESS_THAN = 38;
+  int GREATER_THAN_EQUAL = 38;
   /** RegularExpression Id. */
-  int GREATER_THAN = 39;
+  int LESS_THAN = 39;
   /** RegularExpression Id. */
-  int AND = 40;
+  int GREATER_THAN = 40;
   /** RegularExpression Id. */
-  int OR = 41;
+  int AND = 41;
   /** RegularExpression Id. */
-  int BOOL = 42;
+  int OR = 42;
   /** RegularExpression Id. */
-  int ID = 43;
+  int BOOL = 43;
   /** RegularExpression Id. */
-  int INT = 44;
+  int ID = 44;
   /** RegularExpression Id. */
-  int STRING = 45;
+  int INT = 45;
   /** RegularExpression Id. */
-  int BAD_TOKEN = 46;
+  int STRING = 46;
+  /** RegularExpression Id. */
+  int BAD_TOKEN = 47;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -113,7 +115,8 @@ public interface MINIGrammarConstants {
     "\"}\"",
     "\"(\"",
     "\")\"",
-    "\"[]\"",
+    "\"[\"",
+    "\"]\"",
     "\"this\"",
     "\".\"",
     "\",\"",

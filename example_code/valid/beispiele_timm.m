@@ -4,7 +4,7 @@ class Hello {
   }
 }
 
-class Hello {
+class Helloo {
   void main(string[] args) {
     "...world!";
   }
@@ -24,7 +24,7 @@ class m {
   }
 }
 
-class m {
+class me {
   void main(string[] args) {
     while(args.length > -1) {
       "hallo death".print();
@@ -39,10 +39,10 @@ class FunWithInt {
   }
 }
 
-class FunWithInt {
+class FunWithInteger {
   int int;
   void main(string[] args) {
-    var x := new<FunWithInt>;
+    var x := new<FunWithInteger>;
     x.get().int := 7;
     x.int.print();
   }

@@ -2,10 +2,9 @@ package visitors;
 
 import components.*;
 import components.interfaces.Node;
-import components.interfaces.PrimitiveType;
 import components.interfaces.StatementNode;
 
-public class PrettyPrinter implements Visitor {
+public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentException> {
 
     private int indent = 0;
 
@@ -32,167 +31,206 @@ public class PrettyPrinter implements Visitor {
         this.indent = this.indent + 2;
     }
 
-    public void visit(ClassNode clsNode) {
+    @Override
+    public Void visit(ClassNode clsNode, Void parameter) {
         // classes need no indent
-        bldr.append("class ").append(clsNode.name.image).append(" {");
-        bldr.append("\n");
+        bldr.append("class ").append(clsNode.name).append(" {\n");
         openScope();
-        for (Node child : clsNode.children) {
-            child.accept(this);
+        for (Node child : clsNode.getChildren()) {
+            writeIndent();
+            child.accept(this, null);
+            bldr.append("\n");
         }
         closeScope();
         bldr.append("}\n");
+        return null;
     }
 
-    public void visit(FieldNode fieldNode) {
-        this.writeIndent();
-        bldr.append(fieldNode.type).append(" ").append(fieldNode.name.image).append(";");
-        bldr.append("\n");
+    @Override
+    public Void visit(FieldNode fieldNode, Void parameter) {
+        fieldNode.type.accept(this, null);
+        bldr.append(" ").append(fieldNode.name).append(";");
+        return null;
     }
 
-    public void visit(MethodNode methodNode) {
-        this.writeIndent();
-        String arglist = "";
+    @Override
+    public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        methodNode.returnType.accept(this, null);
+        bldr.append(" ").append(methodNode.name).append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
-            arglist = arglist + methodNode.arguments.get(i).type + " " + methodNode.arguments.get(i).name.image;
+            methodNode.arguments.get(i).accept(this, null);
             if (i + 1 != methodNode.arguments.size()) {
-                arglist = arglist + ", ";
+                bldr.append(", ");
             }
         }
-        bldr.append(methodNode.returnType.baseType).append(" ").append(methodNode.name.image).append("(")
-                .append(arglist).append(") {");
-        bldr.append("\n");
-        methodNode.body.accept(this);
-        writeIndent();
-        bldr.append("}");
-        bldr.append("\n");
+        bldr.append(") ");
+        methodNode.body.accept(this, null);
+        return null;
     }
 
-    public void visit(AssignmentStatementNode assignmentStatementNode) {
-        this.writeIndent();
-        assignmentStatementNode.first.accept(this);
+    @Override
+    public Void visit(AssignmentStatementNode assignmentStatementNode, Void parameter) {
+        assignmentStatementNode.first.accept(this, null);
         bldr.append(" := ");
-        assignmentStatementNode.second.accept(this);
-        bldr.append(";\n");
+        assignmentStatementNode.second.accept(this, null);
+        bldr.append(";");
+        return null;
     }
 
-    public void visit(IfNode ifNode) {
-        this.writeIndent();
+    @Override
+    public Void visit(IfNode ifNode, Void parameter) {
         bldr.append("if (");
-        ifNode.condition.accept(this);
-        bldr.append(") {");
-        bldr.append("\n");
-        ifNode.first.accept(this);
-        if (ifNode.hasSecond()) {
-            this.writeIndent();
-            bldr.append("} else {");
-            bldr.append("\n");
-            ifNode.second.accept(this);
+        ifNode.condition.accept(this, null);
+        bldr.append(") ");
+        ifNode.first.accept(this, null);
+        if (ifNode.second != null) {
+            bldr.append(" else ");
+            ifNode.second.accept(this, null);
         }
-        this.writeIndent();
-        bldr.append("}\n");
+        return null;
     }
 
-    public void visit(ReturnNode returnNode) {
-        writeIndent();
+    @Override
+    public Void visit(ReturnNode returnNode, Void parameter) {
         bldr.append("return ");
-        returnNode.value.accept(this);
-        bldr.append(";\n");
+        returnNode.value.accept(this, null);
+        bldr.append(";");
+        return null;
     }
 
-    public void visit(PrimitiveType type) {
+    @Override
+    public Void visit(LiteralNode type, Void parameter) {
         bldr.append(type);
+        return null;
     }
 
-    public void visit(BlockNode blockNode) {
+    @Override
+    public Void visit(BlockNode blockNode, Void parameter) {
+        bldr.append("{\n");
         openScope();
         for (StatementNode stmntNode : blockNode.children) {
-            stmntNode.accept(this);
+            writeIndent();
+            stmntNode.accept(this, null);
+            bldr.append("\n");
         }
         closeScope();
+        writeIndent();
+        bldr.append("}");
+        return null;
     }
 
-    public void visit(WhileNode whileNode) {
-        writeIndent();
+    @Override
+    public Void visit(WhileNode whileNode, Void parameter) {
         bldr.append("while (");
-        whileNode.condition.accept(this);
-        bldr.append(") {\n");
-        whileNode.body.accept(this);
-        writeIndent();
-        bldr.append("}\n");
+        whileNode.condition.accept(this, null);
+        bldr.append(") ");
+        whileNode.body.accept(this, null);
+        return null;
     }
+    @Override
 
-    public void visit(NullExpressionNode nullExpression) {
+    public Void visit(NullExpressionNode nullExpression, Void parameter) {
         bldr.append("null<").append(nullExpression.type).append(">");
+        return null;
     }
 
-    public void visit(DeclarationStatementNode declarationStatementNode) {
-        writeIndent();
+    @Override
+    public Void visit(DeclarationStatementNode declarationStatementNode, Void parameter) {
         bldr.append("var ").append(declarationStatementNode.name).append(" := ");
-        declarationStatementNode.expression.accept(this);
-        bldr.append(";\n");
+        declarationStatementNode.expression.accept(this, null);
+        bldr.append(";");
+        return null;
     }
 
-    public void visit(FieldMemberExpressionNode memberExpression) {
+    @Override
+    public Void visit(FieldMemberExpressionNode memberExpression, Void parameter) {
         if (memberExpression.baseObject != null) {
-            memberExpression.baseObject.accept(this);
+            memberExpression.baseObject.accept(this, null);
             bldr.append(".");
         }
         bldr.append(memberExpression.identifier);
+        return null;
     }
 
-    public void visit(SimpleStatementNode simpleStatementNode) {
-        writeIndent();
-        simpleStatementNode.expression.accept(this);
-        bldr.append(";\n");
+    @Override
+    public Void visit(SimpleStatementNode simpleStatementNode, Void parameter) {
+        simpleStatementNode.expression.accept(this, null);
+        bldr.append(";");
+        return null;
     }
 
-    public void visit(MethodInvocationExpressionNode methodMemberExpressionNode) {
+    @Override
+    public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
         if (methodMemberExpressionNode.baseObject != null) {
-            methodMemberExpressionNode.baseObject.accept(this);
+            methodMemberExpressionNode.baseObject.accept(this, null);
             bldr.append(".");
         }
         bldr.append(methodMemberExpressionNode.identifier).append("(");
         for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
-            methodMemberExpressionNode.arguments.get(i).accept(this);
+            methodMemberExpressionNode.arguments.get(i).accept(this, null);
             if (i != methodMemberExpressionNode.arguments.size() - 1) {
                 bldr.append(", ");
             }
         }
         bldr.append(")");
+        return null;
     }
 
-    public void visit(NewExpressionNode newExpressionNode) {
+    @Override
+    public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
         bldr.append("new <").append(newExpressionNode.type);
-        for (int i = 0; i < newExpressionNode.arguments.size(); ++i) {
-            bldr.append(newExpressionNode.arguments.get(i));
-            if (i != newExpressionNode.arguments.size() - 1) {
-                bldr.append(", ");
-            }
+        for (String arg: newExpressionNode.arguments) {
+            bldr.append(", ").append(arg);
         }
         bldr.append(">");
+        return null;
     }
 
-    public void visit(BinaryExpressionNode binaryExpressionNode) {
+    @Override
+    public Void visit(BinaryExpressionNode binaryExpressionNode, Void parameter) {
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
-        binaryExpressionNode.first.accept(this);
-        bldr.append(" ").append(binaryExpressionNode.operator.image).append(" ");
-        binaryExpressionNode.second.accept(this);
+        binaryExpressionNode.first.accept(this, null);
+        bldr.append(" ").append(binaryExpressionNode.operator).append(" ");
+        binaryExpressionNode.second.accept(this, null);
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
+        return null;
     }
 
-    public void visit(UnaryExpressionNode unaryExpressionNode) {
+    @Override
+    public Void visit(UnaryExpressionNode unaryExpressionNode, Void parameter) {
         if (unaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
         bldr.append(unaryExpressionNode.operator);
-        unaryExpressionNode.child.accept(this);
+        unaryExpressionNode.child.accept(this, null);
         if (unaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
+        return null;
+    }
+
+    @Override
+    public Void visit(NamedType namedType, Void parameter) {
+        namedType.type.accept(this, null);
+        bldr.append(" ").append(namedType.name);
+        return null;
+    }
+
+    @Override
+    public Void visit(TypeNode typeNode, Void parameter) {
+        bldr.append(typeNode);
+        return null;
+    }
+
+    @Override
+    public Void visit(FileNode fileNode, Void parameter) {
+        for (ClassNode cls: fileNode.classes) {
+            cls.accept(this, null);
+        }
+        return null;
     }
 }

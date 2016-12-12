@@ -4,8 +4,6 @@ jdk:
 script:
   - cd code/cb2
   - DEBUG=true gradle check
-  - cd ../../
-  - bash ./upload_report.sh
 notifications:
   slack: cb2-team:j3MM4tzEbTc5cr0MmkrokqHo
 

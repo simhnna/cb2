@@ -1,8 +1,8 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
-import parser.Token;
 import visitors.Visitor;
 
 public class IfNode extends StatementNode {
@@ -10,18 +10,14 @@ public class IfNode extends StatementNode {
     public final BlockNode first;
     public final BlockNode second;
 
-    public IfNode(Token position, ExpressionNode condition, BlockNode first, BlockNode second) {
+    public IfNode(Position position, ExpressionNode condition, BlockNode first, BlockNode second) {
         super(position);
         this.condition = condition;
         this.first = first;
         this.second = second;
     }
 
-    public boolean hasSecond() {
-        return second != null;
-    }
-
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
+        return visitor.visit(this, parameter);
     }
 }

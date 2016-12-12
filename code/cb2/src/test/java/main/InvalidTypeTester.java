@@ -2,6 +2,7 @@ package main;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,23 +13,34 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import components.FileNode;
+import middleware.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
+import testsuite.ParseException;
+import testsuite.TypeException;
+import visitors.NameAndTypeChecker;
 
 @RunWith(Parameterized.class)
-public class InvalidMiniProgramTester {
+public class InvalidTypeTester {
     private File file;
 
-    public InvalidMiniProgramTester(File file, String filename) {
+    public InvalidTypeTester(File file, String filename) {
         this.file = file;
     }
 
     @Test
     public void testFile() {
+        FileNode result_node;
         try {
-            MINIGrammar.parse(file);
+            result_node = MINIGrammar.parse(file);
+            NameAndTypeChecker checker = new NameAndTypeChecker();
+            NameTable globalNameTable = new NameTable(null);
+            result_node.accept(checker, globalNameTable);
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
-        } catch (MINIException e) {
+        } catch (ParseException e) {
+            fail("Found Syntax Errors in file.");
+        } catch (TypeException e) {
             // TEST SUCCESS
             if (System.getenv("DEBUG") != null) {
                 System.out.println(e.toString());
@@ -39,6 +51,8 @@ public class InvalidMiniProgramTester {
                 assertEquals("The error occurred in an unexpected line", lineNumber, e.getLineNumber());
             } catch (NumberFormatException ne) {
             }
+        } catch (MINIException e) {
+            e.printStackTrace();
         }
 
     }
@@ -46,8 +60,8 @@ public class InvalidMiniProgramTester {
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();
-        File validFolder = new File("res" + File.separator + "example_code" + File.separator + "invalid");
-        File[] sourceFiles = validFolder.listFiles();
+        File invalidFolder = new File("res" + File.separator + "example_code" + File.separator + "invalid" + File.separator + "type_errors");
+        File[] sourceFiles = invalidFolder.listFiles();
         for (File f : sourceFiles) {
             if (f.isFile() && f.getName().endsWith(".m")) {
                 data.add(new Object[] { f, f.getName() });

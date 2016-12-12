@@ -1,22 +1,37 @@
 package components;
 
+import components.helpers.Position;
 import components.interfaces.MemberNode;
-import parser.Token;
+import ir.Field;
+import ir.Type;
 import visitors.Visitor;
 
-public class FieldNode extends MemberNode {
-    public final Token name;
-    public final Type type;
+public class FieldNode extends MemberNode implements Field {
+    public final TypeNode type;
 
-    public FieldNode(Token name, Type type) {
-        super(name);
-        this.name = name;
+    public FieldNode(String name, TypeNode type, Position position) {
+        super(position, name);
         this.type = type;
     }
 
     @Override
-    public void accept(Visitor visitor) {
-        visitor.visit(this);
+    public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
+        return visitor.visit(this, parameter);
+    }
+
+    @Override
+    public Type getType() {
+        return type.type;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }
