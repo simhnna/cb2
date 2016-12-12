@@ -267,6 +267,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             return "String";
         } else if (type == BooleanType.INSTANCE) {
             return "boolean";
+        } else if (type instanceof ArrayType) {
+            String type_str = getTypeRepresentation(((ArrayType) type).getBasicDataType());
+            do {
+                type_str = type_str + "[]";
+                type = ((ArrayType) type).baseType;
+            } while (type instanceof ArrayType);
+            return type_str;
         } else {
             return type.toString();
         }
