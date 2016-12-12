@@ -57,7 +57,7 @@ class A {
   void main(string[] args) {
     nonRecursiveFactorial(1).print();
     nonRecursiveFactorial(otherFactorial(2)).print();
-    args.length.print();
+    args.size().print();
     var car := new <Car>;
     var num := 1;
     var cars := new <Car[][], 1, num>;
