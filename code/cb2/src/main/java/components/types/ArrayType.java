@@ -15,30 +15,29 @@ public class ArrayType implements Type {
     private static final HashMap<String, ArrayType> arrayTypes = new HashMap<>();
 
     public final Type baseType;
-    public final int dimensions;
 
-    private ArrayType(Type baseType, int dimensions) {
+    private ArrayType(Type baseType) {
         this.baseType = baseType;
-        this.dimensions = dimensions;
     }
     
     public static ArrayType getOrCreateArrayType(Type baseType, int dimensions) {
         String representation = baseType.getName() + dimensions;
         ArrayType type = arrayTypes.get(representation);
         if (type == null) {
-            type = new ArrayType(baseType, dimensions);
-            arrayTypes.put(representation, type);
+            if (dimensions == 1) {
+                type = new ArrayType(baseType);
+                arrayTypes.put(baseType.getName() + 1, type);
+            } else {
+                type = getOrCreateArrayType(baseType, dimensions - 1);
+                type = new ArrayType(type);
+            }
         }
         return type;
     }
 
     @Override
     public String getName() {
-        StringBuilder bldr = new StringBuilder(baseType.getName());
-        for (int i = 0; i < dimensions; ++i) {
-            bldr.append("[]");
-        }
-        return bldr.toString();
+        return baseType.getName() + "[]";
     }
 
     @Override
@@ -88,6 +87,24 @@ public class ArrayType implements Type {
                 ArrayList<Type> args = new ArrayList<>();
                 args.add(IntegerType.INSTANCE);
                 return args;
+            }
+        });
+        
+        methods.add(new Method() {
+            
+            @Override
+            public String getName() {
+                return "size";
+            }
+            
+            @Override
+            public Type getReturnType() {
+                return IntegerType.INSTANCE;
+            }
+            
+            @Override
+            public List<Type> getArgumentTypes() {
+                return new ArrayList<>();
             }
         });
         return methods;
