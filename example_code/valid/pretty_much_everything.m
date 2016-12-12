@@ -56,7 +56,7 @@ class A {
   }
   void main(string[] args) {
     args.set(1, "bla");
-    args.get(1);
+    var test := args.get(1);
     nonRecursiveFactorial(1).print();
     nonRecursiveFactorial(otherFactorial(2)).print();
     args.length.print();

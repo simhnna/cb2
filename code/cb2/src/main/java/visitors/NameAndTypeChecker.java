@@ -171,6 +171,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } else {
             baseObject = nameTable.lookup("this", true);
         }
+        methodInvocationExpressionNode.setResolvedType(baseObject);
         for (Method m: baseObject.getMethods()) {
             if (m.getName().equals(methodInvocationExpressionNode.identifier)) {
                 ArrayList<ExpressionNode> invocationArguments = methodInvocationExpressionNode.arguments;

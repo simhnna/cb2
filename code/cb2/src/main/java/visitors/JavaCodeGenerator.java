@@ -173,6 +173,27 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         if (methodMemberExpressionNode.identifier.equals("print")) {
             bldr.append("System.out.println(");
             methodMemberExpressionNode.baseObject.accept(this, null);
+            bldr.append(")");
+        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType().getName().equals("string")) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append(".length()");
+            }
+        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append(".length");
+            }
+        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("]");
+            }
+        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("] = ").append(methodMemberExpressionNode.arguments.get(1));
+            }
         } else {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
@@ -185,8 +206,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                     bldr.append(", ");
                 }
             }
+            bldr.append(")");
         }
-        bldr.append(")");
         return null;
     }
 
