@@ -10,6 +10,7 @@ import visitors.Visitor;
 public class BlockNode extends StatementNode {
     
     private Type returnType;
+    private Type expectedReturnType;
     
     public BlockNode(Position position) {
         super(position);
@@ -22,14 +23,24 @@ public class BlockNode extends StatementNode {
         return visitor.visit(this, parameter);
     }
 
+    public void setExpectedReturnType(Type expectedReturnType) {
+        this.expectedReturnType = expectedReturnType;
+    }
+    
     public void setReturnType(Type returnType) {
         if (this.returnType != null) {
             throw new IllegalArgumentException("Second return statement found");
+        } else if (returnType != expectedReturnType) {
+            throw new IllegalArgumentException("Expected return type '" + expectedReturnType.getName() + "' but found '" + returnType + "' instead" );
         }
         this.returnType = returnType;
     }
     
     public Type getReturnType() {
         return returnType;
+    }
+
+    public Type getExpectedReturnType() {
+        return expectedReturnType;
     }
 }

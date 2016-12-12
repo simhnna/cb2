@@ -107,6 +107,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(BlockNode blockNode, NameTable nameTable) throws TypeException {
         // Create a new NameTable since we are in a new scope
         NameTable newTable = new NameTable(nameTable, blockNode);
+        blockNode.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         for (StatementNode s: blockNode.children) {
             if (blockNode.getReturnType() != null) {
                 throw new TypeException(s.position.path, s.position.line, "Unreachable code");
@@ -120,7 +121,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
         classNode.setNameTable(nameTable);
-        nameTable.addName("this", classNode);
+        nameTable.addName("this", CompositeType.getDeclaredType(classNode.name));
 
         for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
@@ -159,8 +160,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(ifNode.position.path, ifNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
+        ifNode.first.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         ifNode.first.accept(this, nameTable);
         if (ifNode.second != null) {
+            ifNode.second.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
             ifNode.second.accept(this, nameTable);
         }
         return null;
@@ -196,8 +199,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
 
+        methodNode.returnType.accept(this, nameTable);
+        methodNode.body.setExpectedReturnType(methodNode.getReturnType());
         nameTable = new NameTable(nameTable, methodNode.body);
         for (NamedType namedType: methodNode.arguments) {
+            namedType.accept(this, nameTable);
             try {
                 nameTable.addName(namedType.name, namedType.type.type);
             } catch (IllegalArgumentException e) {
@@ -264,6 +270,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(whileNode.position.path, whileNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
+        whileNode.body.setExpectedReturnType(nameTable.owner.getExpectedReturnType());
         whileNode.body.accept(this, nameTable);
         return null;
     }
@@ -288,11 +295,18 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(NamedType namedType, NameTable nameTable) throws TypeException {
-        return namedType.type.type;
+        return namedType.type.accept(this, nameTable);
     }
 
     @Override
     public Type visit(TypeNode typeNode, NameTable nameTable) throws TypeException {
+        if (typeNode.type instanceof CompositeType) {
+            try {
+                CompositeType.getDeclaredType(typeNode.toString());
+            } catch (IllegalArgumentException e) {
+                throw new TypeException(typeNode.position.path, typeNode.position.line, e.getMessage());
+            }
+        }
         return typeNode.type;
     }
 
