@@ -229,14 +229,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(UnaryExpressionNode unaryExpressionNode, Void parameter) {
-        if (unaryExpressionNode.inParenthesis()) {
-            bldr.append('(');
-        }
+        bldr.append('(');
         bldr.append(unaryExpressionNode.operator);
         unaryExpressionNode.child.accept(this, null);
-        if (unaryExpressionNode.inParenthesis()) {
-            bldr.append(')');
-        }
+        bldr.append(')');
         return null;
     }
 
