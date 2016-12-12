@@ -39,6 +39,14 @@ public class ArrayType implements Type {
     public String getName() {
         return baseType.getName() + "[]";
     }
+    
+    public Type getBasicDataType() {
+        ArrayType type = this;
+        while (type.baseType instanceof ArrayType) {
+            type = (ArrayType) type.baseType;
+        }
+        return type.baseType;
+    }
 
     @Override
     public Set<Method> getMethods() {
