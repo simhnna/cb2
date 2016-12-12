@@ -13,11 +13,13 @@ public class ArrayCompositionChecker {
     public void oneDimensionalArray() {
         ArrayType type = ArrayType.getOrCreateArrayType(IntegerType.INSTANCE, 1);
         assertEquals(IntegerType.INSTANCE, type.baseType);
+        assertEquals(IntegerType.INSTANCE, type.getBasicDataType());
     }
     
     @Test
     public void twoDimensionalArray() {
         ArrayType type = ArrayType.getOrCreateArrayType(IntegerType.INSTANCE, 2);
+        assertEquals(IntegerType.INSTANCE, type.getBasicDataType());
         assertEquals(true, type.baseType instanceof ArrayType);
         type = (ArrayType) type.baseType;
         assertEquals(IntegerType.INSTANCE, type.baseType);
@@ -26,6 +28,7 @@ public class ArrayCompositionChecker {
     @Test
     public void threeDimensionalArray() {
         ArrayType type = ArrayType.getOrCreateArrayType(IntegerType.INSTANCE, 3);
+        assertEquals(IntegerType.INSTANCE, type.getBasicDataType());
         assertEquals(true, type.baseType instanceof ArrayType);
         type = (ArrayType) type.baseType;
         assertEquals(true, type.baseType instanceof ArrayType);
