@@ -109,8 +109,6 @@ public class ArrayType implements Type {
                 return args;
             }
         });
-        
-        methods.add(PredefinedMethods.ARRAY_SIZE);
         return methods;
     }
 

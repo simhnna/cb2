@@ -36,6 +36,7 @@ import ir.Field;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
+import middleware.NameTableEntry;
 import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
@@ -141,7 +142,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         final Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
         declarationStatementNode.setType(declaredType);
         try {
-            nameTable.addName(declarationStatementNode.name, declaredType);
+            declarationStatementNode.setNameTableEntry(nameTable.addName(declarationStatementNode.name, declaredType));
         } catch (IllegalArgumentException e) {
             // Duplicate identifier
             throw new TypeException(declarationStatementNode.position.path, declarationStatementNode.position.line, e.getMessage());
@@ -155,7 +156,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  Fields are added in classes, so that they are defined in all methods regardless of order
          *  We are however adding this field to the nameTable of the class
          */
-        nameTable.addName(fieldNode.getName(), fieldNode.getType());
+        fieldNode.setNameTableEntry(nameTable.addName(fieldNode.getName(), fieldNode.getType()));
         
         return null;
     }
@@ -184,7 +185,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         if (methodInvocationExpressionNode.baseObject != null) {
             baseObject = methodInvocationExpressionNode.baseObject.accept(this, nameTable);
         } else if (!inMainMethod()) {
-            baseObject = nameTable.lookup("this", true);
+            baseObject = nameTable.lookup("this", true).type;
         } else {
             throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
         }
@@ -216,12 +217,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         nameTable = new NameTable(nameTable, methodNode.body);
         for (NamedType namedType: methodNode.arguments) {
             namedType.accept(this, nameTable);
-            try {
-                nameTable.addName(namedType.name, namedType.type.type);
-            } catch (IllegalArgumentException e) {
-                // Duplicate names used in Method declaration
-                throw new TypeException(namedType.position.path, namedType.position.line, e.getMessage());
-            }
         }
         methodNode.body.accept(this, nameTable);
         // set reference for NameTable of method
@@ -265,7 +260,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
-            return nameTable.lookup(primitiveType.token, !inMainMethod());
+            // type is null, when it's a _this_ literalNode
+            return nameTable.lookup(primitiveType.token, !inMainMethod()).type;
         }
         return primitiveType.type;
     }
@@ -319,21 +315,33 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             Type baseObject = fieldMemberExpressionNode.baseObject.accept(this, nameTable);
             for (Field f: baseObject.getFields()) {
                 if (f.getName().equals(fieldMemberExpressionNode.identifier)) {
+                    if (baseObject instanceof CompositeType) {
+                        // we need to set the nameTableEntry of the class field
+                        fieldMemberExpressionNode.setResolvedField(f);
+                    }
                     return f.getType();
                 }
             }
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Field '" + fieldMemberExpressionNode.identifier + "' is not identified for type '" + baseObject.getName() + "'");
         }
-        Type type = nameTable.lookup(fieldMemberExpressionNode.identifier, !inMainMethod());
-        if (type == null) {
+        NameTableEntry nameTableEntry = nameTable.lookup(fieldMemberExpressionNode.identifier, !inMainMethod());
+        if (nameTableEntry == null) {
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
         }
-        return type;
+        fieldMemberExpressionNode.setNameTableEntry(nameTableEntry);
+        return nameTableEntry.type;
     }
 
     @Override
     public Type visit(NamedType namedType, NameTable nameTable) throws TypeException {
-        return namedType.type.accept(this, nameTable);
+        namedType.type.accept(this, nameTable);
+        try {
+            namedType.setNameTableEntry(nameTable.addName(namedType.name, namedType.type.type));
+        } catch (IllegalArgumentException e) {
+            // Duplicate names used in Method declaration
+            throw new TypeException(namedType.position.path, namedType.position.line, e.getMessage());
+        }
+        return namedType.type.type;
     }
 
     @Override

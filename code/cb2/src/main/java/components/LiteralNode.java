@@ -5,6 +5,18 @@ import components.interfaces.ExpressionNode;
 import ir.Type;
 import visitors.Visitor;
 
+/**
+ * A wrapper around basic types and this. All valid tokens are:
+ * 
+ * - this
+ * - integers
+ * - strings
+ * - booleans
+ * 
+ * </ul>
+ * @author sim
+ *
+ */
 public class LiteralNode extends ExpressionNode{
     public final Type type;
     public final String token;
