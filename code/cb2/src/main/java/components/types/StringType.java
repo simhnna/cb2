@@ -1,8 +1,6 @@
 package components.types;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import ir.Field;
@@ -24,26 +22,7 @@ public class StringType implements Type {
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
         methods.add(PrintMethod.INSTANCE);
-        methods.add(new Method() {
-            @Override
-            public String getName() {
-                return "size";
-            }
-            
-            @Override
-            public Type getReturnType() {
-                return IntegerType.INSTANCE;
-            }
-            
-            @Override
-            public List<Type> getArgumentTypes() {
-                return new ArrayList<>();
-            }
-            @Override
-            public String toString() {
-                return getName();
-            }
-        });
+        methods.add(PredefinedMethods.STRING_SIZE);
         return methods;
     }
 

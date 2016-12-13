@@ -3,13 +3,16 @@ package components;
 import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
+import ir.Name;
 import ir.Type;
+import middleware.NameTableEntry;
 import visitors.Visitor;
 
-public class DeclarationStatementNode extends StatementNode {
+public class DeclarationStatementNode extends StatementNode implements Name {
     public final String name;
     public final ExpressionNode expression;
     private Type type;
+    private NameTableEntry nameTableEntry;
 
     public DeclarationStatementNode(String name, ExpressionNode expression, Position position) {
         super(position);
@@ -37,5 +40,18 @@ public class DeclarationStatementNode extends StatementNode {
     
     public Type getType() {
         return type;
+    }
+    
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setNameTableEntry(NameTableEntry nameTableEntry) {
+        this.nameTableEntry = nameTableEntry;
+    }
+    
+    public NameTableEntry getNameTableEntry() {
+        return nameTableEntry;
     }
 }

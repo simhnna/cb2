@@ -55,6 +55,10 @@ public class CompositeType implements Type {
         }
         return type;
     }
+    
+    public ClassNode getType() {
+        return type;
+    }
 
     @Override
     public String getName() {

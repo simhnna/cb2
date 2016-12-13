@@ -7,12 +7,12 @@ import visitors.Visitor;
 
 public class NewExpressionNode extends ExpressionNode {
     public final TypeNode type;
-    public final ArrayList<String> arguments;
-
+    public final ArrayList<ExpressionNode> arguments;
+    
     public NewExpressionNode(TypeNode type) {
         super(type.position);
         this.type = type;
-        this.arguments = new ArrayList<>();
+        arguments = new ArrayList<>();
     }
 
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {

@@ -641,12 +641,9 @@ NewExpressionNode newExpression() :
   (
     < COMMA >
     (
-      < INT >
-    | < ID >
+      < INT > { n.arguments.add(new LiteralNode(tokenify(token), IntegerType.INSTANCE, generatePosition(token))); }
+    | < ID > { n.arguments.add(new FieldMemberExpressionNode(null, tokenify(token), generatePosition(token))); }
     )
-    {
-      n.arguments.add(tokenify(token));
-    }
   )*
   < GREATER_THAN >
   {

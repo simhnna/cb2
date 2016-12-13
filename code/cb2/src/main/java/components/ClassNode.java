@@ -12,6 +12,7 @@ import ir.Field;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
+import middleware.NameTableEntry;
 import visitors.Visitor;
 
 public class ClassNode extends Node implements Type {
@@ -53,6 +54,11 @@ public class ClassNode extends Node implements Type {
     
     public void setNameTable(NameTable nameTable) {
         this.nameTable = nameTable;
+    }
+    
+    public NameTableEntry lookup(String identifier) {
+        System.out.println(nameTable.lookup(identifier, false));
+        return nameTable.lookup(identifier, false);
     }
     
     public ArrayList<MemberNode> getChildren() {

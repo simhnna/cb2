@@ -1,6 +1,7 @@
 package visitors;
 
 import components.*;
+import components.interfaces.ExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
 
@@ -179,8 +180,9 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
         bldr.append("new <").append(newExpressionNode.type);
-        for (String arg: newExpressionNode.arguments) {
-            bldr.append(", ").append(arg);
+        for (ExpressionNode arg: newExpressionNode.arguments) {
+            bldr.append(", ");
+            arg.accept(this, null);
         }
         bldr.append(">");
         return null;
