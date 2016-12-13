@@ -59,8 +59,9 @@ class A {
   void main(string[] args) {
     args.set(1, "bla");
     var test := args.get(1);
-    nonRecursiveFactorial(1).print();
-    nonRecursiveFactorial(otherFactorial(2)).print();
+    var a := new<A>;
+    a.nonRecursiveFactorial(1).print();
+    a.nonRecursiveFactorial(a.otherFactorial(2)).print();
     args.size().print();
     var car := new <Car>;
     var num := 1;
