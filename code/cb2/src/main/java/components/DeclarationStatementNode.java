@@ -29,10 +29,10 @@ public class DeclarationStatementNode extends StatementNode {
      * @param declaredType the Type of the expression
      */
     public void setType(Type declaredType) {
-        if (type == null) {
-            type = declaredType;
+        if (type != null) {
+            throw new IllegalArgumentException("Duplicate assignment of types, this shouldn't happen");
         }
-        // TODO: add warning
+        type = declaredType;
     }
     
     public Type getType() {

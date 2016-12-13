@@ -26,7 +26,7 @@ class m {
 
 class me {
   void main(string[] args) {
-    while(args.length > -1) {
+    while(args.size() > -1) {
       "hallo death".print();
     }
   }
@@ -46,7 +46,7 @@ class FunWithInteger {
     x.get().int := 7;
     x.int.print();
   }
-  FunWithInt get() {
+  FunWithInteger get() {
     return this;
   }
 }

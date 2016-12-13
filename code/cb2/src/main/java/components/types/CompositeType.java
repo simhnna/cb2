@@ -13,8 +13,7 @@ public class CompositeType implements Type {
     private ClassNode type;
     private String className;
 
-    private static HashMap<String, CompositeType> seenClasses = new HashMap<>();
-    private static HashMap<String, CompositeType> declaredClasses = new HashMap<>();
+    private static HashMap<String, CompositeType> classes = new HashMap<>();
 
     private CompositeType(ClassNode cls) {
         type = cls;
@@ -26,29 +25,33 @@ public class CompositeType implements Type {
     }
 
     public static boolean createType(ClassNode cls) {
-        CompositeType type = declaredClasses.get(cls.getName());
+        CompositeType type = classes.get(cls.getName());
         if (type == null) {
-            type = seenClasses.get(cls.getName());
-            if (type == null) {
-                type = new CompositeType(cls);
-                declaredClasses.put(cls.getName(), type);
-            } else {
-               seenClasses.remove(cls.getName()); 
+            type = new CompositeType(cls);
+            classes.put(cls.getName(), type);
+        } else {
+            if (type.type != null) {
+                return false;
             }
             type.type = cls;
-            return true;
         }
-        return false;
+        return true;
+
     }
 
     public static CompositeType getOrCreateTempType(String className) {
-        CompositeType type = declaredClasses.get(className);
+        CompositeType type = classes.get(className);
         if (type == null) {
-            type = seenClasses.get(className);
-            if (type == null) {
-                type = new CompositeType(className);
-                seenClasses.put(className, type);
-            }
+            type = new CompositeType(className);
+            classes.put(className, type);
+        }
+        return type;
+    }
+    
+    public static CompositeType getDeclaredType(String className) {
+        CompositeType type = classes.get(className);
+        if (type.type == null) {
+            throw new IllegalArgumentException("Using undefined class with name '" + className + "'");
         }
         return type;
     }
@@ -74,7 +77,6 @@ public class CompositeType implements Type {
     }
     
     public static void clear() {
-        seenClasses.clear();
-        declaredClasses.clear();
+        classes.clear();
     }
 }

@@ -2,6 +2,7 @@ package middleware;
 
 import java.util.HashMap;
 
+import components.BlockNode;
 import ir.Type;
 
 public class NameTable {
@@ -10,8 +11,11 @@ public class NameTable {
         
     private final HashMap<String, Type> names;
     
-    public NameTable(NameTable parent) {
+    public final BlockNode owner;
+    
+    public NameTable(NameTable parent, BlockNode owner) {
         this.parent = parent;
+        this.owner = owner;
         names = new HashMap<>();
     }
     

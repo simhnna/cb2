@@ -3,6 +3,7 @@ package components;
 import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
+import ir.Type;
 import visitors.Visitor;
 
 public class WhileNode extends StatementNode {

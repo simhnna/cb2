@@ -120,25 +120,7 @@ public class ArrayType implements Type {
 
     @Override
     public Set<Field> getFields() {
-        HashSet<Field> fields = new HashSet<>();
-        fields.add(new Field() {
-            
-            @Override
-            public Type getType() {
-                return IntegerType.INSTANCE;
-            }
-            
-            @Override
-            public String getName() {
-                return "length";
-            }
-            
-            @Override
-            public String toString() {
-                return getName();
-            }
-        });
-        return fields;
+        return new HashSet<>();
     }
     
     @Override
