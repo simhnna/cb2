@@ -30,7 +30,7 @@ public class BinaryExpressionNode extends ExpressionNode {
         
         private Operator parent = null;
 
-        private Operator(Operator parent) {
+        Operator(Operator parent) {
             this.parent = parent;
         }
         

@@ -17,7 +17,7 @@ import testsuite.MINIException;
 @RunWith(Parameterized.class)
 public class ValidSyntaxTester {
 
-    private File file;
+    private final File file;
 
     public ValidSyntaxTester(File file, String filename) {
         this.file = file;

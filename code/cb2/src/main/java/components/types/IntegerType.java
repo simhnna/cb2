@@ -21,7 +21,7 @@ public class IntegerType implements Type {
     @Override
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
-        methods.add(PrintMethod.INSTANCE);
+        methods.add(PredefinedMethods.PRINT);
         return methods;
     }
 

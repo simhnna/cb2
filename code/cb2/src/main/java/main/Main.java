@@ -13,7 +13,7 @@ public class Main {
 
     public static void main(String... args) {
         NameTable globalNameTable = new NameTable(null, null);
-        FileNode classes = null;
+        FileNode classes;
         try {
             File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
                     + File.separator + "pretty_much_everything.m");

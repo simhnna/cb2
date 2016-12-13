@@ -184,7 +184,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type baseObject;
         if (methodInvocationExpressionNode.baseObject != null) {
             baseObject = methodInvocationExpressionNode.baseObject.accept(this, nameTable);
-        } else if (!inMainMethod()) {
+        } else if (inNonStaticMethod()) {
             baseObject = nameTable.lookup("this", true).type;
         } else {
             throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
@@ -261,7 +261,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
             // type is null, when it's a _this_ literalNode
-            return nameTable.lookup(primitiveType.token, !inMainMethod()).type;
+            return nameTable.lookup(primitiveType.token, inNonStaticMethod()).type;
         }
         return primitiveType.type;
     }
@@ -324,7 +324,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             }
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Field '" + fieldMemberExpressionNode.identifier + "' is not identified for type '" + baseObject.getName() + "'");
         }
-        NameTableEntry nameTableEntry = nameTable.lookup(fieldMemberExpressionNode.identifier, !inMainMethod());
+        NameTableEntry nameTableEntry = nameTable.lookup(fieldMemberExpressionNode.identifier, inNonStaticMethod());
         if (nameTableEntry == null) {
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
         }
@@ -388,7 +388,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         return null;
     }
     
-    private boolean inMainMethod() {
-        return currentMethod != null && currentMethod.name.equals("main");
+    private boolean inNonStaticMethod() {
+        return currentMethod == null || !currentMethod.name.equals("main");
     }
 }

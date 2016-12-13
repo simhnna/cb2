@@ -17,7 +17,7 @@ import testsuite.MINIException;
 @RunWith(Parameterized.class)
 public class ValidTypeTester {
 
-    private File file;
+    private final File file;
 
     public ValidTypeTester(File file, String filename) {
         this.file = file;

@@ -29,7 +29,7 @@ public class JavaCodeGeneratorTester {
     private static void runProcess(String command) throws IOException, InterruptedException {
         StringBuilder bldr = new StringBuilder();
         Process pro = Runtime.getRuntime().exec(command);
-        String line = null;
+        String line;
         BufferedReader in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
         while ((line = in.readLine()) != null) {
             bldr.append(line);

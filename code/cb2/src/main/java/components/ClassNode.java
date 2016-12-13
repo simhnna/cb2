@@ -7,7 +7,7 @@ import java.util.Set;
 import components.helpers.Position;
 import components.interfaces.MemberNode;
 import components.interfaces.Node;
-import components.types.PrintMethod;
+import components.types.PredefinedMethods;
 import ir.Field;
 import ir.Method;
 import ir.Type;
@@ -19,8 +19,8 @@ public class ClassNode extends Node implements Type {
     public final String name;
     private final ArrayList<MemberNode> children = new ArrayList<>();
     
-    private HashSet<Method> methods;
-    private HashSet<Field> fields;
+    private final HashSet<Method> methods;
+    private final HashSet<Field> fields;
     
     private NameTable nameTable = null;
 
@@ -29,7 +29,7 @@ public class ClassNode extends Node implements Type {
         this.name = name;
         methods = new HashSet<>();
         fields = new HashSet<>();
-        methods.add(PrintMethod.INSTANCE);
+        methods.add(PredefinedMethods.PRINT);
     }
 
     @Override

@@ -20,7 +20,7 @@ import testsuite.TypeException;
 
 @RunWith(Parameterized.class)
 public class InvalidTypeTester {
-    private File file;
+    private final File file;
 
     public InvalidTypeTester(File file, String filename) {
         this.file = file;
@@ -42,7 +42,7 @@ public class InvalidTypeTester {
             try {
                 int lineNumber = Integer.parseInt(errorLine);
                 assertEquals("The error occurred in an unexpected line", lineNumber, e.getLineNumber());
-            } catch (NumberFormatException ne) {
+            } catch (NumberFormatException ignored) {
             }
         } catch (MINIException e) {
             e.printStackTrace();

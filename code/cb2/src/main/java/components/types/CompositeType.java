@@ -11,9 +11,9 @@ import ir.Type;
 public class CompositeType implements Type {
 
     private ClassNode type;
-    private String className;
+    private final String className;
 
-    private static HashMap<String, CompositeType> classes = new HashMap<>();
+    private static final HashMap<String, CompositeType> classes = new HashMap<>();
 
     private CompositeType(ClassNode cls) {
         type = cls;

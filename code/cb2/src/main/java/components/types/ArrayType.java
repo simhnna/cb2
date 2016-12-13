@@ -61,7 +61,7 @@ public class ArrayType implements Type {
     @Override
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
-        methods.add(PrintMethod.INSTANCE);
+        methods.add(PredefinedMethods.PRINT);
         methods.add(PredefinedMethods.ARRAY_SIZE);
         // TODO find out how to store them as static variables
         methods.add(new Method() {

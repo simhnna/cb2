@@ -9,7 +9,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     private int indent = 0;
 
-    private StringBuilder bldr = new StringBuilder();
+    private final StringBuilder bldr = new StringBuilder();
 
     @Override
     public String toString() {

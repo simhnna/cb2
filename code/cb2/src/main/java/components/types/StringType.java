@@ -21,7 +21,7 @@ public class StringType implements Type {
     @Override
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
-        methods.add(PrintMethod.INSTANCE);
+        methods.add(PredefinedMethods.PRINT);
         methods.add(PredefinedMethods.STRING_SIZE);
         return methods;
     }

@@ -26,7 +26,7 @@ public class TypeNode extends Node {
     }
 
     private static Type createType(String token, int dimensions) {
-        Type type = null;
+        Type type;
         switch(token) {
         case "int":
             type = IntegerType.INSTANCE;

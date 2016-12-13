@@ -22,9 +22,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     private int indent = 0;
 
-    private StringBuilder bldr = new StringBuilder();
-    private HashMap<Name, String> names = new HashMap<>();
-    private HashMap<NameTableEntry, String> nameTableNames = new HashMap<>();
+    private final StringBuilder bldr = new StringBuilder();
+    private final HashMap<Name, String> names = new HashMap<>();
+    private final HashMap<NameTableEntry, String> nameTableNames = new HashMap<>();
     private String currentName = "_";
     private char currentChar = 'a';
     
