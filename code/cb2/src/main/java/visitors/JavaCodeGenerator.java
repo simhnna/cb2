@@ -215,7 +215,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             errPrint = true;
         }
         if (errPrint) {
-            bldr.append("System.err.println(");
+            bldr.append("System.err.println(\"\" + ");
         }
             simpleStatementNode.expression.accept(this, null);
         if (errPrint) {
@@ -228,7 +228,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
         if (methodMemberExpressionNode.identifier.equals("print")) {
-            bldr.append("System.out.println(");
+            // so that null values don't cause any issues...
+            bldr.append("System.out.println(\"\" + ");
             methodMemberExpressionNode.baseObject.accept(this, null);
             bldr.append(")");
         } else if (methodMemberExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
