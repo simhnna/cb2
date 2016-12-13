@@ -74,4 +74,10 @@ public class MINIParser {
         }
     }
     
+    public static void isMINI(File in) throws MINIException {
+        FileNode classes = MINIGrammar.parse(in);
+        NameAndTypeChecker checker = new NameAndTypeChecker();
+        classes.accept(checker, null);
+    }
+    
 }
