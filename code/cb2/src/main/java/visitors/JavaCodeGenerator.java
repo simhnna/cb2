@@ -120,7 +120,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(LiteralNode type, Void parameter) {
-        bldr.append(type);
+        bldr.append(type.token);
         return null;
     }
 
@@ -177,7 +177,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         boolean errPrint = false;
         if (simpleStatementNode.expression instanceof MethodInvocationExpressionNode) {
             Method method = ((MethodInvocationExpressionNode) simpleStatementNode.expression).getResolvedMethod();
-            if (method == PredefinedMethods.ARRAY_SIZE || method == PredefinedMethods.STRING_SIZE) {
+            if (method == PredefinedMethods.ARRAY_SIZE) {
                 errPrint = true;
             }
         } else {
@@ -200,12 +200,12 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             bldr.append("System.out.println(");
             methodMemberExpressionNode.baseObject.accept(this, null);
             bldr.append(")");
-        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType().getName().equals("string")) {
+        } else if (methodMemberExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append(".length()");
             }
-        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+        } else if (methodMemberExpressionNode.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append(".length");
@@ -213,12 +213,17 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("]");
+                bldr.append("[");
+                methodMemberExpressionNode.arguments.get(0).accept(this, null);
+                bldr.append("]");
             }
         } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("] = ").append(methodMemberExpressionNode.arguments.get(1));
+                bldr.append("[");
+                methodMemberExpressionNode.arguments.get(0).accept(this, null);
+                bldr.append("] = ");
+                methodMemberExpressionNode.arguments.get(1).accept(this, null);
             }
         } else {
             if (methodMemberExpressionNode.baseObject != null) {
@@ -241,21 +246,15 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
         bldr.append("new ");
         if (newExpressionNode.type.type instanceof ArrayType) {
-            bldr.append(((ArrayType) newExpressionNode.type.type).getBasicDataType());
-            for (String dimension: newExpressionNode.arguments) {
-                bldr.append("[").append(dimension).append("]");
+            bldr.append(getTypeRepresentation(((ArrayType) newExpressionNode.type.type).getBasicDataType()));
+            for (ExpressionNode dimension: newExpressionNode.arguments) {
+                bldr.append("[");
+                dimension.accept(this, null);
+                bldr.append("]");
             }
         } else {
             newExpressionNode.type.accept(this, null);
-            bldr.append("(");
-            Iterator<String> argument_iter = newExpressionNode.arguments.iterator();
-            while (argument_iter.hasNext()) {
-                bldr.append(" ").append(argument_iter.next());
-                if (argument_iter.hasNext()) {
-                    bldr.append(", ");
-                }
-            }
-            bldr.append(")");
+            bldr.append("()");
         }
         return null;
     }
@@ -305,7 +304,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     }
     
     
-    private static String getTypeRepresentation(Type type) {
+    private String getTypeRepresentation(Type type) {
         if (type == StringType.INSTANCE) {
             return "String";
         } else if (type == BooleanType.INSTANCE) {

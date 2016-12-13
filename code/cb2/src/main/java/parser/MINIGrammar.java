@@ -773,16 +773,17 @@ public class MINIGrammar implements MINIGrammarConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INT:
         jj_consume_token(INT);
+                n.arguments.add(new LiteralNode(tokenify(token), IntegerType.INSTANCE, generatePosition(token)));
         break;
       case ID:
         jj_consume_token(ID);
+               n.arguments.add(new FieldMemberExpressionNode(null, tokenify(token), generatePosition(token)));
         break;
       default:
         jj_la1[29] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
-      n.arguments.add(tokenify(token));
     }
     jj_consume_token(GREATER_THAN);
     {if (true) return n;}

@@ -47,11 +47,23 @@ public class ArrayType implements Type {
         }
         return type.baseType;
     }
+    
+    public int getDimensions() {
+        ArrayType type = this;
+        int dimensions = 1;
+        while (type.baseType instanceof ArrayType) {
+            type = (ArrayType) type.baseType;
+            dimensions++;
+        }
+        return dimensions;
+    }
 
     @Override
     public Set<Method> getMethods() {
         HashSet<Method> methods = new HashSet<>();
         methods.add(PrintMethod.INSTANCE);
+        methods.add(PredefinedMethods.ARRAY_SIZE);
+        // TODO find out how to store them as static variables
         methods.add(new Method() {
             
             @Override

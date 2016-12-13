@@ -26,6 +26,7 @@ import components.WhileNode;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
+import components.types.ArrayType;
 import components.types.BooleanType;
 import components.types.CompositeType;
 import components.types.IntegerType;
@@ -236,6 +237,23 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(NewExpressionNode newExpressionNode, NameTable nameTable) throws TypeException {
+        newExpressionNode.type.accept(this, nameTable);
+        if (newExpressionNode.type.type instanceof CompositeType) {
+            if (newExpressionNode.arguments.size() > 0) {
+                throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Constructors don't have any parameters!");
+            }
+        } else {
+            int dimensions = ((ArrayType) newExpressionNode.type.type).getDimensions();
+            if (newExpressionNode.arguments.size() != dimensions) {
+                throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Expected " + dimensions + " arguments but found " + newExpressionNode.arguments.size() + " instead");
+            }
+        }
+        for (ExpressionNode arg: newExpressionNode.arguments) {
+            Type argType = arg.accept(this, nameTable);
+            if (argType != IntegerType.INSTANCE) {
+                throw new TypeException(arg.position.path, arg.position.line, "Expected an int found '" + argType.getName() + "' instead");
+            }
+        }
         return newExpressionNode.type.type;
     }
 
