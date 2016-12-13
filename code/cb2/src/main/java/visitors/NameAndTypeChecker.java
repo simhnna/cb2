@@ -41,7 +41,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     
     // Used to hold the current method to check for return types
     private MethodDeclarationNode currentMethod;
-
+    
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
         Type first = assignmentStatementNode.first.accept(this, nameTable);
@@ -182,8 +182,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type baseObject;
         if (methodInvocationExpressionNode.baseObject != null) {
             baseObject = methodInvocationExpressionNode.baseObject.accept(this, nameTable);
-        } else {
+        } else if (!inMainMethod()) {
             baseObject = nameTable.lookup("this", true);
+        } else {
+            throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
         }
         methodInvocationExpressionNode.setResolvedType(baseObject);
         for (Method m: baseObject.getMethods()) {
@@ -227,6 +229,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         if (methodNode.returnType.type != VoidType.INSTANCE && !methodNode.body.containsReturn()) {
             throw new TypeException(methodNode.position.path, methodNode.position.line, "Method is missing a return statement");
         }
+        currentMethod = null;
         return null;
     }
 
@@ -243,7 +246,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
-            return nameTable.lookup(primitiveType.token, true);
+            return nameTable.lookup(primitiveType.token, !inMainMethod());
         }
         return primitiveType.type;
     }
@@ -302,7 +305,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             }
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Field '" + fieldMemberExpressionNode.identifier + "' is not identified for type '" + baseObject.getName() + "'");
         }
-        Type type = nameTable.lookup(fieldMemberExpressionNode.identifier, true);
+        Type type = nameTable.lookup(fieldMemberExpressionNode.identifier, !inMainMethod());
         if (type == null) {
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
         }
@@ -356,5 +359,9 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             classNode.accept(this, nameTable);
         }
         return null;
+    }
+    
+    private boolean inMainMethod() {
+        return currentMethod != null && currentMethod.name.equals("main");
     }
 }

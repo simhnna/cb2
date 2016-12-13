@@ -20,8 +20,12 @@ public class NameTable {
     }
     
     public Type lookup(String id, boolean cascade) {
+        if (!cascade && owner == null) {
+            // if we reached the class and should not resolve fields return nothing
+            return null;
+        }
         Type name = names.get(id);
-        if (name == null && cascade && parent != null) {
+        if (name == null && parent != null) {
             return parent.lookup(id, cascade);
         }
         return name;
