@@ -143,7 +143,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(LiteralNode type, Void parameter) {
-        bldr.append(type.token);
+        bldr.append(type.token.replace("\\", "\\\\"));
         return null;
     }
 
