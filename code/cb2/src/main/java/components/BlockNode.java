@@ -8,6 +8,8 @@ import visitors.Visitor;
 
 public class BlockNode extends StatementNode {
     
+    private boolean returnStatementPresent = false;
+    
     public BlockNode(Position position) {
         super(position);
     }
@@ -19,4 +21,16 @@ public class BlockNode extends StatementNode {
         return visitor.visit(this, parameter);
     }
 
+    
+    public void setContainsReturn() {
+        returnStatementPresent = true;
+    }
+    
+    public void clearReturn() {
+        returnStatementPresent = false;
+    }
+    
+    public boolean containsReturn() {
+        return returnStatementPresent;
+    }
 }

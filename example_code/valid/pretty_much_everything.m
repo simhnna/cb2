@@ -7,6 +7,7 @@ class A {
     return 1;
   }
   int fibonacci(int n) {
+    return n;
   }
   int returnArgument(int n) {
     (-n).print();
@@ -39,6 +40,7 @@ class A {
   int otherFactorial(int n) {
     if (n < 1 || n == 1) {
       return 0 + 1;
+    } else {
     }
     var result := n;
     result := result * factorial(n - 1);
@@ -55,9 +57,11 @@ class A {
     return result;
   }
   void main(string[] args) {
+    args.set(1, "bla");
+    var test := args.get(1);
     nonRecursiveFactorial(1).print();
     nonRecursiveFactorial(otherFactorial(2)).print();
-    args.length.print();
+    args.size().print();
     var car := new <Car>;
     var num := 1;
     var cars := new <Car[][], 1, num>;

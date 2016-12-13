@@ -12,7 +12,7 @@ import visitors.NameAndTypeChecker;
 public class Main {
 
     public static void main(String... args) {
-        NameTable globalNameTable = new NameTable(null);
+        NameTable globalNameTable = new NameTable(null, null);
         FileNode classes = null;
         try {
             File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"

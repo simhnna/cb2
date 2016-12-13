@@ -1,5 +1,5 @@
 class c {
-	a m(){
+	void m(){
 		
 		"hallo";	
 		"#";

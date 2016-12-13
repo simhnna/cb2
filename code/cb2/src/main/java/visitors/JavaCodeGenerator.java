@@ -1,10 +1,15 @@
 package visitors;
 
+import java.util.Iterator;
+import java.util.function.Predicate;
+
 import components.*;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
+import components.types.ArrayType;
 import components.types.BooleanType;
 import components.types.StringType;
+import ir.Field;
 import ir.Type;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
@@ -36,6 +41,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(ClassNode clsNode, Void parameter) {
+        String[] keywords = {"abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while" };
+        for(String kw : keywords) {
+            Predicate<Field> p = f -> !f.getName().equals(kw);
+            if (clsNode.getFields().stream().allMatch(p)) {
+
+            };
+        }
         // classes need no indent
         bldr.append("class ").append(clsNode.name).append(" {\n");
         openScope();
@@ -58,6 +70,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        if(methodNode.name.equals("main")) {
+            bldr.append("public static ");
+        }
         methodNode.returnType.accept(this, null);
         bldr.append(" ").append(methodNode.name).append("(");
         for (int i = 0; i < methodNode.arguments.size(); i++) {
@@ -164,29 +179,67 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
-        if (methodMemberExpressionNode.baseObject != null) {
+        if (methodMemberExpressionNode.identifier.equals("print")) {
+            bldr.append("System.out.println(");
             methodMemberExpressionNode.baseObject.accept(this, null);
-            bldr.append(".");
-        }
-        bldr.append(methodMemberExpressionNode.identifier).append("(");
-        for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
-            methodMemberExpressionNode.arguments.get(i).accept(this, null);
-            if (i != methodMemberExpressionNode.arguments.size() - 1) {
-                bldr.append(", ");
+            bldr.append(")");
+        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType().getName().equals("string")) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append(".length()");
             }
+        } else if (methodMemberExpressionNode.identifier.equals("size") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append(".length");
+            }
+        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("]");
+            }
+        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append("[").append(methodMemberExpressionNode.arguments.get(0)).append("] = ").append(methodMemberExpressionNode.arguments.get(1));
+            }
+        } else {
+            if (methodMemberExpressionNode.baseObject != null) {
+                methodMemberExpressionNode.baseObject.accept(this, null);
+                bldr.append(".");
+            }
+            bldr.append(methodMemberExpressionNode.identifier).append("(");
+            for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
+                methodMemberExpressionNode.arguments.get(i).accept(this, null);
+                if (i != methodMemberExpressionNode.arguments.size() - 1) {
+                    bldr.append(", ");
+                }
+            }
+            bldr.append(")");
         }
-        bldr.append(")");
         return null;
     }
 
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
-        bldr.append("new ").append(newExpressionNode.type);
-        bldr.append("(");
-        for (String arg: newExpressionNode.arguments) {
-            bldr.append(" ").append(arg);
+        bldr.append("new ");
+        if (newExpressionNode.type.type instanceof ArrayType) {
+            bldr.append(((ArrayType) newExpressionNode.type.type).getBasicDataType());
+            for (String dimension: newExpressionNode.arguments) {
+                bldr.append("[").append(dimension).append("]");
+            }
+        } else {
+            newExpressionNode.type.accept(this, null);
+            bldr.append("(");
+            Iterator<String> argument_iter = newExpressionNode.arguments.iterator();
+            while (argument_iter.hasNext()) {
+                bldr.append(" ").append(argument_iter.next());
+                if (argument_iter.hasNext()) {
+                    bldr.append(", ");
+                }
+            }
+            bldr.append(")");
         }
-        bldr.append(")");
         return null;
     }
 
@@ -206,14 +259,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(UnaryExpressionNode unaryExpressionNode, Void parameter) {
-        if (unaryExpressionNode.inParenthesis()) {
-            bldr.append('(');
-        }
+        bldr.append('(');
         bldr.append(unaryExpressionNode.operator);
         unaryExpressionNode.child.accept(this, null);
-        if (unaryExpressionNode.inParenthesis()) {
-            bldr.append(')');
-        }
+        bldr.append(')');
         return null;
     }
 
@@ -244,6 +293,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             return "String";
         } else if (type == BooleanType.INSTANCE) {
             return "boolean";
+        } else if (type instanceof ArrayType) {
+            String type_str = getTypeRepresentation(((ArrayType) type).getBasicDataType());
+            do {
+                type_str = type_str + "[]";
+                type = ((ArrayType) type).baseType;
+            } while (type instanceof ArrayType);
+            return type_str;
         } else {
             return type.toString();
         }

@@ -12,6 +12,8 @@ import parser.Token;
 import parser.TokenMgrError;
 import testsuite.MINIException;
 import testsuite.ParseException;
+import visitors.JavaCodeGenerator;
+import visitors.NameAndTypeChecker;
 import visitors.PrettyPrinter;
 
 public class MINIParser {
@@ -56,4 +58,20 @@ public class MINIParser {
             e.printStackTrace();
         }
     }
+
+    public static void printJavaSource(File in, File out) throws MINIException {
+        FileNode classes = MINIGrammar.parse(in);
+        NameAndTypeChecker checker = new NameAndTypeChecker();
+        JavaCodeGenerator java_code_gen = new JavaCodeGenerator();
+        classes.accept(checker, null);
+        classes.accept(java_code_gen, null);
+        try {
+            ArrayList<String> output = new ArrayList<>();
+            output.add(java_code_gen.toString());
+            Files.write(out.toPath(), output, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }
