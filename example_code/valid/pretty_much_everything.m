@@ -7,6 +7,7 @@ class A {
     return 1;
   }
   int fibonacci(int n) {
+    return n;
   }
   int returnArgument(int n) {
     (-n).print();
@@ -39,6 +40,7 @@ class A {
   int otherFactorial(int n) {
     if (n < 1 || n == 1) {
       return 0 + 1;
+    } else {
     }
     var result := n;
     result := result * factorial(n - 1);
