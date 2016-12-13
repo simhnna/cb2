@@ -201,6 +201,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
                         throw new TypeException(invocationArguments.get(i).position.path, invocationArguments.get(i).position.line, "Expected type '" + declaredMethodArguments.get(i).getName() + "' but found '" + invokedType.getName() + "' instead");
                     }
                 }
+                methodInvocationExpressionNode.setResolvedMethod(m);
                 return m.getReturnType();
             }
         }

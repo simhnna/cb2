@@ -98,23 +98,7 @@ public class ArrayType implements Type {
             }
         });
         
-        methods.add(new Method() {
-            
-            @Override
-            public String getName() {
-                return "size";
-            }
-            
-            @Override
-            public Type getReturnType() {
-                return IntegerType.INSTANCE;
-            }
-            
-            @Override
-            public List<Type> getArgumentTypes() {
-                return new ArrayList<>();
-            }
-        });
+        methods.add(PredefinedMethods.ARRAY_SIZE);
         return methods;
     }
 

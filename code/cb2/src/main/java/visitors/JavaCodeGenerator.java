@@ -8,8 +8,10 @@ import components.interfaces.Node;
 import components.interfaces.StatementNode;
 import components.types.ArrayType;
 import components.types.BooleanType;
+import components.types.PredefinedMethods;
 import components.types.StringType;
 import ir.Field;
+import ir.Method;
 import ir.Type;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
@@ -172,7 +174,22 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(SimpleStatementNode simpleStatementNode, Void parameter) {
-        simpleStatementNode.expression.accept(this, null);
+        boolean errPrint = false;
+        if (simpleStatementNode.expression instanceof MethodInvocationExpressionNode) {
+            Method method = ((MethodInvocationExpressionNode) simpleStatementNode.expression).getResolvedMethod();
+            if (method == PredefinedMethods.ARRAY_SIZE || method == PredefinedMethods.STRING_SIZE) {
+                errPrint = true;
+            }
+        } else {
+            errPrint = true;
+        }
+        if (errPrint) {
+            bldr.append("System.err.println(");
+        }
+            simpleStatementNode.expression.accept(this, null);
+        if (errPrint) {
+            bldr.append(")");
+        }
         bldr.append(";");
         return null;
     }
