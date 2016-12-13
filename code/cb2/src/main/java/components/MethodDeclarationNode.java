@@ -51,6 +51,10 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     public void setNameTable(NameTable nameTable) {
         this.nameTable = nameTable;
     }
+    
+    public NameTable getNameTable() {
+        return nameTable;
+    }
 
     @Override
     public String toString() {

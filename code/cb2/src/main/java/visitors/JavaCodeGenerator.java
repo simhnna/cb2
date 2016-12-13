@@ -1,7 +1,6 @@
 package visitors;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import components.*;
 import components.interfaces.ExpressionNode;

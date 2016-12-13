@@ -13,13 +13,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import components.FileNode;
-import middleware.NameTable;
-import parser.MINIGrammar;
+import frontend.MINIParser;
 import testsuite.MINIException;
 import testsuite.ParseException;
 import testsuite.TypeException;
-import visitors.NameAndTypeChecker;
 
 @RunWith(Parameterized.class)
 public class InvalidTypeTester {
@@ -31,12 +28,8 @@ public class InvalidTypeTester {
 
     @Test
     public void testFile() {
-        FileNode result_node;
         try {
-            result_node = MINIGrammar.parse(file);
-            NameAndTypeChecker checker = new NameAndTypeChecker();
-            NameTable globalNameTable = new NameTable(null, null);
-            result_node.accept(checker, globalNameTable);
+            MINIParser.isMINI(file);
             assertFalse("Successfully parsed file that should contain errors " + file.getAbsolutePath(), true);
         } catch (ParseException e) {
             fail("Found Syntax Errors in file.");

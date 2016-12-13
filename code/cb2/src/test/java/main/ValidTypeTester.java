@@ -11,10 +11,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
-import components.FileNode;
-import parser.MINIGrammar;
+import frontend.MINIParser;
 import testsuite.MINIException;
-import visitors.NameAndTypeChecker;
 
 @RunWith(Parameterized.class)
 public class ValidTypeTester {
@@ -28,9 +26,7 @@ public class ValidTypeTester {
     @Test
     public void testFile() {
         try {
-            FileNode classes = MINIGrammar.parse(file);
-            NameAndTypeChecker checker = new NameAndTypeChecker();
-            classes.accept(checker, null);
+            MINIParser.isMINI(file);
         } catch (MINIException e) {
             // TEST FAILURE
             e.printStackTrace();
