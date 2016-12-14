@@ -12,7 +12,6 @@ import ir.Field;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
-import middleware.NameTableEntry;
 import visitors.Visitor;
 
 public class ClassNode extends Node implements Type {

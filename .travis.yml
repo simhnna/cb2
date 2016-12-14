@@ -1,11 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
-script:
-  - cd code/cb2
-  - DEBUG=true gradle check
 notifications:
   slack: cb2-team:j3MM4tzEbTc5cr0MmkrokqHo
-
 after_success:
   - bash <(curl -s https://codecov.io/bash) -t 1414bf6a-caa8-4e47-a92e-313c6f9233e4
