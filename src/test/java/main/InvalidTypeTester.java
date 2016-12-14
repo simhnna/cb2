@@ -34,10 +34,6 @@ public class InvalidTypeTester {
         } catch (ParseException e) {
             fail("Found Syntax Errors in file.");
         } catch (TypeException e) {
-            // TEST SUCCESS
-            if (System.getenv("DEBUG") != null) {
-                System.out.println(e.toString());
-            }
             String errorLine = file.getName().substring(0, 3);
             try {
                 int lineNumber = Integer.parseInt(errorLine);
