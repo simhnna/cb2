@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.ArrayList;
+import java.nio.file.StandardOpenOption;
 
 import components.FileNode;
 import parser.MINIGrammar;
@@ -46,17 +46,19 @@ public class MINIParser {
         MINIGrammar.parse(in);
     }
 
+    private static void printLinesToFile(File file, String lines) {
+        try {
+            Files.write(file.toPath(), lines.getBytes(Charset.forName("UTF-8")), StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void prettyPrinted(File in, File out) throws MINIException {
         FileNode classes = MINIGrammar.parse(in);
         PrettyPrinter visitor = new PrettyPrinter();
         classes.accept(visitor, null);
-        try {
-            ArrayList<String> output = new ArrayList<>();
-            output.add(visitor.toString());
-            Files.write(out.toPath(), output, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        printLinesToFile(out, visitor.toString());
     }
 
     public static void printJavaSource(File in, File out) throws MINIException {
@@ -65,13 +67,7 @@ public class MINIParser {
         JavaCodeGenerator java_code_gen = new JavaCodeGenerator();
         classes.accept(checker, null);
         classes.accept(java_code_gen, null);
-        try {
-            ArrayList<String> output = new ArrayList<>();
-            output.add(java_code_gen.toString());
-            Files.write(out.toPath(), output, Charset.forName("UTF-8"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        printLinesToFile(out, java_code_gen.toString());
     }
     
     public static void isMINI(File in) throws MINIException {
