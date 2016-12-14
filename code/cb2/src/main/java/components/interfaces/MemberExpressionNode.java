@@ -17,7 +17,6 @@ public abstract class MemberExpressionNode extends ExpressionNode {
     public String toString() {
         if (baseObject == null) {
             return identifier;
-
         } else {
             return baseObject + "." + identifier;
         }

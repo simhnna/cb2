@@ -32,9 +32,7 @@ public class DeclarationStatementNode extends StatementNode implements Name {
      * @param declaredType the Type of the expression
      */
     public void setType(Type declaredType) {
-        if (type != null) {
-            throw new IllegalArgumentException("Duplicate assignment of types, this shouldn't happen");
-        }
+        assert type == null;
         type = declaredType;
     }
     

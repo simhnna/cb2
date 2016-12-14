@@ -55,12 +55,13 @@ public class ClassNode extends Node implements Type {
     public void setNameTable(NameTable nameTable) {
         this.nameTable = nameTable;
     }
-    
+
+    /* currently unused
     public NameTableEntry lookup(String identifier) {
-        System.out.println(nameTable.lookup(identifier, false));
         return nameTable.lookup(identifier, false);
     }
-    
+    */
+
     public ArrayList<MemberNode> getChildren() {
         return children;
     }

@@ -51,10 +51,12 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     public void setNameTable(NameTable nameTable) {
         this.nameTable = nameTable;
     }
-    
+
+    /* Todo do we actually need it?
     public NameTable getNameTable() {
         return nameTable;
     }
+     */
 
     @Override
     public String toString() {
