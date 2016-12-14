@@ -14,3 +14,9 @@ hs_err_pid*
 
 # IDE specifics...
 .idea
+
+/.gradle/
+/build/
+!gradle-wrapper.jar
+*.bat
+/bin/
