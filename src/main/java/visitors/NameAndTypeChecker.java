@@ -237,11 +237,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             if (newExpressionNode.arguments.size() > 0) {
                 throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Constructors don't have any parameters!");
             }
-        } else {
+        } else if (newExpressionNode.type.type instanceof ArrayType) {
             int dimensions = ((ArrayType) newExpressionNode.type.type).getDimensions();
             if (newExpressionNode.arguments.size() != dimensions) {
                 throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Expected " + dimensions + " arguments but found " + newExpressionNode.arguments.size() + " instead");
             }
+        } else {
+            throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances is only supported for self defined types and arrays");
         }
         for (ExpressionNode arg: newExpressionNode.arguments) {
             Type argType = arg.accept(this, nameTable);
