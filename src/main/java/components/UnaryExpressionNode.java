@@ -5,7 +5,7 @@ import components.interfaces.ExpressionNode;
 import visitors.Visitor;
 
 public class UnaryExpressionNode extends ExpressionNode {
-    public final ExpressionNode child;
+    public final ExpressionNode expression;
 
     public enum Operator {
         MINUS, NEGATION;
@@ -19,9 +19,9 @@ public class UnaryExpressionNode extends ExpressionNode {
     }
     public final Operator operator;
 
-    public UnaryExpressionNode(Position position, ExpressionNode child, Operator operator) {
+    public UnaryExpressionNode(Position position, ExpressionNode expression, Operator operator) {
         super(position);
-        this.child = child;
+        this.expression = expression;
         this.operator = operator;
     }
 
@@ -31,6 +31,6 @@ public class UnaryExpressionNode extends ExpressionNode {
     
     @Override
     public String toString() {
-        return operator.toString() + child;
+        return operator.toString() + expression;
     }
 }

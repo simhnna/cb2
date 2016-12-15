@@ -112,9 +112,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(AssignmentStatementNode assignmentStatementNode, Void parameter) {
-        assignmentStatementNode.first.accept(this, null);
+        assignmentStatementNode.left.accept(this, null);
         bldr.append(" = ");
-        assignmentStatementNode.second.accept(this, null);
+        assignmentStatementNode.right.accept(this, null);
         bldr.append(";");
         return null;
     }
@@ -124,10 +124,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         bldr.append("if (");
         ifNode.condition.accept(this, null);
         bldr.append(") ");
-        ifNode.first.accept(this, null);
-        if (ifNode.second != null) {
+        ifNode.ifBlock.accept(this, null);
+        if (ifNode.elseBlock != null) {
             bldr.append(" else ");
-            ifNode.second.accept(this, null);
+            ifNode.elseBlock.accept(this, null);
         }
         return null;
     }
@@ -295,9 +295,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
-        binaryExpressionNode.first.accept(this, null);
+        binaryExpressionNode.left.accept(this, null);
         bldr.append(" ").append(binaryExpressionNode.operator).append(" ");
-        binaryExpressionNode.second.accept(this, null);
+        binaryExpressionNode.right.accept(this, null);
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
@@ -308,7 +308,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     public Void visit(UnaryExpressionNode unaryExpressionNode, Void parameter) {
         bldr.append('(');
         bldr.append(unaryExpressionNode.operator);
-        unaryExpressionNode.child.accept(this, null);
+        unaryExpressionNode.expression.accept(this, null);
         bldr.append(')');
         return null;
     }
@@ -329,7 +329,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FileNode fileNode, Void parameter) {
-        // redefine names for classes, methods and fields first
+        // redefine names for classes, methods and fields left
         for (ClassNode cls: fileNode.classes) {
             generateNewName(cls);
             for (MemberNode member: cls.getChildren()) {

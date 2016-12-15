@@ -46,8 +46,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
-        Type first = assignmentStatementNode.first.accept(this, nameTable);
-        Type second = assignmentStatementNode.second.accept(this, nameTable);
+        Type first = assignmentStatementNode.left.accept(this, nameTable);
+        Type second = assignmentStatementNode.right.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(assignmentStatementNode.position.path, assignmentStatementNode.position.line,
                     "Types don't match: " + first.getName() + " != " + second.getName());
@@ -64,8 +64,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          * &&, || --> both are of type bool
          *
          */
-        Type first = binaryExpressionNode.first.accept(this, nameTable);
-        Type second = binaryExpressionNode.second.accept(this, nameTable);
+        Type first = binaryExpressionNode.left.accept(this, nameTable);
+        Type second = binaryExpressionNode.right.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(binaryExpressionNode.position.path, binaryExpressionNode.position.line, "Types don't match: " + first.getName() + " != " + second.getName());
         }
@@ -168,11 +168,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(ifNode.position.path, ifNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        ifNode.first.accept(this, nameTable);
-        if (ifNode.second != null) {
-            ifNode.second.accept(this, nameTable);
+        ifNode.ifBlock.accept(this, nameTable);
+        if (ifNode.elseBlock != null) {
+            ifNode.elseBlock.accept(this, nameTable);
         } 
-        if (ifNode.second == null || !ifNode.second.containsReturn()) {
+        if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
             // clear return in parent block
             nameTable.owner.clearReturn();
         }
@@ -288,7 +288,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(UnaryExpressionNode unaryExpressionNode, NameTable nameTable) throws TypeException {
-        Type child_t = unaryExpressionNode.child.accept(this, nameTable);
+        Type child_t = unaryExpressionNode.expression.accept(this, nameTable);
         if ((child_t == BooleanType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.NEGATION)
         ||  (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS)) {
             return child_t;

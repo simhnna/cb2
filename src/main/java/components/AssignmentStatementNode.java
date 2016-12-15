@@ -6,12 +6,12 @@ import components.interfaces.StatementNode;
 import visitors.Visitor;
 
 public class AssignmentStatementNode extends StatementNode {
-    public final ExpressionNode first, second;
+    public final ExpressionNode left, right;
 
-    public AssignmentStatementNode(ExpressionNode first, Position position, ExpressionNode second) {
+    public AssignmentStatementNode(ExpressionNode left, Position position, ExpressionNode right) {
         super(position);
-        this.first = first;
-        this.second = second;
+        this.left = left;
+        this.right = right;
     }
 
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
