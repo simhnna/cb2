@@ -120,7 +120,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             s.accept(this, newTable);
         }
         if (blockNode.containsReturn()) {
-            nameTable.owner.setContainsReturn();
+            nameTable.owner.setContainsReturn(true);
         }
         return null;
     }
@@ -174,7 +174,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } 
         if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
             // clear return in parent block
-            nameTable.owner.clearReturn();
+            nameTable.owner.setContainsReturn(false);
         }
         return null;
     }
@@ -276,7 +276,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } else if (returnType != currentMethod.getReturnType()) {
             throw new TypeException(returnNode.position.path, returnNode.position.line, "Expected return type '" +  "' but found '" + returnType + "' instead" );
         }
-        nameTable.owner.setContainsReturn();
+        nameTable.owner.setContainsReturn(true);
         return returnType;
     }
 
@@ -307,7 +307,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         whileNode.body.accept(this, nameTable);
         
         // clear possible return Value in parent block
-        nameTable.owner.clearReturn();
+        nameTable.owner.setContainsReturn(false);
         return null;
     }
 
