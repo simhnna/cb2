@@ -12,9 +12,6 @@ import visitors.Visitor;
  * - integers
  * - strings
  * - booleans
- * 
- * </ul>
- * @author sim
  *
  */
 public class LiteralNode extends ExpressionNode{

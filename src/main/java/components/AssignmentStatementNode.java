@@ -6,7 +6,8 @@ import components.interfaces.StatementNode;
 import visitors.Visitor;
 
 public class AssignmentStatementNode extends StatementNode {
-    public final ExpressionNode left, right;
+    public final ExpressionNode left;
+    public final ExpressionNode right;
 
     public AssignmentStatementNode(ExpressionNode left, Position position, ExpressionNode right) {
         super(position);
