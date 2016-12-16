@@ -1,9 +1,7 @@
-class A {
-  int[] s() {
+class a {
+  void foo() {
     if (true) {
-      return new <int[], 10>;
     } else {
-      return new <int[], 20>;
     }
   }
 }
