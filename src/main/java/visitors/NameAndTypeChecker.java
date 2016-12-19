@@ -354,6 +354,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             } catch (IllegalArgumentException e) {
                 throw new TypeException(typeNode.position.path, typeNode.position.line, e.getMessage());
             }
+        } else if (typeNode.type instanceof ArrayType && ((ArrayType) typeNode.type).getBasicDataType() == VoidType.INSTANCE) {
+            throw new TypeException(typeNode.position.path, typeNode.position.line, "Arrays with basetype void are not allowed!");
         }
         return typeNode.type;
     }
