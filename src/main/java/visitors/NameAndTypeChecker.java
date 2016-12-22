@@ -46,6 +46,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
+        if (!(assignmentStatementNode.left instanceof FieldMemberExpressionNode)) {
+            throw new TypeException(assignmentStatementNode.left.position.path, assignmentStatementNode.left.position.line,
+                    "The left side of an assignment has to be a field");
+        }
         Type first = assignmentStatementNode.left.accept(this, nameTable);
         Type second = assignmentStatementNode.right.accept(this, nameTable);
         if (first != second) {
