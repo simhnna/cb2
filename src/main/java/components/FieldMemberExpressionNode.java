@@ -4,7 +4,7 @@ import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberExpressionNode;
 import ir.Field;
-import middleware.NameTableEntry;
+import ir.NameTableEntry;
 import visitors.Visitor;
 
 public class FieldMemberExpressionNode extends MemberExpressionNode {

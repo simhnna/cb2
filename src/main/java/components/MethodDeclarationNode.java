@@ -10,7 +10,7 @@ import components.types.StringType;
 import components.types.VoidType;
 import ir.Method;
 import ir.Type;
-import middleware.NameTable;
+import ir.NameTable;
 import visitors.Visitor;
 
 public class MethodDeclarationNode extends MemberNode implements Method {

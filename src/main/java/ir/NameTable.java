@@ -1,9 +1,8 @@
-package middleware;
+package ir;
 
 import java.util.HashMap;
 
 import components.BlockNode;
-import ir.Type;
 
 public class NameTable {
 

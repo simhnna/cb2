@@ -11,7 +11,7 @@ import components.types.PredefinedMethods;
 import ir.Field;
 import ir.Method;
 import ir.Type;
-import middleware.NameTable;
+import ir.NameTable;
 import visitors.Visitor;
 
 public class ClassNode extends Node implements Type {

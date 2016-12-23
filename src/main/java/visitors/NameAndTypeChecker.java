@@ -35,8 +35,8 @@ import components.types.VoidType;
 import ir.Field;
 import ir.Method;
 import ir.Type;
-import middleware.NameTable;
-import middleware.NameTableEntry;
+import ir.NameTable;
+import ir.NameTableEntry;
 import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {

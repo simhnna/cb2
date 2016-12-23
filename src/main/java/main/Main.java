@@ -3,7 +3,7 @@ package main;
 import java.io.File;
 
 import components.FileNode;
-import middleware.NameTable;
+import ir.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
 import visitors.JavaCodeGenerator;
