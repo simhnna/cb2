@@ -132,7 +132,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
-        classNode.setNameTable(nameTable);
         nameTable.addName("this", CompositeType.getDeclaredType(classNode.name));
 
         for (MemberNode n: classNode.getChildren()) {

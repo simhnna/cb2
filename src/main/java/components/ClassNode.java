@@ -11,7 +11,6 @@ import components.types.PredefinedMethods;
 import ir.Field;
 import ir.Method;
 import ir.Type;
-import ir.NameTable;
 import visitors.Visitor;
 
 public class ClassNode extends Node implements Type {
@@ -20,8 +19,6 @@ public class ClassNode extends Node implements Type {
     
     private final HashSet<Method> methods;
     private final HashSet<Field> fields;
-    
-    private NameTable nameTable = null;
 
     public ClassNode(String name, Position position) {
         super(position);
@@ -50,16 +47,6 @@ public class ClassNode extends Node implements Type {
     public Set<Field> getFields() {
         return fields;
     }
-    
-    public void setNameTable(NameTable nameTable) {
-        this.nameTable = nameTable;
-    }
-
-    /* currently unused
-    public NameTableEntry lookup(String identifier) {
-        return nameTable.lookup(identifier, false);
-    }
-    */
 
     public ArrayList<MemberNode> getChildren() {
         return children;
