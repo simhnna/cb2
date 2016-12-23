@@ -222,8 +222,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             namedType.accept(this, nameTable);
         }
         methodNode.body.accept(this, nameTable);
-        // set reference for NameTable of method
-        methodNode.setNameTable(nameTable);
         
         // check if a return statement is present
         if (methodNode.returnType.type != VoidType.INSTANCE && !methodNode.body.containsReturn()) {
