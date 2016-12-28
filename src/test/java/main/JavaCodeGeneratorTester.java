@@ -2,10 +2,7 @@ package main;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,6 +14,9 @@ import org.junit.runners.Parameterized.Parameters;
 import frontend.MINIParser;
 import testsuite.MINIException;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 @RunWith(Parameterized.class)
 public class JavaCodeGeneratorTester {
     
@@ -26,17 +26,9 @@ public class JavaCodeGeneratorTester {
         this.inputFile = inputFile;
     }
 
-    private static void runProcess(String command) throws IOException, InterruptedException {
-        StringBuilder bldr = new StringBuilder();
-        Process pro = Runtime.getRuntime().exec(command);
-        String line;
-        BufferedReader in = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
-        while ((line = in.readLine()) != null) {
-            bldr.append(line);
-        }
-        pro.waitFor();
-        assertEquals("", bldr.toString());
-        assertEquals(0, pro.exitValue());
+    private static void checkJavaCompiler(File input) throws FileNotFoundException {
+        JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
+        javac.run(null, System.out, System.err, input.getAbsolutePath());
     }
 
 
@@ -47,7 +39,7 @@ public class JavaCodeGeneratorTester {
             out = File.createTempFile("codeGenerationTest", ".java");
             out.deleteOnExit();
             MINIParser.printJavaSource(inputFile, out);
-            runProcess("javac " + out.getAbsolutePath());
+            checkJavaCompiler(out);
         } catch (IOException e) {
             fail("Failed to create temporary File");
         } catch (MINIException e) {

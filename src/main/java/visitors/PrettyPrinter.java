@@ -71,9 +71,9 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     @Override
     public Void visit(AssignmentStatementNode assignmentStatementNode, Void parameter) {
-        assignmentStatementNode.first.accept(this, null);
+        assignmentStatementNode.left.accept(this, null);
         bldr.append(" := ");
-        assignmentStatementNode.second.accept(this, null);
+        assignmentStatementNode.right.accept(this, null);
         bldr.append(";");
         return null;
     }
@@ -83,10 +83,10 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
         bldr.append("if (");
         ifNode.condition.accept(this, null);
         bldr.append(") ");
-        ifNode.first.accept(this, null);
-        if (ifNode.second != null) {
+        ifNode.ifBlock.accept(this, null);
+        if (ifNode.elseBlock != null) {
             bldr.append(" else ");
-            ifNode.second.accept(this, null);
+            ifNode.elseBlock.accept(this, null);
         }
         return null;
     }
@@ -193,9 +193,9 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
-        binaryExpressionNode.first.accept(this, null);
+        binaryExpressionNode.left.accept(this, null);
         bldr.append(" ").append(binaryExpressionNode.operator).append(" ");
-        binaryExpressionNode.second.accept(this, null);
+        binaryExpressionNode.right.accept(this, null);
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
@@ -208,7 +208,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
             bldr.append('(');
         }
         bldr.append(unaryExpressionNode.operator);
-        unaryExpressionNode.child.accept(this, null);
+        unaryExpressionNode.expression.accept(this, null);
         if (unaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }

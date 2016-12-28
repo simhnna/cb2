@@ -61,6 +61,7 @@ class A {
     args.set(1, "bla");
     var test := args.get(1);
     var a := new <A>;
+    a.firstFunction();
     a.nonRecursiveFactorial(1).print();
     a.nonRecursiveFactorial(a.otherFactorial(2)).print();
     args.size().print();

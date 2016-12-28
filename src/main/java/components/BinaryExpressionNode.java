@@ -5,8 +5,8 @@ import components.interfaces.ExpressionNode;
 import visitors.Visitor;
 
 public class BinaryExpressionNode extends ExpressionNode {
-    public final ExpressionNode first;
-    public final ExpressionNode second;
+    public final ExpressionNode left;
+    public final ExpressionNode right;
 
     public enum Operator {
         OPERATOR(null),
@@ -73,10 +73,10 @@ public class BinaryExpressionNode extends ExpressionNode {
     }
     public final Operator operator;
 
-    public BinaryExpressionNode(Position position, ExpressionNode first, ExpressionNode second, Operator operator) {
+    public BinaryExpressionNode(Position position, ExpressionNode left, ExpressionNode right, Operator operator) {
         super(position);
-        this.first = first;
-        this.second = second;
+        this.left = left;
+        this.right = right;
         this.operator = operator;
     }
 
@@ -86,6 +86,6 @@ public class BinaryExpressionNode extends ExpressionNode {
     
     @Override
     public String toString() {
-        return first + " " + operator + " " + second;
+        return left + " " + operator + " " + right;
     }
 }

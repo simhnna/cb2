@@ -21,9 +21,9 @@ public class Token implements java.io.Serializable {
      */
     public int kind;
 
-    /** The line number of the first character of this Token. */
+    /** The line number of the left character of this Token. */
     public int beginLine;
-    /** The column number of the first character of this Token. */
+    /** The column number of the left character of this Token. */
     public int beginColumn;
     /** The line number of the last character of this Token. */
     public int endLine;
@@ -50,7 +50,7 @@ public class Token implements java.io.Serializable {
      * If there are no such special tokens, this field is set to null. When
      * there are more than one such special token, this field refers to the last
      * of these special tokens, which in turn refers to the next previous
-     * special token through its specialToken field, and so on until the first
+     * special token through its specialToken field, and so on until the left
      * special token (whose specialToken field is null). The next fields of
      * special tokens refer to other special tokens that immediately follow it
      * (without an intervening regular token). If there is no such token, this

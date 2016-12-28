@@ -5,6 +5,9 @@ import java.util.List;
 
 import components.helpers.Position;
 import components.interfaces.MemberNode;
+import components.types.ArrayType;
+import components.types.StringType;
+import components.types.VoidType;
 import ir.Method;
 import ir.Type;
 import middleware.NameTable;
@@ -50,6 +53,14 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     
     public void setNameTable(NameTable nameTable) {
         this.nameTable = nameTable;
+    }
+
+    public boolean isMainMethod() {
+        if (name.equals("main") && returnType.type == VoidType.INSTANCE && arguments.size() == 1 &&
+                getArgumentTypes().get(0) == ArrayType.getOrCreateArrayType(StringType.INSTANCE, 1)) {
+            return true;
+        }
+        return false;
     }
 
     /* Todo do we actually need it?

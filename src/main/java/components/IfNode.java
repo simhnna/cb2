@@ -7,14 +7,14 @@ import visitors.Visitor;
 
 public class IfNode extends StatementNode {
     public final ExpressionNode condition;
-    public final BlockNode first;
-    public final BlockNode second;
+    public final BlockNode ifBlock;
+    public final BlockNode elseBlock;
 
-    public IfNode(Position position, ExpressionNode condition, BlockNode first, BlockNode second) {
+    public IfNode(Position position, ExpressionNode condition, BlockNode ifBlock, BlockNode elseBlock) {
         super(position);
         this.condition = condition;
-        this.first = first;
-        this.second = second;
+        this.ifBlock = ifBlock;
+        this.elseBlock = elseBlock;
     }
 
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {

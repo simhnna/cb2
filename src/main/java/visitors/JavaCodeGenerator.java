@@ -7,11 +7,7 @@ import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
-import components.types.ArrayType;
-import components.types.BooleanType;
-import components.types.CompositeType;
-import components.types.PredefinedMethods;
-import components.types.StringType;
+import components.types.*;
 import ir.Field;
 import ir.Method;
 import ir.Name;
@@ -29,7 +25,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     private char currentChar = 'a';
     
     private void generateNewName(Name element) {
-        if (element instanceof MethodDeclarationNode && element.getName().equals("main")) {
+        if (element instanceof MethodDeclarationNode && ((MethodDeclarationNode) element).isMainMethod()) {
             names.put(element, "main");
             return;
         }
@@ -94,7 +90,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
-        if(methodNode.name.equals("main")) {
+        if(methodNode.isMainMethod()) {
             bldr.append("public static ");
         }
         methodNode.returnType.accept(this, null);
@@ -112,9 +108,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(AssignmentStatementNode assignmentStatementNode, Void parameter) {
-        assignmentStatementNode.first.accept(this, null);
+        assignmentStatementNode.left.accept(this, null);
         bldr.append(" = ");
-        assignmentStatementNode.second.accept(this, null);
+        assignmentStatementNode.right.accept(this, null);
         bldr.append(";");
         return null;
     }
@@ -124,10 +120,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         bldr.append("if (");
         ifNode.condition.accept(this, null);
         bldr.append(") ");
-        ifNode.first.accept(this, null);
-        if (ifNode.second != null) {
+        ifNode.ifBlock.accept(this, null);
+        if (ifNode.elseBlock != null) {
             bldr.append(" else ");
-            ifNode.second.accept(this, null);
+            ifNode.elseBlock.accept(this, null);
         }
         return null;
     }
@@ -295,9 +291,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append('(');
         }
-        binaryExpressionNode.first.accept(this, null);
+        binaryExpressionNode.left.accept(this, null);
         bldr.append(" ").append(binaryExpressionNode.operator).append(" ");
-        binaryExpressionNode.second.accept(this, null);
+        binaryExpressionNode.right.accept(this, null);
         if (binaryExpressionNode.inParenthesis()) {
             bldr.append(')');
         }
@@ -308,7 +304,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     public Void visit(UnaryExpressionNode unaryExpressionNode, Void parameter) {
         bldr.append('(');
         bldr.append(unaryExpressionNode.operator);
-        unaryExpressionNode.child.accept(this, null);
+        unaryExpressionNode.expression.accept(this, null);
         bldr.append(')');
         return null;
     }
@@ -329,7 +325,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FileNode fileNode, Void parameter) {
-        // redefine names for classes, methods and fields first
+        // redefine names for classes, methods and fields left
         for (ClassNode cls: fileNode.classes) {
             generateNewName(cls);
             for (MemberNode member: cls.getChildren()) {

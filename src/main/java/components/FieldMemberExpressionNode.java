@@ -26,10 +26,12 @@ public class FieldMemberExpressionNode extends MemberExpressionNode {
     }
 
     public void setResolvedField(Field resolvedField) {
+        assert nameTableEntry == null;
         this.resolvedField = resolvedField;
     }
 
     public void setNameTableEntry(NameTableEntry nameTableEntry) {
+        assert resolvedField == null;
         this.nameTableEntry = nameTableEntry;
     }
     

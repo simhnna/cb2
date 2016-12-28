@@ -22,14 +22,10 @@ public class BlockNode extends StatementNode {
     }
 
     
-    public void setContainsReturn() {
-        returnStatementPresent = true;
+    public void setContainsReturn(boolean containsReturn) {
+        returnStatementPresent = containsReturn;
     }
-    
-    public void clearReturn() {
-        returnStatementPresent = false;
-    }
-    
+
     public boolean containsReturn() {
         return returnStatementPresent;
     }

@@ -46,8 +46,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
-        Type first = assignmentStatementNode.first.accept(this, nameTable);
-        Type second = assignmentStatementNode.second.accept(this, nameTable);
+        if (!(assignmentStatementNode.left instanceof FieldMemberExpressionNode)) {
+            throw new TypeException(assignmentStatementNode.left.position.path, assignmentStatementNode.left.position.line,
+                    "The left side of an assignment has to be a field");
+        }
+        Type first = assignmentStatementNode.left.accept(this, nameTable);
+        Type second = assignmentStatementNode.right.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(assignmentStatementNode.position.path, assignmentStatementNode.position.line,
                     "Types don't match: " + first.getName() + " != " + second.getName());
@@ -64,8 +68,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          * &&, || --> both are of type bool
          *
          */
-        Type first = binaryExpressionNode.first.accept(this, nameTable);
-        Type second = binaryExpressionNode.second.accept(this, nameTable);
+        Type first = binaryExpressionNode.left.accept(this, nameTable);
+        Type second = binaryExpressionNode.right.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(binaryExpressionNode.position.path, binaryExpressionNode.position.line, "Types don't match: " + first.getName() + " != " + second.getName());
         }
@@ -120,7 +124,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             s.accept(this, newTable);
         }
         if (blockNode.containsReturn()) {
-            nameTable.owner.setContainsReturn();
+            nameTable.owner.setContainsReturn(true);
         }
         return null;
     }
@@ -168,13 +172,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(ifNode.position.path, ifNode.position.line,
                     "condition should be of type bool found " + type.getName() + " instead");
         }
-        ifNode.first.accept(this, nameTable);
-        if (ifNode.second != null) {
-            ifNode.second.accept(this, nameTable);
+        ifNode.ifBlock.accept(this, nameTable);
+        if (ifNode.elseBlock != null) {
+            ifNode.elseBlock.accept(this, nameTable);
         } 
-        if (ifNode.second == null || !ifNode.second.containsReturn()) {
+        if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
             // clear return in parent block
-            nameTable.owner.clearReturn();
+            nameTable.owner.setContainsReturn(false);
         }
         return null;
     }
@@ -276,7 +280,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } else if (returnType != currentMethod.getReturnType()) {
             throw new TypeException(returnNode.position.path, returnNode.position.line, "Expected return type '" +  "' but found '" + returnType + "' instead" );
         }
-        nameTable.owner.setContainsReturn();
+        nameTable.owner.setContainsReturn(true);
         return returnType;
     }
 
@@ -288,7 +292,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(UnaryExpressionNode unaryExpressionNode, NameTable nameTable) throws TypeException {
-        Type child_t = unaryExpressionNode.child.accept(this, nameTable);
+        Type child_t = unaryExpressionNode.expression.accept(this, nameTable);
         if ((child_t == BooleanType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.NEGATION)
         ||  (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS)) {
             return child_t;
@@ -307,7 +311,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         whileNode.body.accept(this, nameTable);
         
         // clear possible return Value in parent block
-        nameTable.owner.clearReturn();
+        nameTable.owner.setContainsReturn(false);
         return null;
     }
 
@@ -354,6 +358,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             } catch (IllegalArgumentException e) {
                 throw new TypeException(typeNode.position.path, typeNode.position.line, e.getMessage());
             }
+        } else if (typeNode.type instanceof ArrayType && ((ArrayType) typeNode.type).getBasicDataType() == VoidType.INSTANCE) {
+            throw new TypeException(typeNode.position.path, typeNode.position.line, "Arrays with basetype void are not allowed!");
         }
         return typeNode.type;
     }
