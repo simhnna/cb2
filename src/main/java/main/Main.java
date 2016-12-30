@@ -6,6 +6,7 @@ import components.FileNode;
 import ir.NameTable;
 import parser.MINIGrammar;
 import testsuite.MINIException;
+import visitors.ByteCodeGenerator;
 import visitors.JavaCodeGenerator;
 import visitors.NameAndTypeChecker;
 
@@ -21,7 +22,9 @@ public class Main {
             classes.accept(checker, null);
             JavaCodeGenerator javaPrinter = new JavaCodeGenerator();
             classes.accept(javaPrinter, null);
-            System.out.println(javaPrinter.toString());
+//            System.out.println(javaPrinter.toString());
+            ByteCodeGenerator generator = new ByteCodeGenerator();
+            classes.accept(generator, null);
         } catch (MINIException e) {
             e.printStackTrace();
         }
