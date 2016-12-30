@@ -12,7 +12,7 @@ import ir.Field;
 import ir.Method;
 import ir.Name;
 import ir.Type;
-import middleware.NameTableEntry;
+import ir.NameTableEntry;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
 

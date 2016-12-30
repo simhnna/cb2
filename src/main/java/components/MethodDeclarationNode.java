@@ -10,15 +10,12 @@ import components.types.StringType;
 import components.types.VoidType;
 import ir.Method;
 import ir.Type;
-import middleware.NameTable;
 import visitors.Visitor;
 
 public class MethodDeclarationNode extends MemberNode implements Method {
     public final TypeNode returnType;
     public final ArrayList<NamedType> arguments;
     public final BlockNode body;
-    
-    private NameTable nameTable = null;
 
     public MethodDeclarationNode(String name, TypeNode returnType, ArrayList<NamedType> arguments, BlockNode body, Position position) {
         super(position, name);
@@ -50,10 +47,6 @@ public class MethodDeclarationNode extends MemberNode implements Method {
         }
         return argumentTypes;
     }
-    
-    public void setNameTable(NameTable nameTable) {
-        this.nameTable = nameTable;
-    }
 
     public boolean isMainMethod() {
         if (name.equals("main") && returnType.type == VoidType.INSTANCE && arguments.size() == 1 &&
@@ -62,12 +55,6 @@ public class MethodDeclarationNode extends MemberNode implements Method {
         }
         return false;
     }
-
-    /* Todo do we actually need it?
-    public NameTable getNameTable() {
-        return nameTable;
-    }
-     */
 
     @Override
     public String toString() {

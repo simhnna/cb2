@@ -35,8 +35,8 @@ import components.types.VoidType;
 import ir.Field;
 import ir.Method;
 import ir.Type;
-import middleware.NameTable;
-import middleware.NameTableEntry;
+import ir.NameTable;
+import ir.NameTableEntry;
 import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
@@ -132,7 +132,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
-        classNode.setNameTable(nameTable);
         nameTable.addName("this", CompositeType.getDeclaredType(classNode.name));
 
         for (MemberNode n: classNode.getChildren()) {
@@ -223,8 +222,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             namedType.accept(this, nameTable);
         }
         methodNode.body.accept(this, nameTable);
-        // set reference for NameTable of method
-        methodNode.setNameTable(nameTable);
         
         // check if a return statement is present
         if (methodNode.returnType.type != VoidType.INSTANCE && !methodNode.body.containsReturn()) {
