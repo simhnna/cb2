@@ -1,14 +1,16 @@
 package visitors;
 
-import com.sun.org.apache.bcel.internal.classfile.Field;
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
-import com.sun.org.apache.bcel.internal.classfile.Method;
-import com.sun.org.apache.bcel.internal.generic.*;
-import com.sun.org.apache.bcel.internal.generic.ArrayType;
+
 import components.*;
 import components.interfaces.MemberNode;
+import components.interfaces.StatementNode;
 import components.types.*;
 import ir.Name;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ArrayType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +47,12 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(BlockNode blockNode, Object parameter) throws RuntimeException {
-        return null;
+        ConstantPoolGen cp = (ConstantPoolGen) parameter;
+        InstructionList il = new InstructionList();
+        for (StatementNode s: blockNode.children) {
+            s.accept(this, cp);
+        }
+        return il;
     }
 
     @Override
@@ -75,7 +82,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(DeclarationStatementNode declarationStatementNode, Object parameter) throws RuntimeException {
-        return null;
+        generateNewName(declarationStatementNode);
+        LocalVariableGen var = new LocalVariableGen(2, names.get(declarationStatementNode), getBCELType(declarationStatementNode.getType()), null, null);
+        return var.getLocalVariable((ConstantPoolGen) parameter);
     }
 
     @Override
@@ -107,7 +116,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             argNames[counter] = names.get(t);
             counter++;
         }
-        InstructionList il = new InstructionList();
+        InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
         il.append(new RETURN());
         MethodGen method = new MethodGen(ACC_PUBLIC, getBCELType(methodNode.getReturnType()),argTypes, argNames,
                 names.get(methodNode), cls.getClassName(), il, cls.getConstantPool());
@@ -184,7 +193,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         } else if (t == VoidType.INSTANCE) {
             return Type.VOID;
         } else if (t instanceof CompositeType) {
-            return Type.getType("L" + names.get(((CompositeType) t).getType()));
+            return Type.getType("L" + names.get(((CompositeType) t).getType()) + ";");
         } else if (t instanceof components.types.ArrayType) {
             return new ArrayType(getBCELType(((components.types.ArrayType) t).getBasicDataType()), ((components.types.ArrayType) t).getDimensions());
         }
