@@ -3,6 +3,7 @@ package ir;
 import java.util.HashMap;
 
 import components.BlockNode;
+import components.types.CompositeType;
 
 public class NameTable {
 
@@ -30,10 +31,10 @@ public class NameTable {
         return name;
     }
     
-    public NameTableEntry addName(String id, Type type) {
-        NameTableEntry entry = new NameTableEntry(type);
-        if (names.put(id, entry) != null) {
-            throw new IllegalArgumentException("The identifier '" + id + "' was already declared in this scope");
+    public NameTableEntry addName(Name name, Type type) {
+        NameTableEntry entry = new NameTableEntry(name, type);
+        if (names.put(name.getName(), entry) != null) {
+            throw new IllegalArgumentException("The identifier '" + name.getName() + "' was already declared in this scope");
         }
         return entry;
     }
@@ -41,5 +42,9 @@ public class NameTable {
     @Override
     public String toString() {
         return names.values().toString();
+    }
+
+    public void addName(CompositeType declaredType) {
+        names.put("this", new NameTableEntry(declaredType, declaredType));
     }
 }

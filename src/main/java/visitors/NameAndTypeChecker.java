@@ -132,7 +132,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
-        nameTable.addName("this", CompositeType.getDeclaredType(classNode.name));
+        nameTable.addName(CompositeType.getDeclaredType(classNode.name));
 
         for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
@@ -145,7 +145,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         final Type declaredType = declarationStatementNode.expression.accept(this, nameTable);
         declarationStatementNode.setType(declaredType);
         try {
-            declarationStatementNode.setNameTableEntry(nameTable.addName(declarationStatementNode.name, declaredType));
+            nameTable.addName(declarationStatementNode, declaredType);
         } catch (IllegalArgumentException e) {
             // Duplicate identifier
             throw new TypeException(declarationStatementNode.position.path, declarationStatementNode.position.line, e.getMessage());
@@ -159,7 +159,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  Fields are added in classes, so that they are defined in all methods regardless of order
          *  We are however adding this field to the nameTable of the class
          */
-        fieldNode.setNameTableEntry(nameTable.addName(fieldNode.getName(), fieldNode.getType()));
+        fieldNode.setNameTableEntry(nameTable.addName(fieldNode, fieldNode.getType()));
         
         return null;
     }
@@ -331,7 +331,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         if (nameTableEntry == null) {
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
         }
-        fieldMemberExpressionNode.setNameTableEntry(nameTableEntry);
+        fieldMemberExpressionNode.setName(nameTableEntry.name);
         return nameTableEntry.type;
     }
 
@@ -339,7 +339,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(NamedType namedType, NameTable nameTable) throws TypeException {
         namedType.type.accept(this, nameTable);
         try {
-            namedType.setNameTableEntry(nameTable.addName(namedType.name, namedType.type.type));
+            nameTable.addName(namedType, namedType.type.type);
         } catch (IllegalArgumentException e) {
             // Duplicate names used in Method declaration
             throw new TypeException(namedType.position.path, namedType.position.line, e.getMessage());

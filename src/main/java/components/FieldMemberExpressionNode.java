@@ -4,13 +4,13 @@ import components.helpers.Position;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberExpressionNode;
 import ir.Field;
-import ir.NameTableEntry;
+import ir.Name;
 import visitors.Visitor;
 
 public class FieldMemberExpressionNode extends MemberExpressionNode {
 
     private Field resolvedField;
-    private NameTableEntry nameTableEntry;
+    private Name resolvedName;
 
     public FieldMemberExpressionNode(ExpressionNode baseObject, String identifier, Position position) {
         super(baseObject, identifier, position);
@@ -26,17 +26,14 @@ public class FieldMemberExpressionNode extends MemberExpressionNode {
     }
 
     public void setResolvedField(Field resolvedField) {
-        assert nameTableEntry == null;
         this.resolvedField = resolvedField;
     }
-
-    public void setNameTableEntry(NameTableEntry nameTableEntry) {
-        assert resolvedField == null;
-        this.nameTableEntry = nameTableEntry;
-    }
     
-    public NameTableEntry getNameTableEntry() {
-        return nameTableEntry;
+    public Name getName() {
+        return resolvedName;
     }
 
+    public void setName(Name name) {
+        this.resolvedName = name;
+    }
 }

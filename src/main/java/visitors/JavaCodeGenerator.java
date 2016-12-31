@@ -12,7 +12,6 @@ import ir.Field;
 import ir.Method;
 import ir.Name;
 import ir.Type;
-import ir.NameTableEntry;
 
 public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentException> {
 
@@ -20,28 +19,32 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     private final StringBuilder bldr = new StringBuilder();
     private final HashMap<Name, String> names = new HashMap<>();
-    private final HashMap<NameTableEntry, String> nameTableNames = new HashMap<>();
-    private String currentName = "_";
+    private StringBuilder currentName = new StringBuilder();
     private char currentChar = 'a';
-    
+
+    public JavaCodeGenerator() {
+        currentName.append('_');
+    }
+
     private void generateNewName(Name element) {
         if (element instanceof MethodDeclarationNode && ((MethodDeclarationNode) element).isMainMethod()) {
             names.put(element, "main");
             return;
         }
+
+
+
         if (currentChar > 'z') {
-            currentName += 'a';
+            currentChar = currentName.charAt(currentName.length() - 1);
+            currentChar++;
+            if (currentChar > 'z' || currentChar - 1 == '_') {
+                currentName.append('a');
+            } else {
+                currentName.setCharAt(currentName.length() - 1, currentChar);
+            }
             currentChar = 'a';
         }
-        names.put(element, currentName + currentChar++);
-    }
-    
-    private void generateNewName(NameTableEntry element) {
-        if (currentChar > 'z') {
-            currentName += 'a';
-            currentChar = 'a';
-        }
-        nameTableNames.put(element, currentName + currentChar++);
+        names.put(element, currentName.toString() + currentChar++);
     }
     
     @Override
@@ -82,9 +85,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
-        nameTableNames.put(fieldNode.getNameTableEntry(), names.get(fieldNode));
         fieldNode.type.accept(this, null);
-        bldr.append(" ").append(nameTableNames.get(fieldNode.getNameTableEntry())).append(";");
+        bldr.append(" ").append(names.get(fieldNode)).append(";");
         return null;
     }
 
@@ -174,8 +176,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(DeclarationStatementNode declarationStatementNode, Void parameter) {
-        generateNewName(declarationStatementNode.getNameTableEntry());
-        bldr.append(getTypeRepresentation(declarationStatementNode.getType())).append(" ").append(nameTableNames.get(declarationStatementNode.getNameTableEntry())).append(" = ");
+        generateNewName(declarationStatementNode);
+        bldr.append(getTypeRepresentation(declarationStatementNode.getType())).append(" ").append(names.get(declarationStatementNode)).append(" = ");
         declarationStatementNode.expression.accept(this, null);
         bldr.append(";");
         return null;
@@ -188,13 +190,14 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             bldr.append(".");
             
         }
-        NameTableEntry nameTableEntry = memberExpression.getNameTableEntry();
-        if (nameTableEntry == null) {
+        Name name = memberExpression.getName();
+        if (name == null) {
             Field field = memberExpression.getResolvedField();
             bldr.append(names.get(field));
             return null;
         }
-        bldr.append(nameTableNames.get(memberExpression.getNameTableEntry()));
+        String s = names.get(name);
+        bldr.append(s);
         return null;
     }
 
@@ -311,9 +314,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(NamedType namedType, Void parameter) {
-        generateNewName(namedType.getNameTableEntry());
+        generateNewName(namedType);
         namedType.type.accept(this, null);
-        bldr.append(" ").append(nameTableNames.get(namedType.getNameTableEntry()));
+        bldr.append(" ").append(names.get(namedType));
         return null;
     }
 

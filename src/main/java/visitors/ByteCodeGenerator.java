@@ -8,14 +8,31 @@ import com.sun.org.apache.bcel.internal.generic.ArrayType;
 import components.*;
 import components.interfaces.MemberNode;
 import components.types.*;
+import ir.Name;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.sun.org.apache.bcel.internal.Constants.ACC_PRIVATE;
 import static com.sun.org.apache.bcel.internal.Constants.ACC_PUBLIC;
 
 
 public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeException> {
+
+    private final HashMap<Name, String> names = new HashMap<>();
+
+    private void generateNewName(Name element) {
+        if (element instanceof MethodDeclarationNode && ((MethodDeclarationNode) element).isMainMethod()) {
+            names.put(element, "main");
+            return;
+        }
+        String name = element.getName();
+        while (names.containsValue(name)) {
+            name = "_" + name;
+        }
+        names.put(element, name);
+    }
+
     @Override
     public Object visit(AssignmentStatementNode assignmentStatementNode, Object parameter) throws RuntimeException {
         return null;
@@ -33,8 +50,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(ClassNode classNode, Object parameter) throws RuntimeException {
+        generateNewName(classNode);
         // generate the class
-        ClassGen generatedClass = new ClassGen(classNode.getName(), "java.lang.Object", classNode.position.path.getName(), ACC_PUBLIC, null);
+        ClassGen generatedClass = new ClassGen(names.get(classNode), "java.lang.Object", classNode.position.path.getName(), ACC_PUBLIC, null);
 
         // add the constructor
         generatedClass.addEmptyConstructor(ACC_PUBLIC);
@@ -62,7 +80,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(FieldNode fieldNode, Object parameter) throws RuntimeException {
-        return new FieldGen(ACC_PRIVATE, getBCELType(fieldNode.getType()), fieldNode.getName(), ((ClassGen) parameter).getConstantPool()).getField();
+        generateNewName(fieldNode);
+        return new FieldGen(ACC_PRIVATE, getBCELType(fieldNode.getType()), names.get(fieldNode), ((ClassGen) parameter).getConstantPool()).getField();
     }
 
     @Override
@@ -77,19 +96,21 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(MethodDeclarationNode methodNode, Object parameter) throws RuntimeException {
+        generateNewName(methodNode);
         ClassGen cls = (ClassGen) parameter;
         Type[] argTypes = new Type[methodNode.arguments.size()];
         String[] argNames = new String[argTypes.length];
         int counter = 0;
         for (NamedType t: methodNode.arguments) {
+            t.accept(this, null);
             argTypes[counter] = getBCELType(t.type.type);
-            argNames[counter] = t.name;
+            argNames[counter] = names.get(t);
             counter++;
         }
         InstructionList il = new InstructionList();
         il.append(new RETURN());
         MethodGen method = new MethodGen(ACC_PUBLIC, getBCELType(methodNode.getReturnType()),argTypes, argNames,
-                methodNode.getName(), cls.getClassName(), il, cls.getConstantPool());
+                names.get(methodNode), cls.getClassName(), il, cls.getConstantPool());
         return method.getMethod();
     }
 
@@ -135,6 +156,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(NamedType namedType, Object parameter) throws RuntimeException {
+        generateNewName(namedType);
         return null;
     }
 
@@ -162,7 +184,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         } else if (t == VoidType.INSTANCE) {
             return Type.VOID;
         } else if (t instanceof CompositeType) {
-            return Type.getType("L" + t.getName());
+            return Type.getType("L" + names.get(((CompositeType) t).getType()));
         } else if (t instanceof components.types.ArrayType) {
             return new ArrayType(getBCELType(((components.types.ArrayType) t).getBasicDataType()), ((components.types.ArrayType) t).getDimensions());
         }
