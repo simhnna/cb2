@@ -15,8 +15,10 @@ import org.apache.bcel.generic.ArrayType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.sun.org.apache.bcel.internal.Constants.ACC_PRIVATE;
-import static com.sun.org.apache.bcel.internal.Constants.ACC_PUBLIC;
+import static org.apache.bcel.Const.ACC_PUBLIC;
+import static org.apache.bcel.Const.ACC_STATIC;
+import static org.apache.bcel.Const.ACC_PRIVATE;
+
 
 
 public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeException> {
@@ -118,7 +120,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         }
         InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
         il.append(new RETURN());
-        MethodGen method = new MethodGen(ACC_PUBLIC, getBCELType(methodNode.getReturnType()),argTypes, argNames,
+        MethodGen method = new MethodGen(methodNode.isMainMethod() ? ACC_PUBLIC | ACC_STATIC : ACC_PUBLIC,
+                getBCELType(methodNode.getReturnType()),argTypes, argNames,
                 names.get(methodNode), cls.getClassName(), il, cls.getConstantPool());
         return method.getMethod();
     }
