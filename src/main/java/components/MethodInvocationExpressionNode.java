@@ -25,16 +25,6 @@ public class MethodInvocationExpressionNode extends MemberExpressionNode {
         return visitor.visit(this, parameter);
     }
 
-    public Type getResolvedType() {
-        return this.resolvedType;
-    }
-
-    public void setResolvedType(Type baseObject) {
-        if (resolvedType == null) {
-            resolvedType = baseObject;
-        }
-    }
-
     public void setResolvedMethod(Method method) {
         resolvedMethod = method;
     }

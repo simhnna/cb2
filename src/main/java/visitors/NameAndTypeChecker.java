@@ -107,8 +107,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             case LTE:
             case NOTSAME:
             case SAME:
+                binaryExpressionNode.setResultingType(BooleanType.INSTANCE);
                 return BooleanType.INSTANCE;
             default:
+                binaryExpressionNode.setResultingType(first);
                 return first;
         }
     }
@@ -192,7 +194,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } else {
             throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
         }
-        methodInvocationExpressionNode.setResolvedType(baseObject);
+        methodInvocationExpressionNode.setResultingType(baseObject);
         for (Method m: baseObject.getMethods()) {
             if (m.getName().equals(methodInvocationExpressionNode.identifier)) {
                 ArrayList<ExpressionNode> invocationArguments = methodInvocationExpressionNode.arguments;
@@ -264,8 +266,10 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
             // type is null, when it's a _this_ literalNode
+            primitiveType.setResultingType(nameTable.lookup(primitiveType.token, inNonStaticMethod()).type);
             return nameTable.lookup(primitiveType.token, inNonStaticMethod()).type;
         }
+        primitiveType.setResultingType(primitiveType.type);
         return primitiveType.type;
     }
 
@@ -292,6 +296,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type child_t = unaryExpressionNode.expression.accept(this, nameTable);
         if ((child_t == BooleanType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.NEGATION)
         ||  (child_t == IntegerType.INSTANCE && unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS)) {
+            unaryExpressionNode.setResultingType(child_t);
             return child_t;
         }
         throw new TypeException(unaryExpressionNode.position.path, unaryExpressionNode.position.line, "UnaryOperator '" + unaryExpressionNode.operator + "' not compatible with type '" + child_t.getName() + "'");
@@ -322,6 +327,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
                         // we need to set the nameTableEntry of the class field
                         fieldMemberExpressionNode.setResolvedField(f);
                     }
+                    fieldMemberExpressionNode.setResultingType(f.getType());
                     return f.getType();
                 }
             }
@@ -332,6 +338,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
         }
         fieldMemberExpressionNode.setName(nameTableEntry.name);
+        fieldMemberExpressionNode.setResultingType(nameTableEntry.type);
         return nameTableEntry.type;
     }
 

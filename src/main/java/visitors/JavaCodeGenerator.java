@@ -240,14 +240,14 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append(".length");
             }
-        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResultingType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append("[");
                 methodMemberExpressionNode.arguments.get(0).accept(this, null);
                 bldr.append("]");
             }
-        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResolvedType() instanceof ArrayType) {
+        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResultingType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append("[");
