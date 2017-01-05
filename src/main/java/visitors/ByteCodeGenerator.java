@@ -40,7 +40,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     private final HashMap<Name, Integer> variableAssignment = new HashMap<>();
 
     private MethodGen currentMethod = null;
-    private InstructionHandle currentInstructionHandle = null;
 
     @Override
     public Object visit(AssignmentStatementNode assignmentStatementNode, Object parameter) throws RuntimeException {
@@ -70,6 +69,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         il.append((InstructionList) binaryExpressionNode.left.accept(this, parameter));
         il.append((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+
+        InstructionHandle tmp, end;
         switch(binaryExpressionNode.operator.getParent()) {
             case INT_OP:
                 switch(binaryExpressionNode.operator) {
@@ -77,16 +78,32 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                         il.append(InstructionConst.IDIV);
                         break;
                     case GT:
-                        il.append(new IF_ICMPGT(currentInstructionHandle).negate());
+                        end = il.append(new ICONST(0));
+                        tmp = il.append(new NOP());
+                        tmp = il.insert(end, new GOTO(tmp));
+                        tmp = il.insert(tmp, new ICONST(1));
+                        il.insert(tmp, new IF_ICMPGT(end).negate());
                         break;
                     case GTE:
-                        il.append(new IF_ICMPGE(currentInstructionHandle).negate());
+                        end = il.append(new ICONST(0));
+                        tmp = il.append(new NOP());
+                        tmp = il.insert(end, new GOTO(tmp));
+                        tmp = il.insert(tmp, new ICONST(1));
+                        il.insert(tmp, new IF_ICMPGE(end).negate());
                         break;
                     case LT:
-                        il.append(new IF_ICMPLT(currentInstructionHandle).negate());
+                        end = il.append(new ICONST(0));
+                        tmp = il.append(new NOP());
+                        tmp = il.insert(end, new GOTO(tmp));
+                        tmp = il.insert(tmp, new ICONST(1));
+                        il.insert(tmp, new IF_ICMPLT(end).negate());
                         break;
                     case LTE:
-                        il.append(new IF_ICMPLE(currentInstructionHandle).negate());
+                        end = il.append(new ICONST(0));
+                        tmp = il.append(new NOP());
+                        tmp = il.insert(end, new GOTO(tmp));
+                        tmp = il.insert(tmp, new ICONST(1));
+                        il.insert(tmp, new IF_ICMPLE(end).negate());
                         break;
                     case MOD:
                         il.append(InstructionConst.IREM);
@@ -177,13 +194,13 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     @Override
     public Object visit(IfNode ifNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
-        //il.append((InstructionList) ifNode.condition.accept(this, parameter));
-
-        il.append((InstructionList) ifNode.ifBlock.accept(this, parameter));
+        il.insert((InstructionList) ifNode.ifBlock.accept(this, parameter));
         if (ifNode.elseBlock != null) {
-            il.append((InstructionList) ifNode.elseBlock.accept(this, parameter));
+            il.insert(new IFNE(il.insert((InstructionList) ifNode.elseBlock.accept(this, parameter))));
+        } else {
+            il.insert(new IFNE(il.append(new NOP())));
         }
-
+        il.insert((InstructionList) ifNode.condition.accept(this, parameter));
         return il;
     }
 
@@ -293,9 +310,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         il.append((InstructionList) whileNode.body.accept(this, parameter));
         il.append(new NOP());
-        currentInstructionHandle = il.getEnd();
-        il.insert((InstructionList) whileNode.condition.accept(this, parameter));
-        currentInstructionHandle = null;
+        il.insert(new IFNE(il.getEnd()));
+        il.append(new GOTO(il.insert((InstructionList) whileNode.condition.accept(this, parameter))));
         return il;
     }
 
