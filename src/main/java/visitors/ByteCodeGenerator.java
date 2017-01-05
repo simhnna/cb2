@@ -114,9 +114,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                     case SUB:
                         il.append(InstructionConst.ISUB);
                         break;
-                    case PLUS:
-                        il.append(InstructionConst.IADD);
-                        break;
                 }
                 break;
             case BOOL_OP:
@@ -130,7 +127,24 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 }
                 break;
             case MULTI_TYPE_OP:
-                // string plus
+                // int and string plus
+                if (binaryExpressionNode.left.getResultingType() == IntegerType.INSTANCE) {
+                    il.append(InstructionConst.IADD);
+                } else {
+
+                }
+                break;
+            case ANY_OP:
+                end = il.append(new ICONST(0));
+                tmp = il.append(new NOP());
+                tmp = il.insert(end, new GOTO(tmp));
+                tmp = il.insert(tmp, new ICONST(1));
+                if(binaryExpressionNode.operator == BinaryExpressionNode.Operator.SAME) {
+                    il.insert(tmp, new IFNE(end));
+                } else {
+                    il.insert(tmp, new IFEQ(end));
+                }
+                break;
         }
 
         return il;
@@ -216,7 +230,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         String[] argNames = new String[argTypes.length];
         int counter = 0;
         for (NamedType t: methodNode.arguments) {
-            //t.accept(this, null);
             argTypes[counter] = getBCELType(t.type.type);
             argNames[counter] = t.getName();
             variableAssignment.put(t, counter);
