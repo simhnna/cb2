@@ -6,45 +6,117 @@ import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
 import components.types.*;
 import ir.Name;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
+import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ArrayType;
+import org.apache.bcel.generic.ClassGen;
+import org.apache.bcel.generic.ConstantPoolGen;
+import org.apache.bcel.generic.FieldGen;
+import org.apache.bcel.generic.ICONST;
+import org.apache.bcel.generic.IF_ICMPGE;
+import org.apache.bcel.generic.IF_ICMPGT;
+import org.apache.bcel.generic.IF_ICMPLE;
+import org.apache.bcel.generic.IF_ICMPLT;
+import org.apache.bcel.generic.ISTORE;
+import org.apache.bcel.generic.InstructionFactory;
+import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.InstructionList;
+import org.apache.bcel.generic.MethodGen;
+import org.apache.bcel.generic.PUSH;
+import org.apache.bcel.generic.RETURN;
+import org.apache.bcel.generic.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static org.apache.bcel.Const.ACC_PUBLIC;
-import static org.apache.bcel.Const.ACC_STATIC;
-import static org.apache.bcel.Const.ACC_PRIVATE;
 
 
 
 public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeException> {
 
-    private final HashMap<Name, String> names = new HashMap<>();
+    private final HashMap<Name, Integer> variableAssignment = new HashMap<>();
 
-    private void generateNewName(Name element) {
-        if (element instanceof MethodDeclarationNode && ((MethodDeclarationNode) element).isMainMethod()) {
-            names.put(element, "main");
-            return;
-        }
-        String name = element.getName();
-        while (names.containsValue(name)) {
-            name = "_" + name;
-        }
-        names.put(element, name);
-    }
+    private MethodGen currentMethod = null;
+    private InstructionHandle currentInstructionHandle = null;
 
     @Override
     public Object visit(AssignmentStatementNode assignmentStatementNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        il.append((InstructionList) assignmentStatementNode.right.accept(this, parameter));
+        // we don't need to visit the left node, because we already know where it points to
+        FieldMemberExpressionNode assignedField = (FieldMemberExpressionNode) assignmentStatementNode.left;
+        int index = 10;
+        if (assignedField.getName() != null) {
+            // normal variable
+            index = variableAssignment.get(assignedField.getName());
+        } else {
+            // class field TODO
+            //il.append(new PUTFIELD(0));
+        }
+        if (assignmentStatementNode.getAssignedType() == IntegerType.INSTANCE ||
+                assignmentStatementNode.getAssignedType() == BooleanType.INSTANCE) {
+            il.append(new ISTORE(index));
+        } else {
+            il.append(new ASTORE(index));
+        }
+        return il;
     }
 
     @Override
     public Object visit(BinaryExpressionNode binaryExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        il.append((InstructionList) binaryExpressionNode.left.accept(this, parameter));
+        il.append((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+        switch(binaryExpressionNode.operator.getParent()) {
+            case INT_OP:
+                switch(binaryExpressionNode.operator) {
+                    case DIV:
+                        il.append(InstructionConst.IDIV);
+                        break;
+                    case GT:
+                        il.append(new IF_ICMPGT(currentInstructionHandle).negate());
+                        break;
+                    case GTE:
+                        il.append(new IF_ICMPGE(currentInstructionHandle).negate());
+                        break;
+                    case LT:
+                        il.append(new IF_ICMPLT(currentInstructionHandle).negate());
+                        break;
+                    case LTE:
+                        il.append(new IF_ICMPLE(currentInstructionHandle).negate());
+                        break;
+                    case MOD:
+                        il.append(InstructionConst.IREM);
+                        break;
+                    case MUL:
+                        il.append(InstructionConst.IMUL);
+                        break;
+                    case SUB:
+                        il.append(InstructionConst.ISUB);
+                        break;
+                    case PLUS:
+                        il.append(InstructionConst.IADD);
+                        break;
+                }
+                break;
+            case BOOL_OP:
+                switch(binaryExpressionNode.operator) {
+                    case AND:
+                        il.append(InstructionConst.IAND);
+                        break;
+                    case OR:
+                        il.append(InstructionConst.IOR);
+                        break;
+                }
+                break;
+            case MULTI_TYPE_OP:
+                // string plus
+        }
+
+        return il;
     }
 
     @Override
@@ -52,19 +124,18 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         ConstantPoolGen cp = (ConstantPoolGen) parameter;
         InstructionList il = new InstructionList();
         for (StatementNode s: blockNode.children) {
-            s.accept(this, cp);
+            il.append((InstructionList)s.accept(this, parameter));
         }
         return il;
     }
 
     @Override
     public Object visit(ClassNode classNode, Object parameter) throws RuntimeException {
-        generateNewName(classNode);
         // generate the class
-        ClassGen generatedClass = new ClassGen(names.get(classNode), "java.lang.Object", classNode.position.path.getName(), ACC_PUBLIC, null);
+        ClassGen generatedClass = new ClassGen(classNode.getName(), "java.lang.Object", classNode.position.path.getName(), Const.ACC_PUBLIC, null);
 
         // add the constructor
-        generatedClass.addEmptyConstructor(ACC_PUBLIC);
+        generatedClass.addEmptyConstructor(Const.ACC_PUBLIC);
 
         // add fields and methods
         for (MemberNode member: classNode.getChildren()) {
@@ -79,96 +150,169 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         JavaClass classFile = generatedClass.getJavaClass();
         // TODO remove debug output
         System.out.println(classFile);
+        System.out.println(classFile.getConstantPool());
         return classFile;
     }
 
     @Override
     public Object visit(DeclarationStatementNode declarationStatementNode, Object parameter) throws RuntimeException {
-        generateNewName(declarationStatementNode);
-        LocalVariableGen var = new LocalVariableGen(2, names.get(declarationStatementNode), getBCELType(declarationStatementNode.getType()), null, null);
-        return var.getLocalVariable((ConstantPoolGen) parameter);
+        InstructionList il = new InstructionList();
+        il.append((InstructionList) declarationStatementNode.expression.accept(this, parameter));
+        int index = currentMethod.addLocalVariable(declarationStatementNode.getName(), getBCELType(declarationStatementNode.getType()), null, null).getIndex();
+        variableAssignment.put(declarationStatementNode, index);
+        if (declarationStatementNode.getType() == IntegerType.INSTANCE ||
+                declarationStatementNode.getType() == BooleanType.INSTANCE) {
+            il.append(new ISTORE(index));
+        } else {
+            il.append(new ASTORE(index));
+        }
+        return il;
     }
 
     @Override
     public Object visit(FieldNode fieldNode, Object parameter) throws RuntimeException {
-        generateNewName(fieldNode);
-        return new FieldGen(ACC_PRIVATE, getBCELType(fieldNode.getType()), names.get(fieldNode), ((ClassGen) parameter).getConstantPool()).getField();
+        return new FieldGen(Const.ACC_PRIVATE, getBCELType(fieldNode.getType()), fieldNode.getName(), ((ClassGen) parameter).getConstantPool()).getField();
     }
 
     @Override
     public Object visit(IfNode ifNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        //il.append((InstructionList) ifNode.condition.accept(this, parameter));
+
+        il.append((InstructionList) ifNode.ifBlock.accept(this, parameter));
+        if (ifNode.elseBlock != null) {
+            il.append((InstructionList) ifNode.elseBlock.accept(this, parameter));
+        }
+
+        return il;
     }
 
     @Override
     public Object visit(MethodInvocationExpressionNode methodInvocationExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        return new InstructionList();
     }
 
     @Override
     public Object visit(MethodDeclarationNode methodNode, Object parameter) throws RuntimeException {
-        generateNewName(methodNode);
         ClassGen cls = (ClassGen) parameter;
         Type[] argTypes = new Type[methodNode.arguments.size()];
         String[] argNames = new String[argTypes.length];
         int counter = 0;
         for (NamedType t: methodNode.arguments) {
-            t.accept(this, null);
+            //t.accept(this, null);
             argTypes[counter] = getBCELType(t.type.type);
-            argNames[counter] = names.get(t);
+            argNames[counter] = t.getName();
+            variableAssignment.put(t, counter);
             counter++;
         }
-        InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
-        il.append(new RETURN());
-        MethodGen method = new MethodGen(methodNode.isMainMethod() ? ACC_PUBLIC | ACC_STATIC : ACC_PUBLIC,
+        currentMethod = new MethodGen(methodNode.isMainMethod() ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC,
                 getBCELType(methodNode.getReturnType()),argTypes, argNames,
-                names.get(methodNode), cls.getClassName(), il, cls.getConstantPool());
-        return method.getMethod();
+                methodNode.getName(), cls.getClassName(), new InstructionList(), cls.getConstantPool());
+        InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
+        if (methodNode.getReturnType() == VoidType.INSTANCE) {
+            il.append(new RETURN());
+        }
+        currentMethod.setInstructionList(il);
+        currentMethod.setMaxLocals();
+        currentMethod.setMaxStack();
+        System.out.println(currentMethod);
+        System.out.println(currentMethod.getMethod().getCode());
+        System.out.println("-----------");
+        return currentMethod.getMethod();
     }
 
     @Override
     public Object visit(NewExpressionNode newExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        return new InstructionList(new InstructionFactory((ConstantPoolGen) parameter).createNew(newExpressionNode.getResultingType().getName()));
     }
 
     @Override
     public Object visit(NullExpressionNode nullExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        il.append(InstructionConst.ACONST_NULL);
+        return il;
     }
 
     @Override
     public Object visit(LiteralNode primitiveType, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        ConstantPoolGen cp = (ConstantPoolGen) parameter;
+        if (primitiveType.type == null) {
+            // this
+        } else {
+            if (primitiveType.type == IntegerType.INSTANCE) {
+                il.append(new PUSH(cp, Integer.parseInt(primitiveType.token)));
+            } else if (primitiveType.type == StringType.INSTANCE) {
+                cp.addString(primitiveType.token);
+            } else if (primitiveType.type == BooleanType.INSTANCE) {
+                if (primitiveType.token.equals("true")) {
+                    il.append(new ICONST(1));
+                } else {
+                    il.append(new ICONST(0));
+                }
+            }
+        }
+        return il;
     }
 
     @Override
     public Object visit(ReturnNode returnNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        il.append((InstructionList) returnNode.value.accept(this, parameter));
+        if (returnNode.value.getResultingType() == IntegerType.INSTANCE ||
+                returnNode.value.getResultingType() == BooleanType.INSTANCE) {
+            il.append(InstructionConst.IRETURN);
+        } else {
+            il.append(InstructionConst.ARETURN);
+        }
+        return il;
     }
 
     @Override
     public Object visit(SimpleStatementNode simpleStatementNode, Object parameter) throws RuntimeException {
-        return null;
+        return simpleStatementNode.expression.accept(this, parameter);
     }
 
     @Override
     public Object visit(UnaryExpressionNode unaryExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        unaryExpressionNode.expression.accept(this, parameter);
+        if (unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS) {
+            // negate integer
+            il.append(InstructionConst.INEG);
+        } else {
+            // xor 1 a boolean
+            il.append(InstructionConst.ICONST_1);
+            il.append(InstructionConst.IXOR);
+        }
+        return il;
     }
 
     @Override
     public Object visit(WhileNode whileNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        il.append((InstructionList) whileNode.body.accept(this, parameter));
+        il.append(new NOP());
+        currentInstructionHandle = il.getEnd();
+        il.insert((InstructionList) whileNode.condition.accept(this, parameter));
+        currentInstructionHandle = null;
+        return il;
     }
 
     @Override
     public Object visit(FieldMemberExpressionNode fieldMemberExpressionNode, Object parameter) throws RuntimeException {
-        return null;
+        InstructionList il = new InstructionList();
+        if (fieldMemberExpressionNode.getName() != null) {
+            // local variable
+            il.append(InstructionFactory.createLoad(getBCELType(fieldMemberExpressionNode.getResultingType()), variableAssignment.get(fieldMemberExpressionNode.getName())));
+        } else {
+            // class variable
+        }
+        return il;
     }
 
     @Override
     public Object visit(NamedType namedType, Object parameter) throws RuntimeException {
-        generateNewName(namedType);
         return null;
     }
 
@@ -196,7 +340,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         } else if (t == VoidType.INSTANCE) {
             return Type.VOID;
         } else if (t instanceof CompositeType) {
-            return Type.getType("L" + names.get(((CompositeType) t).getType()) + ";");
+            return Type.getType("L" + t.getName() + ";");
         } else if (t instanceof components.types.ArrayType) {
             return new ArrayType(getBCELType(((components.types.ArrayType) t).getBasicDataType()), ((components.types.ArrayType) t).getDimensions());
         }

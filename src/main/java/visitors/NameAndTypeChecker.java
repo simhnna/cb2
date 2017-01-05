@@ -56,6 +56,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(assignmentStatementNode.position.path, assignmentStatementNode.position.line,
                     "Types don't match: " + first.getName() + " != " + second.getName());
         }
+        assignmentStatementNode.setAssignedType(first);
         return null;
     }
 
