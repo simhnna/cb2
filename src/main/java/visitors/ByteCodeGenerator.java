@@ -235,7 +235,16 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
         if (methodInvocationExpressionNode.identifier.equals("print")) {
-            il.append(ifc.createPrintln("printing..."));
+            il.append(ifc.createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
+            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
+            Type baseType;
+            if (methodInvocationExpressionNode.getResultingType() instanceof CompositeType ||
+                    methodInvocationExpressionNode.getResultingType() instanceof components.types.ArrayType) {
+                baseType = Type.OBJECT;
+            } else {
+                baseType = getBCELType(methodInvocationExpressionNode.getResultingType());
+            }
+            il.append(ifc.createInvoke("java.io.PrintStream", "println", Type.VOID, new Type[] {baseType}, Const.INVOKEVIRTUAL));
         } else if (methodInvocationExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
             il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
             il.append(ifc.createInvoke("java.lang.String", "length", Type.INT, new Type[0], Const.INVOKEVIRTUAL));
@@ -253,14 +262,14 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getResultingType()).getBasicDataType())));
         } else {
             if (methodInvocationExpressionNode.baseObject != null) {
-                il.append(InstructionFactory.createThis());
-            } else {
                 il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
+            } else {
+                il.append(InstructionFactory.createThis());
             }
             for (ExpressionNode e: methodInvocationExpressionNode.arguments) {
                 il.append((InstructionList) e.accept(this, parameter));
             }
-            il.append(ifc.createInvoke("cls", methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResolvedMethod().getReturnType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
+            il.append(ifc.createInvoke(methodInvocationExpressionNode.getResultingType().getName(), methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResolvedMethod().getReturnType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
         }
         return il;
     }
@@ -279,11 +288,16 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         Type[] argTypes = new Type[methodNode.arguments.size()];
         String[] argNames = new String[argTypes.length];
         int counter = 0;
+        int varIndex = 0;
+        if (!methodNode.isMainMethod()) {
+            varIndex++;
+        }
         for (NamedType t: methodNode.arguments) {
             argTypes[counter] = getBCELType(t.type.type);
             argNames[counter] = t.getName();
-            variableAssignment.put(t, counter);
+            variableAssignment.put(t, varIndex);
             counter++;
+            varIndex++;
         }
         currentMethod = new MethodGen(methodNode.isMainMethod() ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC,
                 getBCELType(methodNode.getReturnType()),argTypes, argNames,
@@ -305,8 +319,18 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     public Object visit(NewExpressionNode newExpressionNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
         InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
-        // TODO still incorrect
-        return new InstructionList(new InstructionFactory((ConstantPoolGen) parameter).createNew(newExpressionNode.getResultingType().getName()));
+        if (newExpressionNode.type.type instanceof components.types.ArrayType) {
+            for (ExpressionNode e: newExpressionNode.arguments) {
+                il.append((InstructionList) e.accept(this, parameter));
+            }
+            il.append(ifc.createNewArray(getBCELType(((components.types.ArrayType) newExpressionNode.type.type).getBasicDataType()), (short) ((components.types.ArrayType) newExpressionNode.type.type).getDimensions()));
+        } else {
+            // TODO still incorrect
+            il.append(ifc.createNew(newExpressionNode.getResultingType().getName()));
+            il.append(new DUP());
+            il.append(ifc.createInvoke(newExpressionNode.getResultingType().getName(), "<init>", Type.VOID, new Type[0], Const.INVOKESPECIAL));
+        }
+        return il;
     }
 
     @Override
