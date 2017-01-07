@@ -5,13 +5,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 
 import components.FileNode;
+import org.apache.bcel.classfile.JavaClass;
 import parser.MINIGrammar;
 import parser.Token;
 import parser.TokenMgrError;
 import testsuite.MINIException;
 import testsuite.ParseException;
+import visitors.ByteCodeGenerator;
 import visitors.JavaCodeGenerator;
 import visitors.NameAndTypeChecker;
 import visitors.PrettyPrinter;
@@ -74,6 +77,21 @@ public class MINIParser {
         FileNode classes = MINIGrammar.parse(in);
         NameAndTypeChecker checker = new NameAndTypeChecker();
         classes.accept(checker, null);
+    }
+
+    public static void generateByteCode(File in, File out) throws MINIException {
+        FileNode classes = MINIGrammar.parse(in);
+        NameAndTypeChecker checker = new NameAndTypeChecker();
+        ByteCodeGenerator generator = new ByteCodeGenerator();
+        classes.accept(checker, null);
+        ArrayList<JavaClass> generatedClasses = (ArrayList<JavaClass>) classes.accept(generator, null);
+        for (JavaClass cls: generatedClasses) {
+            try {
+                cls.dump(new File(out.getAbsolutePath() + cls.getClassName() + ".class"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
     
 }

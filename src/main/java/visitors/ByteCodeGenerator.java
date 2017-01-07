@@ -166,6 +166,10 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         for (StatementNode s: blockNode.children) {
             il.append((InstructionList) s.accept(this, parameter));
         }
+        // TODO dirty hack...
+        if (il.isEmpty()) {
+            il.append(new NOP());
+        }
         return il;
     }
 
@@ -187,12 +191,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         }
 
         // create a real java class and return it
-        JavaClass classFile = currentClass.getJavaClass();
-
-        // TODO remove debug output
-        System.out.println(classFile);
-        System.out.println(classFile.getConstantPool());
-        return classFile;
+        return currentClass.getJavaClass();
     }
 
     @Override
@@ -309,9 +308,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         currentMethod.setInstructionList(il);
         currentMethod.setMaxLocals();
         currentMethod.setMaxStack();
-        System.out.println(currentMethod);
-        System.out.println(currentMethod.getMethod().getCode());
-        System.out.println("-----------");
         return currentMethod.getMethod();
     }
 
@@ -325,7 +321,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             }
             il.append(ifc.createNewArray(getBCELType(((components.types.ArrayType) newExpressionNode.type.type).getBasicDataType()), (short) ((components.types.ArrayType) newExpressionNode.type.type).getDimensions()));
         } else {
-            // TODO still incorrect
             il.append(ifc.createNew(newExpressionNode.getResultingType().getName()));
             il.append(new DUP());
             il.append(ifc.createInvoke(newExpressionNode.getResultingType().getName(), "<init>", Type.VOID, new Type[0], Const.INVOKESPECIAL));
