@@ -2,6 +2,7 @@ package visitors;
 
 
 import components.*;
+import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
 import components.types.*;
@@ -32,7 +33,7 @@ import org.apache.bcel.generic.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 
 
 public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeException> {
@@ -161,7 +162,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(BlockNode blockNode, Object parameter) throws RuntimeException {
-        ConstantPoolGen cp = (ConstantPoolGen) parameter;
         InstructionList il = new InstructionList();
         for (StatementNode s: blockNode.children) {
             il.append((InstructionList) s.accept(this, parameter));
@@ -252,10 +252,25 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             il.append((InstructionList) methodInvocationExpressionNode.arguments.get(1).accept(this, parameter));
             il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getResultingType()).getBasicDataType())));
         } else {
-            // TODO
-            il.append(new NOP());
+            if (methodInvocationExpressionNode.baseObject != null) {
+                il.append(InstructionFactory.createThis());
+            } else {
+                il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
+            }
+            for (ExpressionNode e: methodInvocationExpressionNode.arguments) {
+                il.append((InstructionList) e.accept(this, parameter));
+            }
+            il.append(ifc.createInvoke("cls", methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResolvedMethod().getReturnType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
         }
         return il;
+    }
+
+    private Type[] convertMethodArguments(List<ir.Type> argumentTypes) {
+        Type[] types = new Type[argumentTypes.size()];
+        for (int i = 0; i < types.length; ++i) {
+            types[i] = getBCELType(argumentTypes.get(i));
+        }
+        return types;
     }
 
     @Override
