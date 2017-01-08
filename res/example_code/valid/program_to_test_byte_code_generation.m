@@ -33,5 +33,38 @@ class main {
     } else {
       "false".print();
     }
+    if (true || false) {
+      "yes1";
+    } else {
+      "no1";
+    }
+
+    if (false && false) {
+      "no2";
+    } else {
+      "yes2";
+    }
+    if (true) {
+      "yes3";
+    }
+    if (false) {
+      "no4";
+    }
+    if (1 > 2) {
+      "oh no!".print();
+    } else {
+      "whoohoo".print();
+    }
+    if (1 <= 2) {
+      "whoohoo".print();
+    } else {
+      "oh no!".print();
+    }
+    if (1 >= 1) {
+      "whoohoo".print();
+    } else {
+      "oh no!".print();
+    }
+
   }
 }

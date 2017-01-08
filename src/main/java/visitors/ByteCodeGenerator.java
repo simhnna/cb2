@@ -88,32 +88,32 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                         il.append(InstructionConst.IDIV);
                         break;
                     case GT:
-                        end = il.append(new ICONST(0));
+                        end = il.append(new ICONST(1));
                         tmp = il.append(new NOP());
                         tmp = il.insert(end, new GOTO(tmp));
-                        tmp = il.insert(tmp, new ICONST(1));
-                        il.insert(tmp, new IF_ICMPGT(end).negate());
+                        tmp = il.insert(tmp, new ICONST(0));
+                        il.insert(tmp, new IF_ICMPGT(end));
                         break;
                     case GTE:
-                        end = il.append(new ICONST(0));
+                        end = il.append(new ICONST(1));
                         tmp = il.append(new NOP());
                         tmp = il.insert(end, new GOTO(tmp));
-                        tmp = il.insert(tmp, new ICONST(1));
-                        il.insert(tmp, new IF_ICMPGE(end).negate());
+                        tmp = il.insert(tmp, new ICONST(0));
+                        il.insert(tmp, new IF_ICMPGE(end));
                         break;
                     case LT:
-                        end = il.append(new ICONST(0));
+                        end = il.append(new ICONST(1));
                         tmp = il.append(new NOP());
                         tmp = il.insert(end, new GOTO(tmp));
-                        tmp = il.insert(tmp, new ICONST(1));
-                        il.insert(tmp, new IF_ICMPLT(end).negate());
+                        tmp = il.insert(tmp, new ICONST(0));
+                        il.insert(tmp, new IF_ICMPLT(end));
                         break;
                     case LTE:
-                        end = il.append(new ICONST(0));
+                        end = il.append(new ICONST(1));
                         tmp = il.append(new NOP());
                         tmp = il.insert(end, new GOTO(tmp));
-                        tmp = il.insert(tmp, new ICONST(1));
-                        il.insert(tmp, new IF_ICMPLE(end).negate());
+                        tmp = il.insert(tmp, new ICONST(0));
+                        il.insert(tmp, new IF_ICMPLE(end));
                         break;
                     case MOD:
                         il.append(InstructionConst.IREM);
@@ -157,9 +157,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 tmp = il.insert(end, new GOTO(tmp));
                 tmp = il.insert(tmp, new ICONST(1));
                 if(binaryExpressionNode.operator == BinaryExpressionNode.Operator.SAME) {
-                    il.insert(tmp, new IFNE(end));
+                    il.insert(tmp, new IF_ICMPNE(end));
                 } else {
-                    il.insert(tmp, new IFEQ(end));
+                    il.insert(tmp, new IF_ICMPEQ(end));
                 }
                 break;
         }
@@ -224,11 +224,13 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     @Override
     public Object visit(IfNode ifNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
-        il.insert((InstructionList) ifNode.ifBlock.accept(this, parameter));
+        InstructionHandle ifStart = il.append((InstructionList) ifNode.ifBlock.accept(this, parameter));
         if (ifNode.elseBlock != null) {
-            il.insert(new IFNE(il.insert((InstructionList) ifNode.elseBlock.accept(this, parameter))));
+            il.insert(new GOTO(il.append(new NOP())));
+            il.insert((InstructionList) ifNode.elseBlock.accept(this, parameter));
+            il.insert(new IFNE(ifStart));
         } else {
-            il.insert(new IFNE(il.append(new NOP())));
+            il.insert(new IFEQ(il.append(new NOP())));
         }
         il.insert((InstructionList) ifNode.condition.accept(this, parameter));
         return il;
@@ -395,7 +397,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     @Override
     public Object visit(UnaryExpressionNode unaryExpressionNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
-        unaryExpressionNode.expression.accept(this, parameter);
+        il.append((InstructionList) unaryExpressionNode.expression.accept(this, parameter));
         if (unaryExpressionNode.operator == UnaryExpressionNode.Operator.MINUS) {
             // negate integer
             il.append(InstructionConst.INEG);
