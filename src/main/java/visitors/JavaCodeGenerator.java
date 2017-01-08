@@ -140,7 +140,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(LiteralNode type, Void parameter) {
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
         bldr.append(type.token.replace("\\", "\\\\"));
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
         return null;
     }
 

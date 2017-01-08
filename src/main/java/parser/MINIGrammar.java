@@ -23,9 +23,13 @@ public class MINIGrammar implements MINIGrammarConstants {
   }
   private static String tokenify(Token t) {
         String token = tokenTable.get(t.image);
+
         if (token == null) {
           token = t.image;
-          tokenTable.put(token, token);
+          if (token.charAt(0) == '"') {
+                token = token.substring(1, token.length() - 1);
+          }
+          tokenTable.put(t.image, token);
         }
         return token;
   }

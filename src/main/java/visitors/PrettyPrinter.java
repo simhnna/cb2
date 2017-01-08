@@ -4,6 +4,7 @@ import components.*;
 import components.interfaces.ExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
+import components.types.StringType;
 
 public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentException> {
 
@@ -101,7 +102,13 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     @Override
     public Void visit(LiteralNode type, Void parameter) {
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
         bldr.append(type);
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
         return null;
     }
 
