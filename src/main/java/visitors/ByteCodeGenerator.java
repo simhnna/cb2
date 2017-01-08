@@ -226,11 +226,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         il.insert((InstructionList) ifNode.ifBlock.accept(this, parameter));
         if (ifNode.elseBlock != null) {
-            InstructionHandle tmp = il.insert((InstructionList) ifNode.elseBlock.accept(this, parameter));
-            il.insert(new IFNE(tmp));
+            il.insert(new IFNE(il.insert((InstructionList) ifNode.elseBlock.accept(this, parameter))));
         } else {
-            InstructionHandle tmp = il.append(new NOP());
-            il.insert(new IFNE(tmp));
+            il.insert(new IFNE(il.append(new NOP())));
         }
         il.insert((InstructionList) ifNode.condition.accept(this, parameter));
         return il;
@@ -375,7 +373,23 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
 
     @Override
     public Object visit(SimpleStatementNode simpleStatementNode, Object parameter) throws RuntimeException {
-        return simpleStatementNode.expression.accept(this, parameter);
+        InstructionList il = new InstructionList();
+        InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
+        if (simpleStatementNode.expression.getResultingType() != VoidType.INSTANCE) {
+            il.append(ifc.createGetStatic("java.lang.System", "err", Type.getType("Ljava/io/PrintStream;")));
+            il.append((InstructionList) simpleStatementNode.expression.accept(this, parameter));
+            Type baseType;
+            if (simpleStatementNode.expression.getResultingType() instanceof CompositeType ||
+                    simpleStatementNode.expression.getResultingType() instanceof components.types.ArrayType) {
+                baseType = Type.OBJECT;
+            } else {
+                baseType = getBCELType(simpleStatementNode.expression.getResultingType());
+            }
+            il.append(ifc.createInvoke("java.io.PrintStream", "println", Type.VOID, new Type[] {baseType}, Const.INVOKEVIRTUAL));
+        } else {
+            return simpleStatementNode.expression.accept(this, parameter);
+        }
+        return il;
     }
 
     @Override
