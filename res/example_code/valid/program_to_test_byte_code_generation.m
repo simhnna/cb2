@@ -65,6 +65,29 @@ class main {
     } else {
       "oh no!".print();
     }
-
+    "should be 2";
+    4 / 2;
+    var a := 1;
+    "should be 1";
+    a;
+    a := 2;
+    "should be 2";
+    a;
+    if (1 < 2) {
+      "yes!";
+    } else {
+      "no";
+    }
+    "should be 1";
+    3 % 2;
+    "should be 6";
+    3 * 2;
+    "should be 5";
+    3 + 2;
+    "should be my name";
+    "Simon" + " " + "Hanna";
+    if (true) {
+    } else {
+    }
   }
 }
