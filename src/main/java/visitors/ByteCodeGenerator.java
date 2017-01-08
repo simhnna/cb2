@@ -244,11 +244,11 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             il.append(ifc.createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
             il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
             Type baseType;
-            if (methodInvocationExpressionNode.getResultingType() instanceof CompositeType ||
-                    methodInvocationExpressionNode.getResultingType() instanceof components.types.ArrayType) {
+            if (methodInvocationExpressionNode.getBaseObjectType() instanceof CompositeType ||
+                    methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
                 baseType = Type.OBJECT;
             } else {
-                baseType = getBCELType(methodInvocationExpressionNode.getResultingType());
+                baseType = getBCELType(methodInvocationExpressionNode.getBaseObjectType());
             }
             il.append(ifc.createInvoke("java.io.PrintStream", "println", Type.VOID, new Type[] {baseType}, Const.INVOKEVIRTUAL));
         } else if (methodInvocationExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
@@ -257,15 +257,15 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         } else if (methodInvocationExpressionNode.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
             il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
             il.append(new ARRAYLENGTH());
-        } else if (methodInvocationExpressionNode.identifier.equals("get") && methodInvocationExpressionNode.getResultingType() instanceof components.types.ArrayType) {
+        } else if (methodInvocationExpressionNode.identifier.equals("get") && methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
             il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
             il.append((InstructionList) methodInvocationExpressionNode.arguments.get(0).accept(this, parameter));
-            il.append(InstructionFactory.createArrayLoad(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getResultingType()).getBasicDataType())));
-        } else if (methodInvocationExpressionNode.identifier.equals("set") && methodInvocationExpressionNode.getResultingType() instanceof components.types.ArrayType) {
+            il.append(InstructionFactory.createArrayLoad(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getBaseObjectType()).getBasicDataType())));
+        } else if (methodInvocationExpressionNode.identifier.equals("set") && methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
             il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
             il.append((InstructionList) methodInvocationExpressionNode.arguments.get(0).accept(this, parameter));
             il.append((InstructionList) methodInvocationExpressionNode.arguments.get(1).accept(this, parameter));
-            il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getResultingType()).getBasicDataType())));
+            il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getBaseObjectType()).getBasicDataType())));
         } else {
             if (methodInvocationExpressionNode.baseObject != null) {
                 il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
@@ -275,7 +275,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             for (ExpressionNode e: methodInvocationExpressionNode.arguments) {
                 il.append((InstructionList) e.accept(this, parameter));
             }
-            il.append(ifc.createInvoke(methodInvocationExpressionNode.getResultingType().getName(), methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResolvedMethod().getReturnType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
+            il.append(ifc.createInvoke(methodInvocationExpressionNode.getBaseObjectType().getName(), methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResultingType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
         }
         return il;
     }

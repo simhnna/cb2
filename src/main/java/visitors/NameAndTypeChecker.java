@@ -195,7 +195,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         } else {
             throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
         }
-        methodInvocationExpressionNode.setResultingType(baseObject);
+        methodInvocationExpressionNode.setBaseObjectType(baseObject);
         for (Method m: baseObject.getMethods()) {
             if (m.getName().equals(methodInvocationExpressionNode.identifier)) {
                 ArrayList<ExpressionNode> invocationArguments = methodInvocationExpressionNode.arguments;

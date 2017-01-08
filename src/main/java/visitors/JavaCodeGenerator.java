@@ -210,12 +210,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     @Override
     public Void visit(SimpleStatementNode simpleStatementNode, Void parameter) {
         boolean errPrint = false;
-        if (simpleStatementNode.expression instanceof MethodInvocationExpressionNode) {
-            Method method = ((MethodInvocationExpressionNode) simpleStatementNode.expression).getResolvedMethod();
-            if (method == PredefinedMethods.ARRAY_SIZE) {
-                errPrint = true;
-            }
-        } else {
+        if (simpleStatementNode.expression.getResultingType() != VoidType.INSTANCE) {
             errPrint = true;
         }
         if (errPrint) {
@@ -246,14 +241,14 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append(".length");
             }
-        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getResultingType() instanceof ArrayType) {
+        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getBaseObjectType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append("[");
                 methodMemberExpressionNode.arguments.get(0).accept(this, null);
                 bldr.append("]");
             }
-        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getResultingType() instanceof ArrayType) {
+        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getBaseObjectType() instanceof ArrayType) {
             if (methodMemberExpressionNode.baseObject != null) {
                 methodMemberExpressionNode.baseObject.accept(this, null);
                 bldr.append("[");
