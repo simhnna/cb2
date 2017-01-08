@@ -28,7 +28,11 @@ public class JavaCodeGeneratorTester {
 
     private static void checkJavaCompiler(File input) throws FileNotFoundException {
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
-        javac.run(null, System.out, System.err, input.getAbsolutePath());
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        javac.run(null, System.out, output, input.getAbsolutePath());
+        if (output.size() > 0 ) {
+            fail("Found errors during javac call");
+        }
     }
 
 
@@ -45,7 +49,7 @@ public class JavaCodeGeneratorTester {
         } catch (MINIException e) {
             fail("Failed to parse input File");
         } catch (Exception e) {
-            e.printStackTrace();
+            fail("encountered Exception during code generation");
         }
     }
     
