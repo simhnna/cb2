@@ -122,4 +122,7 @@ public class ArrayType implements Type {
         return getName();
     }
 
+    public static void clear() {
+        arrayTypes.clear();
+    }
 }

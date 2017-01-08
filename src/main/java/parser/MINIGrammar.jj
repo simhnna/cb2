@@ -42,6 +42,7 @@ public class MINIGrammar
   {
     currentFile = in;
     CompositeType.clear();
+    ArrayType.clear();
     try
     {
       MINIGrammar parser = new MINIGrammar(new FileInputStream(in));

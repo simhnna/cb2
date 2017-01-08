@@ -33,6 +33,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   {
     currentFile = in;
     CompositeType.clear();
+    ArrayType.clear();
     try
     {
       MINIGrammar parser = new MINIGrammar(new FileInputStream(in));
