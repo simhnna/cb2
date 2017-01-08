@@ -141,7 +141,14 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 if (binaryExpressionNode.left.getResultingType() == IntegerType.INSTANCE) {
                     il.append(InstructionConst.IADD);
                 } else {
-
+                    InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
+                    il.append(ifc.createNew("java.lang.StringBuilder"));
+                    il.append(new DUP());
+                    il.append((InstructionList) binaryExpressionNode.left.accept(this, parameter));
+                    il.append(ifc.createInvoke("java.lang.StringBuilder", "<init>", Type.VOID, new Type[] {Type.STRING}, Const.INVOKESPECIAL));
+                    il.append((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+                    il.append(ifc.createInvoke("java.lang.StringBuilder", "append", Type.getType("Ljava/lang/StringBuilder;"), new Type[] {Type.STRING}, Const.INVOKEVIRTUAL));
+                    il.append(ifc.createInvoke("java.lang.StringBuilder", "toString", Type.STRING, new Type[0], Const.INVOKEVIRTUAL));
                 }
                 break;
             case ANY_OP:
