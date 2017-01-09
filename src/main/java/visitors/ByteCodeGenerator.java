@@ -465,6 +465,17 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     }
 
     @Override
+    public Object visit(TernaryExpressionNode ternaryExpressionNode, Object parameter) throws RuntimeException {
+        InstructionList il = new InstructionList();
+        InstructionHandle ifStart = il.append((InstructionList) ternaryExpressionNode.t_branch.accept(this, parameter));
+        il.insert(new GOTO(il.append(new NOP())));
+        il.insert((InstructionList) ternaryExpressionNode.f_branch.accept(this, parameter));
+        il.insert(new IFNE(ifStart));
+        il.insert((InstructionList) ternaryExpressionNode.condition.accept(this, parameter));
+        return il;
+    }
+
+    @Override
     public Object visit(TypeNode typeNode, Object parameter) throws RuntimeException {
         return null;
     }
