@@ -7,7 +7,6 @@ import java.util.HashMap;
 import components.*;
 import components.types.*;
 import components.helpers.Position;
-import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
@@ -637,10 +636,10 @@ public class MINIGrammar implements MINIGrammarConstants {
         ;
       }
           if (arguments != null) {
-                current = new MethodInvocationExpressionNode(current, tokenify(name), arguments, generatePosition(name));
+                current = new MemberExpressionNode(current, tokenify(name), arguments, generatePosition(name));
                 arguments = null;
           } else {
-                current = new FieldMemberExpressionNode(current, tokenify(name), generatePosition(name));
+                current = new MemberExpressionNode(current, tokenify(name), generatePosition(name));
           }
     }
     {if (true) return current;}
@@ -706,9 +705,9 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       // baseObject is null because it doesn't exist here
       if(arguments == null){
-        {if (true) return new FieldMemberExpressionNode(null, tokenify(name), generatePosition(name));}
+        {if (true) return new MemberExpressionNode(null, tokenify(name), generatePosition(name));}
           }
-          {if (true) return new MethodInvocationExpressionNode(null, tokenify(name), arguments, generatePosition(name));}
+          {if (true) return new MemberExpressionNode(null, tokenify(name), arguments, generatePosition(name));}
       break;
     case THIS:
       jj_consume_token(THIS);
@@ -782,7 +781,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         break;
       case ID:
         jj_consume_token(ID);
-               n.arguments.add(new FieldMemberExpressionNode(null, tokenify(token), generatePosition(token)));
+               n.arguments.add(new MemberExpressionNode(null, tokenify(token), generatePosition(token)));
         break;
       default:
         jj_la1[29] = jj_gen;
