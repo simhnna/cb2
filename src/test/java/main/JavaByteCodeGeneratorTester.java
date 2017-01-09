@@ -50,7 +50,7 @@ public class JavaByteCodeGeneratorTester {
         try {
             out = Files.createTempDirectory("byteCode").toFile();
             out.deleteOnExit();
-            MINIParser.generateByteCode(inputFile, out);
+            MINIParser.compile(inputFile, out);
             checkByteCode(out);
         } catch (IOException e) {
             fail("Failed to create temporary File");

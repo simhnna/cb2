@@ -79,7 +79,7 @@ public class MINIParser {
         classes.accept(checker, null);
     }
 
-    public static void generateByteCode(File in, File out) throws MINIException {
+    public static void compile(File in, File out) throws MINIException {
         FileNode classes = MINIGrammar.parse(in);
         NameAndTypeChecker checker = new NameAndTypeChecker();
         ByteCodeGenerator generator = new ByteCodeGenerator();
