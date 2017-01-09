@@ -425,9 +425,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     public Object visit(WhileNode whileNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
         il.append((InstructionList) whileNode.body.accept(this, parameter));
-        il.append(new NOP());
-        il.insert(new IFNE(il.getEnd()));
-        il.append(new GOTO(il.insert((InstructionList) whileNode.condition.accept(this, parameter))));
+        InstructionHandle bodyEnd = il.append(new NOP());
+        il.insert(new IFEQ(il.getEnd()));
+        il.insert(bodyEnd, new GOTO(il.insert((InstructionList) whileNode.condition.accept(this, parameter))));
         return il;
     }
 
