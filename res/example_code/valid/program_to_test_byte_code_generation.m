@@ -1,4 +1,5 @@
 class a {
+  int member;
   void foo() {
     var foo := new<int[], 100>;
     "should be 100";
@@ -26,12 +27,23 @@ class main {
       "true";
     }
     m := new<a>;
+    m.member := 1;
+    "should be 1";
+    m.member;
+    m.member := m.member + 1;
+    "should be 2";
+    m.member;
     if (m == null<a>) {
       "false";
     } else {
       "true";
     }
     if (m != null<a>) {
+      "true";
+    } else {
+      "false";
+    }
+    if (true == true) {
       "true";
     } else {
       "false";

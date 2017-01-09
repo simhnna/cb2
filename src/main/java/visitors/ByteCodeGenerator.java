@@ -61,7 +61,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             // class variable
             String className;
             if (assignedField.baseObject != null) {
-                il.append((InstructionList) assignedField.baseObject.accept(this, parameter));
+                il.insert((InstructionList) assignedField.baseObject.accept(this, parameter));
                 className = assignedField.baseObject.getResultingType().getName();
             } else {
                 il.append(InstructionFactory.createThis());
