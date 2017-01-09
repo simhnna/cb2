@@ -14,7 +14,28 @@ class a {
 
 class main {
   void main(string[] args) {
-    var m := new<a>;
+    var m := null<a>;
+    if (m == null<a>) {
+      "true";
+    } else {
+      "false";
+    }
+    if (m != null<a>) {
+      "false";
+    } else {
+      "true";
+    }
+    m := new<a>;
+    if (m == null<a>) {
+      "false";
+    } else {
+      "true";
+    }
+    if (m != null<a>) {
+      "true";
+    } else {
+      "false";
+    }
     m.print();
     m.bar(1).print();
     m.bar(0);

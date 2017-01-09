@@ -159,9 +159,19 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 tmp = il.insert(end, new GOTO(tmp));
                 tmp = il.insert(tmp, new ICONST(1));
                 if(binaryExpressionNode.operator == BinaryExpressionNode.Operator.SAME) {
-                    il.insert(tmp, new IF_ICMPNE(end));
+                    if (binaryExpressionNode.right.getResultingType() == IntegerType.INSTANCE ||
+                            binaryExpressionNode.right.getResultingType() == BooleanType.INSTANCE) {
+                        il.insert(tmp, new IF_ICMPNE(end));
+                    } else {
+                        il.insert(tmp, new IF_ACMPNE(end));
+                    }
                 } else {
-                    il.insert(tmp, new IF_ICMPEQ(end));
+                    if (binaryExpressionNode.right.getResultingType() == IntegerType.INSTANCE ||
+                            binaryExpressionNode.right.getResultingType() == BooleanType.INSTANCE) {
+                        il.insert(tmp, new IF_ICMPEQ(end));
+                    } else {
+                        il.insert(tmp, new IF_ACMPEQ(end));
+                    }
                 }
                 break;
         }
