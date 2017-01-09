@@ -306,10 +306,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         Type[] argTypes = new Type[methodNode.arguments.size()];
         String[] argNames = new String[argTypes.length];
         int counter = 0;
-        int varIndex = 0;
-        if (!methodNode.isMainMethod()) {
-            varIndex++;
-        }
+        boolean is_main = methodNode.isMainMethod();
+        int varIndex = is_main ? 0 : 1;
         for (NamedType t: methodNode.arguments) {
             argTypes[counter] = getBCELType(t.type.type);
             argNames[counter] = t.getName();
@@ -317,9 +315,17 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             counter++;
             varIndex++;
         }
-        currentMethod = new MethodGen(methodNode.isMainMethod() ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC,
-                getBCELType(methodNode.getReturnType()),argTypes, argNames,
-                methodNode.getName(), cls.getClassName(), new InstructionList(), cls.getConstantPool());
+        int access_flags = is_main ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC;
+        currentMethod = new MethodGen(access_flags,
+                getBCELType(methodNode.getReturnType()),
+                argTypes,
+                argNames,
+                methodNode.getName(),
+                cls.getClassName(),
+                new InstructionList(),
+                cls.getConstantPool()
+        );
+
         InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
         if (methodNode.getReturnType() == VoidType.INSTANCE) {
             il.append(new RETURN());
