@@ -122,5 +122,11 @@ class main {
     if (true) {
     } else {
     }
+    "print numbers from 1 to 10";
+    var counter := 1;
+    while (counter <= 10) {
+      counter;
+      counter := counter + 1;
+    }
   }
 }
