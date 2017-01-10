@@ -222,11 +222,16 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                     memberExpression.arguments.get(1).accept(this, null);
                 }
             } else {
-                if (memberExpression.baseObject != null) {
-                    memberExpression.baseObject.accept(this, null);
-                    bldr.append(".");
+
+                if (memberExpression.getResolvedMethod() instanceof JavaMethod) {
+                    bldr.append(((JavaMethod) memberExpression.getResolvedMethod()).javaMethodName).append("(");
+                } else {
+                    if (memberExpression.baseObject != null) {
+                        memberExpression.baseObject.accept(this, null);
+                        bldr.append(".");
+                    }
+                    bldr.append(names.get(memberExpression.getResolvedMethod())).append("(");
                 }
-                bldr.append(names.get(memberExpression.getResolvedMethod())).append("(");
                 for (int i = 0; i < memberExpression.arguments.size(); ++i) {
                     memberExpression.arguments.get(i).accept(this, null);
                     if (i != memberExpression.arguments.size() - 1) {
@@ -348,6 +353,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         for (ClassNode cls: fileNode.classes) {
             cls.accept(this, null);
         }
+        return null;
+    }
+
+    @Override
+    public Void visit(JavaMethod javaMethod, Void parameter) throws IllegalArgumentException {
         return null;
     }
 

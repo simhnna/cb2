@@ -19,7 +19,7 @@ public class Main {
         FileNode classes;
         try {
             File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
-                    + File.separator + "program_to_test_byte_code_generation.m");
+                    + File.separator + "math_methods.m");
             classes = MINIGrammar.parse(sourceFile);
             NameAndTypeChecker checker = new NameAndTypeChecker();
             classes.accept(checker, null);

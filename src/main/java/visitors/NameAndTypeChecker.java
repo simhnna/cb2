@@ -406,6 +406,19 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         return null;
     }
 
+    @Override
+    public Type visit(JavaMethod javaMethod, NameTable nameTable) throws TypeException {
+        javaMethod.type.accept(this, nameTable);
+        nameTable = new NameTable(nameTable, null);
+        for (NamedType namedType: javaMethod.arguments) {
+            namedType.accept(this, nameTable);
+        }
+        if (javaMethod.getName().equals("main") && javaMethod.getReturnType() == VoidType.INSTANCE) {
+            throw new TypeException(javaMethod.position.path, javaMethod.position.line, "You have to provide a direct implementation of main");
+        }
+        return null;
+    }
+
     private boolean inNonStaticMethod() {
         return currentMethod == null || !currentMethod.name.equals("main");
     }
