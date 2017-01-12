@@ -30,7 +30,8 @@ public class JavaByteCodeGeneratorTester {
 
     private static void checkByteCode(File classLocation) {
         try {
-            ClassLoader loader = new URLClassLoader(new URL[]{classLocation.toURL()});
+            ClassLoader loader = new URLClassLoader(new URL[]{new URL("file://" + classLocation.getPath() + "/")});
+
             for (File cls: classLocation.listFiles()) {
                 if (cls.getName().endsWith(".class")) {
                     loader.loadClass(cls.getName().substring(0, cls.getName().length() - 6));
