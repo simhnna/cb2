@@ -60,7 +60,7 @@ public class JavaByteCodeGeneratorTester {
             fail("File caused an exception");
         }
     }
-    
+
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();
