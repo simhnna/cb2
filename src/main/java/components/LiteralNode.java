@@ -7,14 +7,14 @@ import visitors.Visitor;
 
 /**
  * A wrapper around basic types and this. All valid tokens are:
- * 
+ *
  * - this
  * - integers
  * - strings
  * - booleans
  *
  */
-public class LiteralNode extends ExpressionNode{
+public class LiteralNode extends ExpressionNode {
     public final Type type;
     public final String token;
 
@@ -27,10 +27,5 @@ public class LiteralNode extends ExpressionNode{
     @Override
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
         return visitor.visit(this, parameter);
-    }
-
-    @Override
-    public String toString() {
-        return token;
     }
 }

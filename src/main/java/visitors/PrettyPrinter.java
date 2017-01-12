@@ -4,6 +4,7 @@ import components.*;
 import components.interfaces.ExpressionNode;
 import components.interfaces.Node;
 import components.interfaces.StatementNode;
+import components.types.StringType;
 
 public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentException> {
 
@@ -101,7 +102,13 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     @Override
     public Void visit(LiteralNode type, Void parameter) {
-        bldr.append(type);
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
+        bldr.append(type.token);
+        if (type.type == StringType.INSTANCE) {
+            bldr.append('"');
+        }
         return null;
     }
 
@@ -131,7 +138,9 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     @Override
 
     public Void visit(NullExpressionNode nullExpression, Void parameter) {
-        bldr.append("null<").append(nullExpression.type).append(">");
+        bldr.append("null<");
+        nullExpression.type.accept(this, null);
+        bldr.append(">");
         return null;
     }
 
@@ -179,7 +188,8 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     @Override
     public Void visit(NewExpressionNode newExpressionNode, Void parameter) {
-        bldr.append("new <").append(newExpressionNode.type);
+        bldr.append("new <");
+        newExpressionNode.type.accept(this, null);
         for (ExpressionNode arg: newExpressionNode.arguments) {
             bldr.append(", ");
             arg.accept(this, null);
@@ -224,7 +234,7 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
 
     @Override
     public Void visit(TypeNode typeNode, Void parameter) {
-        bldr.append(typeNode);
+        bldr.append(typeNode.type.getName());
         return null;
     }
 

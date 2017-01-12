@@ -49,15 +49,7 @@ public class MethodDeclarationNode extends MemberNode implements Method {
     }
 
     public boolean isMainMethod() {
-        if (name.equals("main") && returnType.type == VoidType.INSTANCE && arguments.size() == 1 &&
-                getArgumentTypes().get(0) == ArrayType.getOrCreateArrayType(StringType.INSTANCE, 1)) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return getName();
+        return name.equals("main") && returnType.type == VoidType.INSTANCE && arguments.size() == 1 &&
+                getArgumentTypes().get(0) == ArrayType.getOrCreateArrayType(StringType.INSTANCE, 1);
     }
 }

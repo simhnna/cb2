@@ -19,16 +19,20 @@ import javax.tools.ToolProvider;
 
 @RunWith(Parameterized.class)
 public class JavaCodeGeneratorTester {
-    
+
     private final File inputFile;
-    
+
     public JavaCodeGeneratorTester(File inputFile, String fileName) {
         this.inputFile = inputFile;
     }
 
-    private static void checkJavaCompiler(File input) throws FileNotFoundException {
+    private static void checkJavaCompiler(File input) {
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
-        javac.run(null, System.out, System.err, input.getAbsolutePath());
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        javac.run(null, System.out, output, input.getAbsolutePath());
+        if (output.size() > 0 ) {
+            fail("Found errors during javac call");
+        }
     }
 
 
@@ -45,10 +49,10 @@ public class JavaCodeGeneratorTester {
         } catch (MINIException e) {
             fail("Failed to parse input File");
         } catch (Exception e) {
-            e.printStackTrace();
+            fail("encountered Exception during code generation");
         }
     }
-    
+
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();

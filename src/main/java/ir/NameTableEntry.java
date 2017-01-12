@@ -1,15 +1,11 @@
 package ir;
 
-import ir.Type;
-
 public class NameTableEntry {
     public final Type type;
-    
-    public NameTableEntry(Type type) {
+    public final Name name;
+
+    public NameTableEntry(Name name, Type type) {
         this.type = type;
-    }
-    
-    public String toString() {
-        return type.getName();
+        this.name = name;
     }
 }

@@ -11,8 +11,8 @@ import visitors.Visitor;
 
 public class MethodInvocationExpressionNode extends MemberExpressionNode {
     public final ArrayList<ExpressionNode> arguments;
-    private Type resolvedType;
     private Method resolvedMethod;
+    private Type baseObjectType;
 
     public MethodInvocationExpressionNode(ExpressionNode baseObject, String identifier,
             ArrayList<ExpressionNode> arguments, Position position) {
@@ -25,21 +25,24 @@ public class MethodInvocationExpressionNode extends MemberExpressionNode {
         return visitor.visit(this, parameter);
     }
 
-    public Type getResolvedType() {
-        return this.resolvedType;
-    }
-
-    public void setResolvedType(Type baseObject) {
-        if (resolvedType == null) {
-            resolvedType = baseObject;
-        }
-    }
-
     public void setResolvedMethod(Method method) {
         resolvedMethod = method;
     }
     
     public Method getResolvedMethod() {
         return resolvedMethod;
+    }
+
+    public void setBaseObjectType(Type baseObjectType) {
+        this.baseObjectType = baseObjectType;
+    }
+
+    public Type getBaseObjectType() {
+        return baseObjectType;
+    }
+
+    @Override
+    public Type getResultingType() {
+        return resolvedMethod.getReturnType();
     }
 }
