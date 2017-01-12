@@ -4,7 +4,6 @@ import components.helpers.Position;
 import components.interfaces.MemberNode;
 import ir.Field;
 import ir.Type;
-import ir.NameTableEntry;
 import visitors.Visitor;
 
 public class FieldNode extends MemberNode implements Field {

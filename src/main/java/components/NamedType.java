@@ -3,7 +3,6 @@ package components;
 import components.helpers.Position;
 import components.interfaces.Node;
 import ir.Name;
-import ir.NameTableEntry;
 import visitors.Visitor;
 
 public class NamedType extends Node implements Name {

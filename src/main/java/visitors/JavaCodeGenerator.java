@@ -9,7 +9,6 @@ import components.interfaces.Node;
 import components.interfaces.StatementNode;
 import components.types.*;
 import ir.Field;
-import ir.Method;
 import ir.Name;
 import ir.Type;
 

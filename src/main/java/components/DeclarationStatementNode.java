@@ -5,7 +5,6 @@ import components.interfaces.ExpressionNode;
 import components.interfaces.StatementNode;
 import ir.Name;
 import ir.Type;
-import ir.NameTableEntry;
 import visitors.Visitor;
 
 public class DeclarationStatementNode extends StatementNode implements Name {
