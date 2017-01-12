@@ -55,9 +55,4 @@ public class MethodDeclarationNode extends MemberNode implements Method {
         }
         return false;
     }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
 }

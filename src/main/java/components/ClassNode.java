@@ -16,7 +16,7 @@ import visitors.Visitor;
 public class ClassNode extends Node implements Type {
     public final String name;
     private final ArrayList<MemberNode> children = new ArrayList<>();
-    
+
     private final HashSet<Method> methods;
     private final HashSet<Field> fields;
 
@@ -51,7 +51,7 @@ public class ClassNode extends Node implements Type {
     public ArrayList<MemberNode> getChildren() {
         return children;
     }
-    
+
     private boolean containsName(String name) {
         for (Field field: fields) {
             if (name.equals(field.getName())) {
@@ -65,27 +65,22 @@ public class ClassNode extends Node implements Type {
         }
         return false;
     }
-    
+
     public void addChild(MemberNode member) {
         children.add(member);
     }
-    
+
     public void addField(Field field) {
         if (containsName(field.getName())) {
             throw new IllegalArgumentException();
         }
         fields.add(field);
     }
-    
+
     public void addMethod(Method method) {
         if (containsName(method.getName())) {
             throw new IllegalArgumentException();
         }
         methods.add(method);
-    }
-    
-    @Override
-    public String toString() {
-        return getName();
     }
 }

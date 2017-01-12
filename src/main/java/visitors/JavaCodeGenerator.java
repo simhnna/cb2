@@ -46,7 +46,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         }
         names.put(element, currentName.toString() + currentChar++);
     }
-    
+
     @Override
     public String toString() {
         return bldr.toString();
@@ -194,7 +194,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this, null);
             bldr.append(".");
-            
+
         }
         Name name = memberExpression.getName();
         if (name == null) {
@@ -341,8 +341,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         }
         return null;
     }
-    
-    
+
+
     private String getTypeRepresentation(Type type) {
         if (type == StringType.INSTANCE) {
             return "String";
@@ -358,7 +358,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else if (type instanceof CompositeType) {
             return names.get(((CompositeType) type).getType());
         } else {
-            return type.toString();
+            return type.getName();
         }
     }
 }
