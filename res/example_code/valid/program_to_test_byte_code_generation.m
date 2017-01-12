@@ -5,7 +5,13 @@ class a {
     "should be 100";
     foo.size();
     foo.set(1, 100);
+    "should be 100";
+    foo.get(1);
+    "should be 0";
     foo.get(2);
+    member := 1;
+    "should be one";
+    member;
   }
 
   int bar(int i) {
