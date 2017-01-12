@@ -127,12 +127,27 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 }
                 break;
             case BOOL_OP:
+                il.dispose();
                 switch(binaryExpressionNode.operator) {
                     case AND:
-                        il.append(InstructionConst.IAND);
+                        end = il.append(new NOP());
+                        tmp = il.insert(new ICONST(0));
+                        il.insert(new GOTO(end));
+                        il.insert(new ICONST(1));
+                        il.insert(new IFEQ(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+                        il.insert(new IFEQ(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.left.accept(this, parameter));
                         break;
                     case OR:
-                        il.append(InstructionConst.IOR);
+                        tmp = il.append(new NOP());
+                        end = il.insert(new ICONST(0));
+                        il.insert(new GOTO(tmp));
+                        tmp = il.insert(new ICONST(1));
+                        il.insert(new IFEQ(end));
+                        il.insert((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+                        il.insert(new IFNE(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.left.accept(this, parameter));
                         break;
                 }
                 break;
