@@ -3,26 +3,7 @@ package visitors;
 import java.util.List;
 import java.util.ArrayList;
 
-import components.AssignmentStatementNode;
-import components.BinaryExpressionNode;
-import components.BlockNode;
-import components.ClassNode;
-import components.DeclarationStatementNode;
-import components.FieldMemberExpressionNode;
-import components.FieldNode;
-import components.FileNode;
-import components.IfNode;
-import components.LiteralNode;
-import components.MethodDeclarationNode;
-import components.MethodInvocationExpressionNode;
-import components.NamedType;
-import components.NewExpressionNode;
-import components.NullExpressionNode;
-import components.ReturnNode;
-import components.SimpleStatementNode;
-import components.TypeNode;
-import components.UnaryExpressionNode;
-import components.WhileNode;
+import components.*;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
@@ -353,6 +334,23 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(namedType.position.path, namedType.position.line, e.getMessage());
         }
         return namedType.type.type;
+    }
+
+    @Override
+    public Type visit(TernaryExpressionNode ternaryExpressionNode, NameTable nameTable) throws TypeException {
+        ternaryExpressionNode.condition.accept(this, nameTable);
+        if (ternaryExpressionNode.condition.getResultingType() != BooleanType.INSTANCE) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Conditional needs to evaluate to boolean.");
+        }
+        ternaryExpressionNode.t_branch.accept(this, nameTable);
+        Type t_branch_type = ternaryExpressionNode.t_branch.getResultingType();
+        ternaryExpressionNode.f_branch.accept(this, nameTable);
+        Type f_branch_type = ternaryExpressionNode.f_branch.getResultingType();
+        if (t_branch_type != f_branch_type) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Branches need to have the same type.");
+        }
+        ternaryExpressionNode.setResultingType(t_branch_type);
+        return t_branch_type;
     }
 
     @Override

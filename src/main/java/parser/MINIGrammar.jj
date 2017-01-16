@@ -145,6 +145,8 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
+| < TERNARY_CONDITION : "?" >
+| < TERNARY_DIVIDER : ":" >
 | < BOOL :
     (
       "true"
@@ -300,10 +302,10 @@ StatementNode simpleStatement() :
   Token position;
 }
 {
-  first = expression7()
+  first = expression8()
   (
     position=< SEMICOLON > { return new SimpleStatementNode(generatePosition(position), first); }
-    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
+    | position=< ASSIGNMENT > second = expression8() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
   )
 }
 
@@ -316,7 +318,7 @@ DeclarationStatementNode declaration() :
   < VAR >
   < ID > { name = token; }
   < ASSIGNMENT >
-  expression = expression7()
+  expression = expression8()
   < SEMICOLON >
   {
     return new DeclarationStatementNode(tokenify(name), expression, generatePosition(name));
@@ -349,7 +351,7 @@ IfNode ifStatement() :
   Token position;
 }
 {
-  position=< IF > < PARAN_OPEN > condition = expression7()
+  position=< IF > < PARAN_OPEN > condition = expression8()
   < PARAN_CLOSE > first = blockStatement()
   (
     < ELSE > second = blockStatement()
@@ -366,7 +368,7 @@ WhileNode whileStatement() :
   Token position;
 }
 {
-  position=< WHILE > < PARAN_OPEN > condition = expression7()
+  position=< WHILE > < PARAN_OPEN > condition = expression8()
   < PARAN_CLOSE > body = blockStatement()
   {
     return new WhileNode(generatePosition(position), condition, body);
@@ -379,9 +381,30 @@ ReturnNode returnStatement() :
   Token position;
 }
 {
-  position=< RETURN > returnValue = expression7() < SEMICOLON >
+  position=< RETURN > returnValue = expression8() < SEMICOLON >
   {
     return new ReturnNode(generatePosition(position), returnValue);
+  }
+}
+
+ExpressionNode expression8 () :
+//ternary expression
+{
+  ExpressionNode condition;
+  Token position;
+  ExpressionNode t_branch;
+  ExpressionNode f_branch;
+}
+{
+  condition=expression7()
+  (
+    position = < TERNARY_CONDITION >
+    t_branch = expression8()
+    < TERNARY_DIVIDER >
+    f_branch = expression8() { condition = new TernaryExpressionNode(generatePosition(position), condition, t_branch, f_branch); }
+  )?
+  {
+    return condition;
   }
 }
 
@@ -525,7 +548,8 @@ ExpressionNode expression1 () :
   UnaryExpressionNode.Operator operator;
 }
 {
-  (    
+  (
+    
     (
       (
         position=< NEGATION > { operator = UnaryExpressionNode.Operator.NEGATION; }
@@ -575,12 +599,12 @@ ArrayList<ExpressionNode> argumentList() :
 {
   < PARAN_OPEN >
   (
-    expr = expression7()
+    expr = expression8()
     {
       arguments.add(expr);
     }
     (
-      < COMMA > expr = expression7()
+      < COMMA > expr = expression8()
       {
      	arguments.add(expr);
       }
@@ -617,7 +641,7 @@ ExpressionNode atomicExpression() :
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
-    expression = expression7()
+    expression = expression8()
     < PARAN_CLOSE > { expression.setParenthesis(); return expression; }
   )
 {

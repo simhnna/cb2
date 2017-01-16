@@ -304,10 +304,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         Type[] argTypes = new Type[methodNode.arguments.size()];
         String[] argNames = new String[argTypes.length];
         int counter = 0;
-        int varIndex = 0;
-        if (!methodNode.isMainMethod()) {
-            varIndex++;
-        }
+        boolean is_main = methodNode.isMainMethod();
+        int varIndex = is_main ? 0 : 1;
         for (NamedType t: methodNode.arguments) {
             argTypes[counter] = getBCELType(t.type.type);
             argNames[counter] = t.getName();
@@ -315,9 +313,17 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             counter++;
             varIndex++;
         }
-        currentMethod = new MethodGen(methodNode.isMainMethod() ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC,
-                getBCELType(methodNode.getReturnType()),argTypes, argNames,
-                methodNode.getName(), cls.getClassName(), new InstructionList(), cls.getConstantPool());
+        int access_flags = is_main ? Const.ACC_PUBLIC | Const.ACC_STATIC : Const.ACC_PUBLIC;
+        currentMethod = new MethodGen(access_flags,
+                getBCELType(methodNode.getReturnType()),
+                argTypes,
+                argNames,
+                methodNode.getName(),
+                cls.getClassName(),
+                new InstructionList(),
+                cls.getConstantPool()
+        );
+
         InstructionList il = (InstructionList) methodNode.body.accept(this, cls.getConstantPool());
         if (methodNode.getReturnType() == VoidType.INSTANCE) {
             il.append(new RETURN());
@@ -424,7 +430,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         il.append((InstructionList) whileNode.body.accept(this, parameter));
         InstructionHandle bodyEnd = il.append(new NOP());
-        il.insert(new IFEQ(il.getEnd()));
+        il.insert(new IFEQ(bodyEnd));
         il.insert(bodyEnd, new GOTO(il.insert((InstructionList) whileNode.condition.accept(this, parameter))));
         return il;
     }
@@ -454,6 +460,17 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     @Override
     public Object visit(NamedType namedType, Object parameter) throws RuntimeException {
         return null;
+    }
+
+    @Override
+    public Object visit(TernaryExpressionNode ternaryExpressionNode, Object parameter) throws RuntimeException {
+        InstructionList il = new InstructionList();
+        InstructionHandle ifStart = il.append((InstructionList) ternaryExpressionNode.t_branch.accept(this, parameter));
+        il.insert(new GOTO(il.append(new NOP())));
+        il.insert((InstructionList) ternaryExpressionNode.f_branch.accept(this, parameter));
+        il.insert(new IFNE(ifStart));
+        il.insert((InstructionList) ternaryExpressionNode.condition.accept(this, parameter));
+        return il;
     }
 
     @Override
