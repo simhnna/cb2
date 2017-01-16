@@ -113,6 +113,14 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.dispose();
                 switch(binaryExpressionNode.operator) {
                     case AND:
+                        //      left...
+                        //        ifeq tmp
+                        //      right...
+                        //        ifeq tmp
+                        //        iconst 1
+                        //        goto end
+                        // tmp -> iconst 0
+                        // end -> nop
                         end = il.append(new NOP());
                         tmp = il.insert(new ICONST(0));
                         il.insert(new GOTO(end));
