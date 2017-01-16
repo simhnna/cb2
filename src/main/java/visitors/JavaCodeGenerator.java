@@ -326,7 +326,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             bldr.append('(');
         }
         ternaryExpressionNode.condition.accept(this, null);
-        bldr.append(" ? ").append(ternaryExpressionNode.t_branch).append(" : ");
+        bldr.append(" ? ");
+        ternaryExpressionNode.t_branch.accept(this, null);
+        bldr.append(" : ");
         ternaryExpressionNode.f_branch.accept(this, null);
         if (ternaryExpressionNode.inParenthesis()) {
             bldr.append(')');
