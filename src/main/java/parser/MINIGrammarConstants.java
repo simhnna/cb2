@@ -81,17 +81,21 @@ public interface MINIGrammarConstants {
   /** RegularExpression Id. */
   int OR = 42;
   /** RegularExpression Id. */
-  int BOOL = 43;
+  int TERNARY_CONDITION = 43;
   /** RegularExpression Id. */
-  int ID = 44;
+  int TERNARY_DIVIDER = 44;
   /** RegularExpression Id. */
-  int INT = 45;
+  int BOOL = 45;
   /** RegularExpression Id. */
-  int STRING = 46;
+  int ID = 46;
   /** RegularExpression Id. */
-  int AT = 47;
+  int INT = 47;
   /** RegularExpression Id. */
-  int BAD_TOKEN = 48;
+  int STRING = 48;
+  /** RegularExpression Id. */
+  int AT = 49;
+  /** RegularExpression Id. */
+  int BAD_TOKEN = 50;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -145,6 +149,8 @@ public interface MINIGrammarConstants {
     "\">\"",
     "\"&&\"",
     "\"||\"",
+    "\"?\"",
+    "\":\"",
     "<BOOL>",
     "<ID>",
     "<INT>",

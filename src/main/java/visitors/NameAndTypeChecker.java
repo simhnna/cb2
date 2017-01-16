@@ -3,27 +3,7 @@ package visitors;
 import java.util.List;
 import java.util.ArrayList;
 
-import components.AssertedExpressionNode;
-import components.AssignmentStatementNode;
-import components.BinaryExpressionNode;
-import components.BlockNode;
-import components.ClassNode;
-import components.DeclarationStatementNode;
-import components.FieldMemberExpressionNode;
-import components.FieldNode;
-import components.FileNode;
-import components.IfNode;
-import components.LiteralNode;
-import components.MethodDeclarationNode;
-import components.MethodInvocationExpressionNode;
-import components.NamedType;
-import components.NewExpressionNode;
-import components.NullExpressionNode;
-import components.ReturnNode;
-import components.SimpleStatementNode;
-import components.TypeNode;
-import components.UnaryExpressionNode;
-import components.WhileNode;
+import components.*;
 import components.interfaces.ExpressionNode;
 import components.interfaces.MemberNode;
 import components.interfaces.StatementNode;
@@ -47,11 +27,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
-        if (!(assignmentStatementNode.left instanceof FieldMemberExpressionNode)) {
+        Type first = assignmentStatementNode.left.accept(this, nameTable);
+        if (!(assignmentStatementNode.left instanceof MemberExpressionNode) ||
+                ((MemberExpressionNode) assignmentStatementNode.left).isMethod()) {
             throw new TypeException(assignmentStatementNode.left.position.path, assignmentStatementNode.left.position.line,
                     "The left side of an assignment has to be a field");
         }
-        Type first = assignmentStatementNode.left.accept(this, nameTable);
         Type second = assignmentStatementNode.right.accept(this, nameTable);
         if (first != second) {
             throw new TypeException(assignmentStatementNode.position.path, assignmentStatementNode.position.line,
@@ -183,37 +164,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     }
 
     @Override
-    public Type visit(MethodInvocationExpressionNode methodInvocationExpressionNode, NameTable nameTable) throws TypeException {
-        Type baseObject;
-        if (methodInvocationExpressionNode.baseObject != null) {
-            baseObject = methodInvocationExpressionNode.baseObject.accept(this, nameTable);
-        } else if (inNonStaticMethod()) {
-            baseObject = nameTable.lookup("this", true).type;
-        } else {
-            throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Can't access non static method '" + methodInvocationExpressionNode.identifier + "'");
-        }
-        methodInvocationExpressionNode.setBaseObjectType(baseObject);
-        for (Method m: baseObject.getMethods()) {
-            if (m.getName().equals(methodInvocationExpressionNode.identifier)) {
-                ArrayList<ExpressionNode> invocationArguments = methodInvocationExpressionNode.arguments;
-                List<Type> declaredMethodArguments = m.getArgumentTypes();
-                if (invocationArguments.size() != declaredMethodArguments.size()) {
-                    throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Expected " + declaredMethodArguments.size() + " arguments but found " + invocationArguments.size() + " instead");
-                }
-                for (int i = 0; i < declaredMethodArguments.size(); ++i) {
-                    Type invokedType = invocationArguments.get(i).accept(this, nameTable);
-                    if (invokedType != declaredMethodArguments.get(i)) {
-                        throw new TypeException(invocationArguments.get(i).position.path, invocationArguments.get(i).position.line, "Expected type '" + declaredMethodArguments.get(i).getName() + "' but found '" + invokedType.getName() + "' instead");
-                    }
-                }
-                methodInvocationExpressionNode.setResolvedMethod(m);
-                return m.getReturnType();
-            }
-        }
-        throw new TypeException(methodInvocationExpressionNode.position.path, methodInvocationExpressionNode.position.line, "Method '" + methodInvocationExpressionNode.identifier + "' is not defined for Type '" + baseObject + "'");
-    }
-
-    @Override
     public Type visit(MethodDeclarationNode methodNode, NameTable nameTable) throws TypeException {
         currentMethod = methodNode;
         methodNode.returnType.accept(this, nameTable);
@@ -320,28 +270,61 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     }
 
     @Override
-    public Type visit(FieldMemberExpressionNode fieldMemberExpressionNode, NameTable nameTable) throws TypeException {
-        if (fieldMemberExpressionNode.baseObject != null) {
-            Type baseObject = fieldMemberExpressionNode.baseObject.accept(this, nameTable);
-            for (Field f: baseObject.getFields()) {
-                if (f.getName().equals(fieldMemberExpressionNode.identifier)) {
-                    if (baseObject instanceof CompositeType) {
-                        // we need to set the nameTableEntry of the class field
-                        fieldMemberExpressionNode.setResolvedField(f);
-                    }
-                    fieldMemberExpressionNode.setResultingType(f.getType());
-                    return f.getType();
-                }
+    public Type visit(MemberExpressionNode fieldMemberExpressionNode, NameTable nameTable) throws TypeException {
+        Type baseObject;
+        if (fieldMemberExpressionNode.baseObject == null) {
+            // could be a local variable check first...
+            NameTableEntry nameTableEntry = nameTable.lookup(fieldMemberExpressionNode.identifier, inNonStaticMethod());
+            if (nameTableEntry != null) {
+                fieldMemberExpressionNode.setName(nameTableEntry.name);
+                fieldMemberExpressionNode.setResultingType(nameTableEntry.type);
+                return nameTableEntry.type;
             }
-            throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Field '" + fieldMemberExpressionNode.identifier + "' is not identified for type '" + baseObject.getName() + "'");
+            // lookup the class type for future
+            if (inNonStaticMethod()) {
+                baseObject = nameTable.lookup("this", true).type;
+            } else {
+                // in a static method we can only access local variables. If we come here, there is something wrong
+                throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
+            }
+        } else {
+            baseObject = fieldMemberExpressionNode.baseObject.accept(this, nameTable);
         }
-        NameTableEntry nameTableEntry = nameTable.lookup(fieldMemberExpressionNode.identifier, inNonStaticMethod());
-        if (nameTableEntry == null) {
-            throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
+        fieldMemberExpressionNode.setBaseObjectType(baseObject);
+
+        // check if it is a field
+        for (Field f : baseObject.getFields()) {
+            if (f.getName().equals(fieldMemberExpressionNode.identifier)) {
+                if (baseObject instanceof CompositeType) {
+                    // we need to set the nameTableEntry of the class field
+                    fieldMemberExpressionNode.setResolvedField(f);
+                }
+                fieldMemberExpressionNode.setResultingType(f.getType());
+                return f.getType();
+            }
         }
-        fieldMemberExpressionNode.setName(nameTableEntry.name);
-        fieldMemberExpressionNode.setResultingType(nameTableEntry.type);
-        return nameTableEntry.type;
+        // check if it is a method
+        for (Method m: baseObject.getMethods()) {
+            if (m.getName().equals(fieldMemberExpressionNode.identifier)) {
+                ArrayList<ExpressionNode> invocationArguments = fieldMemberExpressionNode.arguments;
+                List<Type> declaredMethodArguments = m.getArgumentTypes();
+                if (invocationArguments.size() != declaredMethodArguments.size()) {
+                    throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Expected " + declaredMethodArguments.size() + " arguments but found " + invocationArguments.size() + " instead");
+                }
+                for (int i = 0; i < declaredMethodArguments.size(); ++i) {
+                    Type invokedType = invocationArguments.get(i).accept(this, nameTable);
+                    if (invokedType != declaredMethodArguments.get(i)) {
+                        throw new TypeException(invocationArguments.get(i).position.path, invocationArguments.get(i).position.line, "Expected type '" + declaredMethodArguments.get(i).getName() + "' but found '" + invokedType.getName() + "' instead");
+                    }
+                }
+                fieldMemberExpressionNode.setResolvedMethod(m);
+                return m.getReturnType();
+            }
+        }
+        if (fieldMemberExpressionNode.baseObject != null) {
+            throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "Member '" + fieldMemberExpressionNode.identifier + "' is not identified for type '" + baseObject.getName() + "'");
+        }
+        throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable/method '" + fieldMemberExpressionNode.identifier + "' was not defined");
     }
 
     @Override
@@ -354,6 +337,23 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             throw new TypeException(namedType.position.path, namedType.position.line, e.getMessage());
         }
         return namedType.type.type;
+    }
+
+    @Override
+    public Type visit(TernaryExpressionNode ternaryExpressionNode, NameTable nameTable) throws TypeException {
+        ternaryExpressionNode.condition.accept(this, nameTable);
+        if (ternaryExpressionNode.condition.getResultingType() != BooleanType.INSTANCE) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Conditional needs to evaluate to boolean.");
+        }
+        ternaryExpressionNode.t_branch.accept(this, nameTable);
+        Type t_branch_type = ternaryExpressionNode.t_branch.getResultingType();
+        ternaryExpressionNode.f_branch.accept(this, nameTable);
+        Type f_branch_type = ternaryExpressionNode.f_branch.getResultingType();
+        if (t_branch_type != f_branch_type) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Branches need to have the same type.");
+        }
+        ternaryExpressionNode.setResultingType(t_branch_type);
+        return t_branch_type;
     }
 
     @Override

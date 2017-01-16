@@ -15,7 +15,6 @@ import java.util.HashMap;
 import components.*;
 import components.types.*;
 import components.helpers.Position;
-import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
@@ -145,6 +144,8 @@ TOKEN : /* Reserved keywords and such */
 | < GREATER_THAN : ">" >
 | < AND : "&&" >
 | < OR : "||" >
+| < TERNARY_CONDITION : "?" >
+| < TERNARY_DIVIDER : ":" >
 | < BOOL :
     (
       "true"
@@ -301,10 +302,10 @@ StatementNode simpleStatement() :
   Token position;
 }
 {
-  first = expression7()
+  first = expression8()
   (
     position=< SEMICOLON > { return new SimpleStatementNode(generatePosition(position), first); }
-    | position=< ASSIGNMENT > second = expression7() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
+    | position=< ASSIGNMENT > second = expression8() < SEMICOLON > {  return new AssignmentStatementNode(first, generatePosition(position), second); }
   )
 }
 
@@ -317,7 +318,7 @@ DeclarationStatementNode declaration() :
   < VAR >
   < ID > { name = token; }
   < ASSIGNMENT >
-  expression = expression7()
+  expression = expression8()
   < SEMICOLON >
   {
     return new DeclarationStatementNode(tokenify(name), expression, generatePosition(name));
@@ -350,7 +351,7 @@ IfNode ifStatement() :
   Token position;
 }
 {
-  position=< IF > < PARAN_OPEN > condition = expression7()
+  position=< IF > < PARAN_OPEN > condition = expression8()
   < PARAN_CLOSE > first = blockStatement()
   (
     < ELSE > second = blockStatement()
@@ -367,7 +368,7 @@ WhileNode whileStatement() :
   Token position;
 }
 {
-  position=< WHILE > < PARAN_OPEN > condition = expression7()
+  position=< WHILE > < PARAN_OPEN > condition = expression8()
   < PARAN_CLOSE > body = blockStatement()
   {
     return new WhileNode(generatePosition(position), condition, body);
@@ -380,9 +381,30 @@ ReturnNode returnStatement() :
   Token position;
 }
 {
-  position=< RETURN > returnValue = expression7() < SEMICOLON >
+  position=< RETURN > returnValue = expression8() < SEMICOLON >
   {
     return new ReturnNode(generatePosition(position), returnValue);
+  }
+}
+
+ExpressionNode expression8 () :
+//ternary expression
+{
+  ExpressionNode condition;
+  Token position;
+  ExpressionNode t_branch;
+  ExpressionNode f_branch;
+}
+{
+  condition=expression7()
+  (
+    position = < TERNARY_CONDITION >
+    t_branch = expression8()
+    < TERNARY_DIVIDER >
+    f_branch = expression8() { condition = new TernaryExpressionNode(generatePosition(position), condition, t_branch, f_branch); }
+  )?
+  {
+    return condition;
   }
 }
 
@@ -527,7 +549,6 @@ ExpressionNode expression1 () :
 }
 {
   (
-
     (
       (
         position=< NEGATION > { operator = UnaryExpressionNode.Operator.NEGATION; }
@@ -558,10 +579,10 @@ ExpressionNode expression0 () :
     < DOT > name=< ID >(arguments=argumentList())?
     {
 	  if (arguments != null) {
-		current = new MethodInvocationExpressionNode(current, tokenify(name), arguments, generatePosition(name));
+		current = new MemberExpressionNode(current, tokenify(name), arguments, generatePosition(name));
 		arguments = null;
 	  } else {
-		current = new FieldMemberExpressionNode(current, tokenify(name), generatePosition(name));
+		current = new MemberExpressionNode(current, tokenify(name), generatePosition(name));
 	  }
     }
   )*
@@ -582,12 +603,12 @@ ArrayList<ExpressionNode> argumentList() :
 {
   < PARAN_OPEN >
   (
-    expr = expression7()
+    expr = expression8()
     {
       arguments.add(expr);
     }
     (
-      < COMMA > expr = expression7()
+      < COMMA > expr = expression8()
       {
      	arguments.add(expr);
       }
@@ -613,9 +634,9 @@ ExpressionNode atomicExpression() :
     {
       // baseObject is null because it doesn't exist here
       if(arguments == null){
-        return new FieldMemberExpressionNode(null, tokenify(name), generatePosition(name));
+        return new MemberExpressionNode(null, tokenify(name), generatePosition(name));
 	  }
-	  return new MethodInvocationExpressionNode(null, tokenify(name), arguments, generatePosition(name));
+	  return new MemberExpressionNode(null, tokenify(name), arguments, generatePosition(name));
     }
   | < THIS > { return new LiteralNode(tokenify(token), null, generatePosition(token)); }
   | < STRING > { return new LiteralNode(tokenify(token), StringType.INSTANCE, generatePosition(token)); }
@@ -624,7 +645,7 @@ ExpressionNode atomicExpression() :
   | n = nullExpression()
   | n = newExpression()
   | < PARAN_OPEN >
-    expression = expression7()
+    expression = expression8()
     < PARAN_CLOSE > { expression.setParenthesis(); return expression; }
   )
 {
@@ -654,7 +675,7 @@ NewExpressionNode newExpression() :
     < COMMA >
     (
       < INT > { n.arguments.add(new LiteralNode(tokenify(token), IntegerType.INSTANCE, generatePosition(token))); }
-    | < ID > { n.arguments.add(new FieldMemberExpressionNode(null, tokenify(token), generatePosition(token))); }
+    | < ID > { n.arguments.add(new MemberExpressionNode(null, tokenify(token), generatePosition(token))); }
     )
   )*
   < GREATER_THAN >

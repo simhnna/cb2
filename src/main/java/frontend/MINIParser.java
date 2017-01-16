@@ -60,6 +60,8 @@ public class MINIParser {
     public static void prettyPrinted(File in, File out) throws MINIException {
         FileNode classes = MINIGrammar.parse(in);
         PrettyPrinter visitor = new PrettyPrinter();
+        // type check so methods are marked as such
+        classes.accept(new NameAndTypeChecker(), null);
         classes.accept(visitor, null);
         printLinesToFile(out, visitor.toString());
     }

@@ -153,12 +153,22 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     }
 
     @Override
-    public Void visit(FieldMemberExpressionNode memberExpression, Void parameter) {
+    public Void visit(MemberExpressionNode memberExpression, Void parameter) {
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this, null);
             bldr.append(".");
         }
         bldr.append(memberExpression.identifier);
+        if (memberExpression.isMethod()) {
+            bldr.append("(");
+            for (int i = 0; i < memberExpression.arguments.size(); ++i) {
+                memberExpression.arguments.get(i).accept(this, null);
+                if (i != memberExpression.arguments.size() - 1) {
+                    bldr.append(", ");
+                }
+            }
+            bldr.append(")");
+        }
         return null;
     }
 
@@ -166,23 +176,6 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     public Void visit(SimpleStatementNode simpleStatementNode, Void parameter) {
         simpleStatementNode.expression.accept(this, null);
         bldr.append(";");
-        return null;
-    }
-
-    @Override
-    public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
-        if (methodMemberExpressionNode.baseObject != null) {
-            methodMemberExpressionNode.baseObject.accept(this, null);
-            bldr.append(".");
-        }
-        bldr.append(methodMemberExpressionNode.identifier).append("(");
-        for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
-            methodMemberExpressionNode.arguments.get(i).accept(this, null);
-            if (i != methodMemberExpressionNode.arguments.size() - 1) {
-                bldr.append(", ");
-            }
-        }
-        bldr.append(")");
         return null;
     }
 
@@ -229,6 +222,22 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
     public Void visit(NamedType namedType, Void parameter) {
         namedType.type.accept(this, null);
         bldr.append(" ").append(namedType.name);
+        return null;
+    }
+
+    @Override
+    public Void visit(TernaryExpressionNode ternaryExpressionNode, Void parameter) throws IllegalArgumentException {
+        if (ternaryExpressionNode.inParenthesis()) {
+            bldr.append('(');
+        }
+        ternaryExpressionNode.condition.accept(this, null);
+        bldr.append(" ? ");
+        ternaryExpressionNode.t_branch.accept(this, null);
+        bldr.append(" : ");
+        ternaryExpressionNode.f_branch.accept(this, null);
+        if (ternaryExpressionNode.inParenthesis()) {
+            bldr.append(')');
+        }
         return null;
     }
 
