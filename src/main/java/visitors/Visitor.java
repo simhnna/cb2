@@ -38,6 +38,8 @@ public interface Visitor<R, P, E extends Throwable> {
 
     R visit(NamedType namedType, P parameter) throws E;
 
+    R visit(TernaryExpressionNode ternaryExpressionNode, P parameter) throws E;
+
     R visit(TypeNode typeNode, P parameter) throws E;
 
     R visit(FileNode fileNode, P parameter) throws E;

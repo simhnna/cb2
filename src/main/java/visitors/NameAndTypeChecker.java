@@ -340,6 +340,23 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     }
 
     @Override
+    public Type visit(TernaryExpressionNode ternaryExpressionNode, NameTable nameTable) throws TypeException {
+        ternaryExpressionNode.condition.accept(this, nameTable);
+        if (ternaryExpressionNode.condition.getResultingType() != BooleanType.INSTANCE) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Conditional needs to evaluate to boolean.");
+        }
+        ternaryExpressionNode.t_branch.accept(this, nameTable);
+        Type t_branch_type = ternaryExpressionNode.t_branch.getResultingType();
+        ternaryExpressionNode.f_branch.accept(this, nameTable);
+        Type f_branch_type = ternaryExpressionNode.f_branch.getResultingType();
+        if (t_branch_type != f_branch_type) {
+            throw new TypeException(ternaryExpressionNode.position.path, ternaryExpressionNode.position.line, "Ternary Expression Branches need to have the same type.");
+        }
+        ternaryExpressionNode.setResultingType(t_branch_type);
+        return t_branch_type;
+    }
+
+    @Override
     public Type visit(TypeNode typeNode, NameTable nameTable) throws TypeException {
         if (typeNode.type instanceof CompositeType) {
             try {
