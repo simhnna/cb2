@@ -19,14 +19,14 @@ import javax.tools.ToolProvider;
 
 @RunWith(Parameterized.class)
 public class JavaCodeGeneratorTester {
-    
+
     private final File inputFile;
-    
+
     public JavaCodeGeneratorTester(File inputFile, String fileName) {
         this.inputFile = inputFile;
     }
 
-    private static void checkJavaCompiler(File input) throws FileNotFoundException {
+    private static void checkJavaCompiler(File input) {
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         javac.run(null, System.out, output, input.getAbsolutePath());
@@ -52,7 +52,7 @@ public class JavaCodeGeneratorTester {
             fail("encountered Exception during code generation");
         }
     }
-    
+
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();

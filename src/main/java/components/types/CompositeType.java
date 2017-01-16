@@ -47,7 +47,7 @@ public class CompositeType implements Type {
         }
         return type;
     }
-    
+
     public static CompositeType getDeclaredType(String className) {
         CompositeType type = classes.get(className);
         if (type.type == null) {
@@ -55,7 +55,7 @@ public class CompositeType implements Type {
         }
         return type;
     }
-    
+
     public ClassNode getType() {
         return type;
     }
@@ -74,12 +74,7 @@ public class CompositeType implements Type {
     public Set<Field> getFields() {
         return type.getFields();
     }
-    
-    @Override
-    public String toString() {
-        return getName();
-    }
-    
+
     public static void clear() {
         classes.clear();
     }

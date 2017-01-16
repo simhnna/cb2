@@ -9,7 +9,6 @@ import components.interfaces.Node;
 import components.interfaces.StatementNode;
 import components.types.*;
 import ir.Field;
-import ir.Method;
 import ir.Name;
 import ir.Type;
 
@@ -356,7 +355,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else if (type instanceof CompositeType) {
             return names.get(((CompositeType) type).getType());
         } else {
-            return type.toString();
+            return type.getName();
         }
     }
 }

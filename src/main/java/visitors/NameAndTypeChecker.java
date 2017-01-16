@@ -144,7 +144,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  Fields are added in classes, so that they are defined in all methods regardless of order
          *  We are however adding this field to the nameTable of the class
          */
-        fieldNode.setNameTableEntry(nameTable.addName(fieldNode, fieldNode.getType()));
+        nameTable.addName(fieldNode, fieldNode.getType());
 
         return null;
     }
@@ -343,7 +343,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(TypeNode typeNode, NameTable nameTable) throws TypeException {
         if (typeNode.type instanceof CompositeType) {
             try {
-                CompositeType.getDeclaredType(typeNode.toString());
+                CompositeType.getDeclaredType(typeNode.type.getName());
             } catch (IllegalArgumentException e) {
                 throw new TypeException(typeNode.position.path, typeNode.position.line, e.getMessage());
             }

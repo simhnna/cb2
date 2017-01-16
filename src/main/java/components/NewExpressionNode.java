@@ -9,7 +9,7 @@ import visitors.Visitor;
 public class NewExpressionNode extends ExpressionNode {
     public final TypeNode type;
     public final ArrayList<ExpressionNode> arguments;
-    
+
     public NewExpressionNode(TypeNode type) {
         super(type.position);
         this.type = type;
@@ -23,10 +23,5 @@ public class NewExpressionNode extends ExpressionNode {
     @Override
     public Type getResultingType() {
         return type.type;
-    }
-    
-    @Override
-    public String toString() {
-        return "<new " + type + ">";
     }
 }
