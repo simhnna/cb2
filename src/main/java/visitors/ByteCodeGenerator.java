@@ -496,4 +496,9 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         }
         throw new RuntimeException();
     }
+
+    @Override
+    public Object visit(AssertedExpressionNode node, Object parameter) throws RuntimeException {
+        return node.expression.accept(this, parameter);
+    }
 }

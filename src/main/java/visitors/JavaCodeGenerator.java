@@ -362,4 +362,10 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             return type.getName();
         }
     }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        return null;
+    }
 }

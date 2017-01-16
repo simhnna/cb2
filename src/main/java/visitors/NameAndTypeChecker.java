@@ -3,6 +3,7 @@ package visitors;
 import java.util.List;
 import java.util.ArrayList;
 
+import components.AssertedExpressionNode;
 import components.AssignmentStatementNode;
 import components.BinaryExpressionNode;
 import components.BlockNode;
@@ -163,7 +164,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  We are however adding this field to the nameTable of the class
          */
         nameTable.addName(fieldNode, fieldNode.getType());
-
         return null;
     }
 
@@ -404,5 +404,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     private boolean inNonStaticMethod() {
         return currentMethod == null || !currentMethod.name.equals("main");
+    }
+
+    @Override
+    public Type visit(AssertedExpressionNode node, NameTable parameter) throws TypeException {
+        if (node.expression.accept(this, parameter) != node.assertedType.accept(this, parameter)) {
+            throw new TypeException(node.position.path, node.position.line, "Expected to find type '" + node.assertedType.type + "' but found '" + node.expression.getResultingType() + "' instead");
+        }
+        node.setResultingType(node.expression.getResultingType());
+        return node.getResultingType();
     }
 }

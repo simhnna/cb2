@@ -1,6 +1,6 @@
 class A {
   void firstFunction() {
-    "whatever";
+    "whatever" @ string;
     var meh := true;
     meh := false;
   }

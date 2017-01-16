@@ -160,6 +160,7 @@ TOKEN : /* Reserved keywords and such */
     | [ "#"-"~" ]
     )*
     "\"" >
+| < AT : "@" >
 | < BAD_TOKEN : ~[ ] >
 }
 
@@ -268,7 +269,7 @@ ArrayList < NamedType > signature() :
         arguments.add(new NamedType(tokenify(token), type, generatePosition(token)));
       }
     )*
- 
+
   )?
   < PARAN_CLOSE >
   {
@@ -525,7 +526,8 @@ ExpressionNode expression1 () :
   UnaryExpressionNode.Operator operator;
 }
 {
-  (    
+  (
+
     (
       (
         position=< NEGATION > { operator = UnaryExpressionNode.Operator.NEGATION; }
@@ -548,6 +550,7 @@ ExpressionNode expression0 () :
   ExpressionNode current;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  TypeNode assertedType = null;
 }
 {
   current = atomicExpression()
@@ -562,6 +565,10 @@ ExpressionNode expression0 () :
 	  }
     }
   )*
+  (
+    name=< AT > assertedType=type()
+    { return new AssertedExpressionNode(current, assertedType, generatePosition(name)); }
+  )?
   {
     return current;
   }
