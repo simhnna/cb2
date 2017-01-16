@@ -172,16 +172,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type type = ifNode.condition.accept(this, nameTable);
         if (type != BooleanType.INSTANCE) {
             throw new TypeException(ifNode.position.path, ifNode.position.line,
-                    "condition should be of type bool found " + type.getName() + " instead");
+                    "condition should be of type bool, found " + type.getName() + " instead");
         }
         ifNode.ifBlock.accept(this, nameTable);
         if (ifNode.elseBlock != null) {
             ifNode.elseBlock.accept(this, nameTable);
         }
-        if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
-            // clear return in parent block
-            nameTable.owner.setContainsReturn(false);
-        }
+        nameTable.owner.setContainsReturn(ifNode.elseBlock != null && ifNode.elseBlock.containsReturn() && ifNode.ifBlock.containsReturn());
         return null;
     }
 
