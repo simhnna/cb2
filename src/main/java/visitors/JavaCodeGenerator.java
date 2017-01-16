@@ -189,7 +189,54 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
     }
 
     @Override
-    public Void visit(FieldMemberExpressionNode memberExpression, Void parameter) {
+    public Void visit(MemberExpressionNode memberExpression, Void parameter) {
+        if (memberExpression.isMethod()) {
+            if (memberExpression.identifier.equals("print")) {
+                // so that null values don't cause any issues...
+                bldr.append("System.out.println(\"\" + ");
+                memberExpression.baseObject.accept(this, null);
+                bldr.append(")");
+            } else if (memberExpression.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
+                if (memberExpression.baseObject != null) {
+                    memberExpression.baseObject.accept(this, null);
+                    bldr.append(".length()");
+                }
+            } else if (memberExpression.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
+                if (memberExpression.baseObject != null) {
+                    memberExpression.baseObject.accept(this, null);
+                    bldr.append(".length");
+                }
+            } else if (memberExpression.identifier.equals("get") && memberExpression.getBaseObjectType() instanceof ArrayType) {
+                if (memberExpression.baseObject != null) {
+                    memberExpression.baseObject.accept(this, null);
+                    bldr.append("[");
+                    memberExpression.arguments.get(0).accept(this, null);
+                    bldr.append("]");
+                }
+            } else if (memberExpression.identifier.equals("set") && memberExpression.getBaseObjectType() instanceof ArrayType) {
+                if (memberExpression.baseObject != null) {
+                    memberExpression.baseObject.accept(this, null);
+                    bldr.append("[");
+                    memberExpression.arguments.get(0).accept(this, null);
+                    bldr.append("] = ");
+                    memberExpression.arguments.get(1).accept(this, null);
+                }
+            } else {
+                if (memberExpression.baseObject != null) {
+                    memberExpression.baseObject.accept(this, null);
+                    bldr.append(".");
+                }
+                bldr.append(names.get(memberExpression.getResolvedMethod())).append("(");
+                for (int i = 0; i < memberExpression.arguments.size(); ++i) {
+                    memberExpression.arguments.get(i).accept(this, null);
+                    if (i != memberExpression.arguments.size() - 1) {
+                        bldr.append(", ");
+                    }
+                }
+                bldr.append(")");
+            }
+            return null;
+        }
         if (memberExpression.baseObject != null) {
             memberExpression.baseObject.accept(this, null);
             bldr.append(".");
@@ -220,55 +267,6 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             bldr.append(")");
         }
         bldr.append(";");
-        return null;
-    }
-
-    @Override
-    public Void visit(MethodInvocationExpressionNode methodMemberExpressionNode, Void parameter) {
-        if (methodMemberExpressionNode.identifier.equals("print")) {
-            // so that null values don't cause any issues...
-            bldr.append("System.out.println(\"\" + ");
-            methodMemberExpressionNode.baseObject.accept(this, null);
-            bldr.append(")");
-        } else if (methodMemberExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
-            if (methodMemberExpressionNode.baseObject != null) {
-                methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append(".length()");
-            }
-        } else if (methodMemberExpressionNode.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
-            if (methodMemberExpressionNode.baseObject != null) {
-                methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append(".length");
-            }
-        } else if (methodMemberExpressionNode.identifier.equals("get") && methodMemberExpressionNode.getBaseObjectType() instanceof ArrayType) {
-            if (methodMemberExpressionNode.baseObject != null) {
-                methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append("[");
-                methodMemberExpressionNode.arguments.get(0).accept(this, null);
-                bldr.append("]");
-            }
-        } else if (methodMemberExpressionNode.identifier.equals("set") && methodMemberExpressionNode.getBaseObjectType() instanceof ArrayType) {
-            if (methodMemberExpressionNode.baseObject != null) {
-                methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append("[");
-                methodMemberExpressionNode.arguments.get(0).accept(this, null);
-                bldr.append("] = ");
-                methodMemberExpressionNode.arguments.get(1).accept(this, null);
-            }
-        } else {
-            if (methodMemberExpressionNode.baseObject != null) {
-                methodMemberExpressionNode.baseObject.accept(this, null);
-                bldr.append(".");
-            }
-            bldr.append(names.get(methodMemberExpressionNode.getResolvedMethod())).append("(");
-            for (int i = 0; i < methodMemberExpressionNode.arguments.size(); ++i) {
-                methodMemberExpressionNode.arguments.get(i).accept(this, null);
-                if (i != methodMemberExpressionNode.arguments.size() - 1) {
-                    bldr.append(", ");
-                }
-            }
-            bldr.append(")");
-        }
         return null;
     }
 

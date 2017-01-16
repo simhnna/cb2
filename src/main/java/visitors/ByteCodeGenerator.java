@@ -31,7 +31,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         InstructionList il = new InstructionList();
         il.append((InstructionList) assignmentStatementNode.right.accept(this, parameter));
         // we don't need to visit the left node, because we already know where it points to
-        FieldMemberExpressionNode assignedField = (FieldMemberExpressionNode) assignmentStatementNode.left;
+        MemberExpressionNode assignedField = (MemberExpressionNode) assignmentStatementNode.left;
         if (variableAssignment.containsKey(assignedField.getName())) {
             // normal variable
             if (assignmentStatementNode.getAssignedType() == IntegerType.INSTANCE ||
@@ -246,50 +246,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
         return il;
     }
 
-    @Override
-    public Object visit(MethodInvocationExpressionNode methodInvocationExpressionNode, Object parameter) throws RuntimeException {
-        InstructionList il = new InstructionList();
-        InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
-        if (methodInvocationExpressionNode.identifier.equals("print")) {
-            il.append(ifc.createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
-            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            Type baseType;
-            if (methodInvocationExpressionNode.getBaseObjectType() instanceof CompositeType ||
-                    methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
-                baseType = Type.OBJECT;
-            } else {
-                baseType = getBCELType(methodInvocationExpressionNode.getBaseObjectType());
-            }
-            il.append(ifc.createInvoke("java.io.PrintStream", "println", Type.VOID, new Type[] {baseType}, Const.INVOKEVIRTUAL));
-        } else if (methodInvocationExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
-            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            il.append(ifc.createInvoke("java.lang.String", "length", Type.INT, new Type[0], Const.INVOKEVIRTUAL));
-        } else if (methodInvocationExpressionNode.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
-            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            il.append(new ARRAYLENGTH());
-        } else if (methodInvocationExpressionNode.identifier.equals("get") && methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
-            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            il.append((InstructionList) methodInvocationExpressionNode.arguments.get(0).accept(this, parameter));
-            il.append(InstructionFactory.createArrayLoad(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getBaseObjectType()).getBasicDataType())));
-        } else if (methodInvocationExpressionNode.identifier.equals("set") && methodInvocationExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
-            il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            il.append((InstructionList) methodInvocationExpressionNode.arguments.get(0).accept(this, parameter));
-            il.append((InstructionList) methodInvocationExpressionNode.arguments.get(1).accept(this, parameter));
-            il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) methodInvocationExpressionNode.getBaseObjectType()).getBasicDataType())));
-        } else {
-            if (methodInvocationExpressionNode.baseObject != null) {
-                il.append((InstructionList) methodInvocationExpressionNode.baseObject.accept(this, parameter));
-            } else {
-                il.append(InstructionFactory.createThis());
-            }
-            for (ExpressionNode e: methodInvocationExpressionNode.arguments) {
-                il.append((InstructionList) e.accept(this, parameter));
-            }
-            il.append(ifc.createInvoke(methodInvocationExpressionNode.getBaseObjectType().getName(), methodInvocationExpressionNode.identifier, getBCELType(methodInvocationExpressionNode.getResultingType()), convertMethodArguments(methodInvocationExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
-        }
-        return il;
-    }
-
     private Type[] convertMethodArguments(List<ir.Type> argumentTypes) {
         Type[] types = new Type[argumentTypes.size()];
         for (int i = 0; i < types.length; ++i) {
@@ -436,9 +392,48 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
     }
 
     @Override
-    public Object visit(FieldMemberExpressionNode fieldMemberExpressionNode, Object parameter) throws RuntimeException {
+    public Object visit(MemberExpressionNode fieldMemberExpressionNode, Object parameter) throws RuntimeException {
         InstructionList il = new InstructionList();
-        if (variableAssignment.containsKey(fieldMemberExpressionNode.getName())) {
+        InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
+        if (fieldMemberExpressionNode.isMethod()) {
+            if (fieldMemberExpressionNode.identifier.equals("print")) {
+                il.append(ifc.createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
+                il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                Type baseType;
+                if (fieldMemberExpressionNode.getBaseObjectType() instanceof CompositeType ||
+                        fieldMemberExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
+                    baseType = Type.OBJECT;
+                } else {
+                    baseType = getBCELType(fieldMemberExpressionNode.getBaseObjectType());
+                }
+                il.append(ifc.createInvoke("java.io.PrintStream", "println", Type.VOID, new Type[]{baseType}, Const.INVOKEVIRTUAL));
+            } else if (fieldMemberExpressionNode.getResolvedMethod() == PredefinedMethods.STRING_SIZE) {
+                il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                il.append(ifc.createInvoke("java.lang.String", "length", Type.INT, new Type[0], Const.INVOKEVIRTUAL));
+            } else if (fieldMemberExpressionNode.getResolvedMethod() == PredefinedMethods.ARRAY_SIZE) {
+                il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                il.append(new ARRAYLENGTH());
+            } else if (fieldMemberExpressionNode.identifier.equals("get") && fieldMemberExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
+                il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                il.append((InstructionList) fieldMemberExpressionNode.arguments.get(0).accept(this, parameter));
+                il.append(InstructionFactory.createArrayLoad(getBCELType(((components.types.ArrayType) fieldMemberExpressionNode.getBaseObjectType()).getBasicDataType())));
+            } else if (fieldMemberExpressionNode.identifier.equals("set") && fieldMemberExpressionNode.getBaseObjectType() instanceof components.types.ArrayType) {
+                il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                il.append((InstructionList) fieldMemberExpressionNode.arguments.get(0).accept(this, parameter));
+                il.append((InstructionList) fieldMemberExpressionNode.arguments.get(1).accept(this, parameter));
+                il.append(InstructionFactory.createArrayStore(getBCELType(((components.types.ArrayType) fieldMemberExpressionNode.getBaseObjectType()).getBasicDataType())));
+            } else {
+                if (fieldMemberExpressionNode.baseObject != null) {
+                    il.append((InstructionList) fieldMemberExpressionNode.baseObject.accept(this, parameter));
+                } else {
+                    il.append(InstructionFactory.createThis());
+                }
+                for (ExpressionNode e : fieldMemberExpressionNode.arguments) {
+                    il.append((InstructionList) e.accept(this, parameter));
+                }
+                il.append(ifc.createInvoke(fieldMemberExpressionNode.getBaseObjectType().getName(), fieldMemberExpressionNode.identifier, getBCELType(fieldMemberExpressionNode.getResultingType()), convertMethodArguments(fieldMemberExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKEVIRTUAL));
+            }
+        } else if (variableAssignment.containsKey(fieldMemberExpressionNode.getName())) {
             // local variable
             il.append(InstructionFactory.createLoad(getBCELType(fieldMemberExpressionNode.getResultingType()), variableAssignment.get(fieldMemberExpressionNode.getName())));
         } else {
@@ -451,7 +446,6 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.append(InstructionFactory.createThis());
                 className = currentClass.getClassName();
             }
-            InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
             il.append(ifc.createGetField(className, fieldMemberExpressionNode.identifier, getBCELType(fieldMemberExpressionNode.getResultingType())));
         }
         return il;

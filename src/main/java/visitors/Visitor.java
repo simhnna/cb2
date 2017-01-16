@@ -18,8 +18,6 @@ public interface Visitor<R, P, E extends Throwable> {
 
     R visit(IfNode ifNode, P parameter) throws E;
 
-    R visit(MethodInvocationExpressionNode methodInvocationExpressionNode, P parameter) throws E;
-
     R visit(MethodDeclarationNode methodNode, P parameter) throws E;
 
     R visit(NewExpressionNode newExpressionNode, P parameter) throws E;
@@ -36,7 +34,7 @@ public interface Visitor<R, P, E extends Throwable> {
 
     R visit(WhileNode whileNode, P parameter) throws E;
 
-    R visit(FieldMemberExpressionNode fieldMemberExpressionNode, P parameter) throws E;
+    R visit(MemberExpressionNode memberExpressionNode, P parameter) throws E;
 
     R visit(NamedType namedType, P parameter) throws E;
 

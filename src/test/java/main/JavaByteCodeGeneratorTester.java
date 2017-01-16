@@ -56,6 +56,7 @@ public class JavaByteCodeGeneratorTester {
         } catch (MINIException e) {
             fail("Failed to parse input File");
         } catch (Exception e) {
+            e.printStackTrace();
             fail("File caused an exception");
         }
     }
