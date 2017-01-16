@@ -31,9 +31,13 @@ public class JavaCodeGeneratorTester {
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
         Assume.assumeNotNull(javac);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        javac.run(null, System.out, output, input.getAbsolutePath());
-        if (output.size() > 0 ) {
-            fail("Found errors during javac call");
+        try {
+            javac.run(null, System.out, output, input.getAbsolutePath());
+            if (output.size() > 0) {
+                throw null;
+            }
+        } catch (Exception e) {
+            fail("Encountered Exception during javac call:\n" + output.toString());
         }
     }
 
