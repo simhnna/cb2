@@ -28,17 +28,16 @@ public class JavaByteCodeGeneratorTester {
         this.inputFile = inputFile;
     }
 
-    private static void checkByteCode(File classLocation) throws FileNotFoundException {
+    private static void checkByteCode(File classLocation) {
         try {
-            ClassLoader loader = new URLClassLoader(new URL[]{classLocation.toURL()});
+            ClassLoader loader = new URLClassLoader(new URL[]{new URL("file://" + classLocation.getPath() + "/")});
+
             for (File cls: classLocation.listFiles()) {
                 if (cls.getName().endsWith(".class")) {
                     loader.loadClass(cls.getName().substring(0, cls.getName().length() - 6));
                 }
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (MalformedURLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -60,7 +59,7 @@ public class JavaByteCodeGeneratorTester {
             fail("File caused an exception");
         }
     }
-    
+
     @Parameters(name = "{1}")
     public static Collection<Object[]> data() {
         Collection<Object[]> data = new ArrayList<>();

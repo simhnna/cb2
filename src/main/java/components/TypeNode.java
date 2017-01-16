@@ -48,9 +48,4 @@ public class TypeNode extends Node {
         }
         return type;
     }
-
-    @Override
-    public String toString() {
-        return type.getName();
-    }
 }

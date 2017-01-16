@@ -21,10 +21,10 @@ import ir.NameTableEntry;
 import testsuite.TypeException;
 
 public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeException> {
-    
+
     // Used to hold the current method to check for return types
     private MethodDeclarationNode currentMethod;
-    
+
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
         if (!(assignmentStatementNode.left instanceof FieldMemberExpressionNode)) {
@@ -143,8 +143,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  Fields are added in classes, so that they are defined in all methods regardless of order
          *  We are however adding this field to the nameTable of the class
          */
-        fieldNode.setNameTableEntry(nameTable.addName(fieldNode, fieldNode.getType()));
-        
+        nameTable.addName(fieldNode, fieldNode.getType());
+
         return null;
     }
 
@@ -158,7 +158,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         ifNode.ifBlock.accept(this, nameTable);
         if (ifNode.elseBlock != null) {
             ifNode.elseBlock.accept(this, nameTable);
-        } 
+        }
         if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
             // clear return in parent block
             nameTable.owner.setContainsReturn(false);
@@ -206,7 +206,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             namedType.accept(this, nameTable);
         }
         methodNode.body.accept(this, nameTable);
-        
+
         // check if a return statement is present
         if (methodNode.returnType.type != VoidType.INSTANCE && !methodNode.body.containsReturn()) {
             throw new TypeException(methodNode.position.path, methodNode.position.line, "Method is missing a return statement");
@@ -293,7 +293,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
                     "condition should be of type bool found " + type.getName() + " instead");
         }
         whileNode.body.accept(this, nameTable);
-        
+
         // clear possible return Value in parent block
         nameTable.owner.setContainsReturn(false);
         return null;
@@ -357,7 +357,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(TypeNode typeNode, NameTable nameTable) throws TypeException {
         if (typeNode.type instanceof CompositeType) {
             try {
-                CompositeType.getDeclaredType(typeNode.toString());
+                CompositeType.getDeclaredType(typeNode.type.getName());
             } catch (IllegalArgumentException e) {
                 throw new TypeException(typeNode.position.path, typeNode.position.line, e.getMessage());
             }
@@ -391,14 +391,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
                         "A class with name '" + classNode.getName() + "' was already defined");
             }
         }
-        
+
         // now we can process classes knowing all types are defined
         for (ClassNode classNode: fileNode.classes) {
             classNode.accept(this, nameTable);
         }
         return null;
     }
-    
+
     private boolean inNonStaticMethod() {
         return currentMethod == null || !currentMethod.name.equals("main");
     }

@@ -12,24 +12,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.*;
-import org.apache.bcel.generic.ASTORE;
 import org.apache.bcel.generic.ArrayType;
-import org.apache.bcel.generic.ClassGen;
-import org.apache.bcel.generic.ConstantPoolGen;
-import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.ICONST;
-import org.apache.bcel.generic.IF_ICMPGE;
-import org.apache.bcel.generic.IF_ICMPGT;
-import org.apache.bcel.generic.IF_ICMPLE;
-import org.apache.bcel.generic.IF_ICMPLT;
-import org.apache.bcel.generic.ISTORE;
-import org.apache.bcel.generic.InstructionFactory;
-import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
-import org.apache.bcel.generic.MethodGen;
-import org.apache.bcel.generic.PUSH;
-import org.apache.bcel.generic.RETURN;
-import org.apache.bcel.generic.Type;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +47,7 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.insert((InstructionList) assignedField.baseObject.accept(this, parameter));
                 className = assignedField.baseObject.getResultingType().getName();
             } else {
-                il.append(InstructionFactory.createThis());
+                il.insert(InstructionFactory.createThis());
                 className = currentClass.getClassName();
             }
             InstructionFactory ifc = new InstructionFactory((ConstantPoolGen) parameter);
@@ -127,12 +110,27 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 }
                 break;
             case BOOL_OP:
+                il.dispose();
                 switch(binaryExpressionNode.operator) {
                     case AND:
-                        il.append(InstructionConst.IAND);
+                        end = il.append(new NOP());
+                        tmp = il.insert(new ICONST(0));
+                        il.insert(new GOTO(end));
+                        il.insert(new ICONST(1));
+                        il.insert(new IFEQ(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+                        il.insert(new IFEQ(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.left.accept(this, parameter));
                         break;
                     case OR:
-                        il.append(InstructionConst.IOR);
+                        tmp = il.append(new NOP());
+                        end = il.insert(new ICONST(0));
+                        il.insert(new GOTO(tmp));
+                        tmp = il.insert(new ICONST(1));
+                        il.insert(new IFEQ(end));
+                        il.insert((InstructionList) binaryExpressionNode.right.accept(this, parameter));
+                        il.insert(new IFNE(tmp));
+                        il.insert((InstructionList) binaryExpressionNode.left.accept(this, parameter));
                         break;
                 }
                 break;

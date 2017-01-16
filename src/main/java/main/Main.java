@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 
 import components.FileNode;
-import ir.NameTable;
 import org.apache.bcel.classfile.JavaClass;
 import parser.MINIGrammar;
 import testsuite.MINIException;
@@ -36,6 +35,5 @@ public class Main {
         } catch (MINIException e) {
             e.printStackTrace();
         }
-
     }
 }
