@@ -345,6 +345,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.append((InstructionList) e.accept(this, parameter));
             }
             il.append(ifc.createNewArray(getBCELType(((components.types.ArrayType) newExpressionNode.type.type).getBasicDataType()), (short) ((components.types.ArrayType) newExpressionNode.type.type).getDimensions()));
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            il.append(new ICONST(0));
         } else {
             il.append(ifc.createNew(newExpressionNode.getResultingType().getName()));
             il.append(new DUP());
