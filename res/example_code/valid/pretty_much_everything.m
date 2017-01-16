@@ -58,7 +58,7 @@ class A {
     return result;
   }
   void main(string[] args) {
-    args := new<string[], 5>;
+    args := new <string[], 5>;
     args.set(0, "bla");
     var test := args.get(0);
     var a := new <A>;
