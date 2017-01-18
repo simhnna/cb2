@@ -145,7 +145,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  We are however adding this field to the nameTable of the class
          */
         nameTable.addName(fieldNode, fieldNode.getType());
-
         return null;
     }
 
@@ -154,16 +153,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type type = ifNode.condition.accept(this, nameTable);
         if (type != BooleanType.INSTANCE) {
             throw new TypeException(ifNode.position.path, ifNode.position.line,
-                    "condition should be of type bool found " + type.getName() + " instead");
+                    "condition should be of type bool, found " + type.getName() + " instead");
         }
         ifNode.ifBlock.accept(this, nameTable);
         if (ifNode.elseBlock != null) {
             ifNode.elseBlock.accept(this, nameTable);
         }
-        if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
-            // clear return in parent block
-            nameTable.owner.setContainsReturn(false);
-        }
+        nameTable.owner.setContainsReturn(ifNode.elseBlock != null && ifNode.elseBlock.containsReturn() && ifNode.ifBlock.containsReturn());
         return null;
     }
 
@@ -197,8 +193,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             if (newExpressionNode.arguments.size() != dimensions) {
                 throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Expected " + dimensions + " arguments but found " + newExpressionNode.arguments.size() + " instead");
             }
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            if (newExpressionNode.arguments.size() > 0) {
+                throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances of int doesn't take any parameters");
+            }
         } else {
-            throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances is only supported for self defined types and arrays");
+            throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances is only supported for integers, self defined types and arrays");
         }
         for (ExpressionNode arg: newExpressionNode.arguments) {
             Type argType = arg.accept(this, nameTable);
@@ -404,5 +404,14 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     private boolean inNonStaticMethod() {
         return currentMethod == null || !currentMethod.name.equals("main");
+    }
+
+    @Override
+    public Type visit(AssertedExpressionNode node, NameTable parameter) throws TypeException {
+        if (node.expression.accept(this, parameter) != node.assertedType.accept(this, parameter)) {
+            throw new TypeException(node.position.path, node.position.line, "Expected to find type '" + node.assertedType.type + "' but found '" + node.expression.getResultingType() + "' instead");
+        }
+        node.setResultingType(node.expression.getResultingType());
+        return node.getResultingType();
     }
 }

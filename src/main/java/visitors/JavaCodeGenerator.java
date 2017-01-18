@@ -280,6 +280,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 dimension.accept(this, null);
                 bldr.append("]");
             }
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            bldr.append(" Integer()");
         } else {
             newExpressionNode.type.accept(this, null);
             bldr.append("()");
@@ -373,5 +375,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else {
             return type.getName();
         }
+    }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        return null;
     }
 }

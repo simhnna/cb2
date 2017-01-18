@@ -113,6 +113,14 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.dispose();
                 switch(binaryExpressionNode.operator) {
                     case AND:
+                        //      left...
+                        //        ifeq tmp
+                        //      right...
+                        //        ifeq tmp
+                        //        iconst 1
+                        //        goto end
+                        // tmp -> iconst 0
+                        // end -> nop
                         end = il.append(new NOP());
                         tmp = il.insert(new ICONST(0));
                         il.insert(new GOTO(end));
@@ -299,6 +307,8 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
                 il.append((InstructionList) e.accept(this, parameter));
             }
             il.append(ifc.createNewArray(getBCELType(((components.types.ArrayType) newExpressionNode.type.type).getBasicDataType()), (short) ((components.types.ArrayType) newExpressionNode.type.type).getDimensions()));
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            il.append(new ICONST(0));
         } else {
             il.append(ifc.createNew(newExpressionNode.getResultingType().getName()));
             il.append(new DUP());
@@ -496,5 +506,10 @@ public class ByteCodeGenerator implements Visitor<Object, Object, RuntimeExcepti
             return new ArrayType(getBCELType(((components.types.ArrayType) t).getBasicDataType()), ((components.types.ArrayType) t).getDimensions());
         }
         throw new RuntimeException();
+    }
+
+    @Override
+    public Object visit(AssertedExpressionNode node, Object parameter) throws RuntimeException {
+        return node.expression.accept(this, parameter);
     }
 }
