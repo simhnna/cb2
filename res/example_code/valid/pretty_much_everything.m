@@ -5,10 +5,10 @@ class A {
     meh := false;
   }
   int returnsConstant() {
-    return 1;
+    return 1 == 1 ? 1 : 2;
   }
   int fibonacci(int n) {
-    return n;
+    return (false ? n - 1 : n);
   }
   int returnArgument(int n) {
     (-n).print();
