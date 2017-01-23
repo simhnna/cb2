@@ -53,7 +53,7 @@ public class MINIParser {
         try {
             Files.write(file.toPath(), lines.getBytes(Charset.forName("UTF-8")), StandardOpenOption.WRITE);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Can't write to file " + file.getPath());
         }
     }
 
@@ -91,7 +91,7 @@ public class MINIParser {
             try {
                 cls.dump(new File(out.getAbsolutePath()  + File.separator + cls.getClassName() + ".class"));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Can't write to file " + out.getPath());
             }
         }
     }
