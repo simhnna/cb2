@@ -320,17 +320,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(TernaryExpressionNode ternaryExpressionNode, Void parameter) throws IllegalArgumentException {
-        if (ternaryExpressionNode.inParenthesis()) {
-            bldr.append('(');
-        }
+        bldr.append('(');
         ternaryExpressionNode.condition.accept(this, null);
         bldr.append(" ? ");
         ternaryExpressionNode.t_branch.accept(this, null);
         bldr.append(" : ");
         ternaryExpressionNode.f_branch.accept(this, null);
-        if (ternaryExpressionNode.inParenthesis()) {
-            bldr.append(')');
-        }
+        bldr.append(')');
         return null;
     }
 

@@ -27,9 +27,9 @@ public class Main {
             classes.accept(javaPrinter, null);
 //            System.out.println(javaPrinter.toString());
             ByteCodeGenerator generator = new ByteCodeGenerator();
-            ArrayList<JavaClass> genClasses = (ArrayList<JavaClass>) classes.accept(generator, null);
+            classes.accept(generator, null);
             File tmpDir = Files.createTempDirectory("classFiles").toFile();
-            for (JavaClass cls: genClasses) {
+            for (JavaClass cls: generator.getGeneratedClasses()) {
                 cls.dump(new File(tmpDir + File.separator + cls.getClassName() + ".class"));
             }
         } catch (MINIException e) {

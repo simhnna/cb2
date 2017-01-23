@@ -86,8 +86,8 @@ public class MINIParser {
         NameAndTypeChecker checker = new NameAndTypeChecker();
         ByteCodeGenerator generator = new ByteCodeGenerator();
         classes.accept(checker, null);
-        ArrayList<JavaClass> generatedClasses = (ArrayList<JavaClass>) classes.accept(generator, null);
-        for (JavaClass cls: generatedClasses) {
+        classes.accept(generator, null);
+        for (JavaClass cls: generator.getGeneratedClasses()) {
             try {
                 cls.dump(new File(out.getAbsolutePath()  + File.separator + cls.getClassName() + ".class"));
             } catch (IOException e) {
