@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,10 +29,15 @@ public class JavaCodeGeneratorTester {
 
     private static void checkJavaCompiler(File input) {
         JavaCompiler javac = ToolProvider.getSystemJavaCompiler();
+        Assume.assumeNotNull(javac);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        javac.run(null, System.out, output, input.getAbsolutePath());
-        if (output.size() > 0 ) {
-            fail("Found errors during javac call");
+        try {
+            javac.run(null, System.out, output, input.getAbsolutePath());
+            if (output.size() > 0) {
+                throw null;
+            }
+        } catch (Exception e) {
+            fail("Encountered Exception during javac call:\n" + output.toString());
         }
     }
 
@@ -48,8 +54,6 @@ public class JavaCodeGeneratorTester {
             fail("Failed to create temporary File");
         } catch (MINIException e) {
             fail("Failed to parse input File");
-        } catch (Exception e) {
-            fail("encountered Exception during code generation");
         }
     }
 

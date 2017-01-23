@@ -7,7 +7,6 @@ import java.util.HashMap;
 import components.*;
 import components.types.*;
 import components.helpers.Position;
-import ir.Type;
 import components.interfaces.*;
 import java.util.ArrayList;
 import testsuite.MINIException;
