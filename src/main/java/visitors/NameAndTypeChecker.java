@@ -24,6 +24,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     // Used to hold the current method to check for return types
     private MethodDeclarationNode currentMethod;
+    // Used to resolve 'this'
+    private CompositeType currentClass;
 
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
@@ -117,8 +119,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
-        nameTable.addName(CompositeType.getDeclaredType(classNode.name));
-
+        currentClass = CompositeType.getDeclaredType(classNode.name);
         for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
         }
@@ -218,8 +219,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
             // type is null, when it's a _this_ literalNode
-            primitiveType.setResultingType(nameTable.lookup(primitiveType.token, inNonStaticMethod()).type);
-            return nameTable.lookup(primitiveType.token, inNonStaticMethod()).type;
+            if (!inNonStaticMethod()) {
+                throw new TypeException(primitiveType.position.path, primitiveType.position.line, "The use of 'this' is not allowed in a static method!");
+            }
+            primitiveType.setResultingType(currentClass);
+            return primitiveType.getResultingType();
         }
         primitiveType.setResultingType(primitiveType.type);
         return primitiveType.type;
@@ -282,7 +286,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             }
             // lookup the class type for future
             if (inNonStaticMethod()) {
-                baseObject = nameTable.lookup("this", true).type;
+                baseObject = currentClass;
             } else {
                 // in a static method we can only access local variables. If we come here, there is something wrong
                 throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
