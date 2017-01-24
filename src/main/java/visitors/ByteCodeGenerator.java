@@ -397,7 +397,14 @@ public class ByteCodeGenerator implements Visitor<InstructionList, Object, Runti
         InstructionList il = new InstructionList();
         InstructionFactory ifc = new InstructionFactory(currentClass.getConstantPool());
         if (fieldMemberExpressionNode.isMethod()) {
-            if (fieldMemberExpressionNode.identifier.equals("print")) {
+            if (fieldMemberExpressionNode.getResolvedMethod() instanceof JavaMethod) {
+                for (ExpressionNode arg: fieldMemberExpressionNode.arguments) {
+                    il.append(arg.accept(this, parameter));
+                }
+                String method = ((JavaMethod) fieldMemberExpressionNode.getResolvedMethod()).javaMethodName;
+
+                il.append(ifc.createInvoke(method.substring(0, method.lastIndexOf(".")), method.substring(method.lastIndexOf(".") + 1), getBCELType(fieldMemberExpressionNode.getResultingType()), convertMethodArguments(fieldMemberExpressionNode.getResolvedMethod().getArgumentTypes()), Const.INVOKESTATIC));
+            } else if (fieldMemberExpressionNode.identifier.equals("print")) {
                 il.append(ifc.createGetStatic("java.lang.System", "out", Type.getType("Ljava/io/PrintStream;")));
                 il.append(fieldMemberExpressionNode.baseObject.accept(this, parameter));
                 Type baseType;
@@ -478,6 +485,11 @@ public class ByteCodeGenerator implements Visitor<InstructionList, Object, Runti
         for (ClassNode cls: fileNode.classes) {
             cls.accept(this, null);
         }
+        return null;
+    }
+
+    @Override
+    public InstructionList visit(JavaMethod javaMethod, Object parameter) throws RuntimeException {
         return null;
     }
 
