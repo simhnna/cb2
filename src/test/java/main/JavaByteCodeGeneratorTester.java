@@ -37,7 +37,7 @@ public class JavaByteCodeGeneratorTester {
                 if (cls.getName().endsWith(".class")) {
                     Class c = loader.loadClass(cls.getName().substring(0, cls.getName().length() - 6));
                     Method main = c.getMethod("main", String[].class);
-                    main.invoke(null, new String[1]);
+                    main.invoke(null, new Object[] {new String[0]});
                 }
             }
         } catch (MalformedURLException | ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
