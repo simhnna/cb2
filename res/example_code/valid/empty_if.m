@@ -4,4 +4,9 @@ class a {
     } else {
     }
   }
+
+  void main(string[] args) {
+    var a := new<a>;
+    a.foo();
+  }
 }

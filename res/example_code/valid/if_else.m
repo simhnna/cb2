@@ -12,4 +12,9 @@ class A {
       var id := "meh";
     }
   }
+
+  void main(string[] args) {
+    var a := new<A>;
+    a.meh();
+  }
 }

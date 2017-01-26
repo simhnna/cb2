@@ -1,5 +1,5 @@
 class A {
-  void testing() {
+  void main(string[] args) {
     if (true) {
       if (true) {
         if (false) {

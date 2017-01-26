@@ -3,4 +3,11 @@ class foobar {
   int foo() {{{{{{
   	return 1;
   }}}}}}
+
+  void main(string[] args) {
+    var a := new<foobar>;
+    if (a.foo != 1) {
+      "err";
+    }
+  }
 }
