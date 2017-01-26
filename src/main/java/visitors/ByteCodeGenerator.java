@@ -234,7 +234,7 @@ public class ByteCodeGenerator implements Visitor<InstructionList, Object, Runti
 
     @Override
     public InstructionList visit(FieldNode fieldNode, Object parameter) throws RuntimeException {
-        currentClass.addField(new FieldGen(Const.ACC_PRIVATE, getBCELType(fieldNode.getType()), fieldNode.getName(), currentClass.getConstantPool()).getField());
+        currentClass.addField(new FieldGen(Const.ACC_PUBLIC, getBCELType(fieldNode.getType()), fieldNode.getName(), currentClass.getConstantPool()).getField());
         return null;
     }
 
