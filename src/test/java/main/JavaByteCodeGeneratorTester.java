@@ -8,8 +8,9 @@ import org.junit.runners.Parameterized.Parameters;
 import testsuite.MINIException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,11 +35,16 @@ public class JavaByteCodeGeneratorTester {
 
             for (File cls: classLocation.listFiles()) {
                 if (cls.getName().endsWith(".class")) {
-                    loader.loadClass(cls.getName().substring(0, cls.getName().length() - 6));
+                    Class c = loader.loadClass(cls.getName().substring(0, cls.getName().length() - 6));
+                    Method main = c.getMethod("main", String[].class);
+                    main.invoke(null, new String[1]);
                 }
             }
-        } catch (MalformedURLException | ClassNotFoundException e) {
+        } catch (MalformedURLException | ClassNotFoundException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+            fail("main caused an exception... ");
+        } catch (NoSuchMethodException e) {
+
         }
     }
 

@@ -1,5 +1,6 @@
 package components.interfaces;
 
+import components.TypeNode;
 import components.helpers.Position;
 import ir.Type;
 
@@ -8,6 +9,8 @@ public abstract class ExpressionNode extends Node {
     private boolean inParenthesis;
 
     private Type resultingType;
+    
+    private TypeNode assertedType = null;
 
     public ExpressionNode(Position position) {
         super(position);
@@ -28,5 +31,13 @@ public abstract class ExpressionNode extends Node {
 
     public Type getResultingType() {
         return resultingType;
+    }
+    
+    public void setAssertedType(TypeNode assertedType) {
+        this.assertedType = assertedType;
+    }
+    
+    public TypeNode getAssertedType() {
+        return assertedType;
     }
 }

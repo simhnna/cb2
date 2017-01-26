@@ -30,9 +30,6 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             names.put(element, "main");
             return;
         }
-
-
-
         if (currentChar > 'z') {
             currentChar = currentName.charAt(currentName.length() - 1);
             currentChar++;
@@ -84,6 +81,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
+        bldr.append("public ");
         fieldNode.type.accept(this, null);
         bldr.append(" ").append(names.get(fieldNode)).append(";");
         return null;
@@ -91,8 +89,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        bldr.append("public ");
         if(methodNode.isMainMethod()) {
-            bldr.append("public static ");
+            bldr.append("static ");
         }
         methodNode.returnType.accept(this, null);
         bldr.append(" ").append(names.get(methodNode)).append("(");
@@ -285,6 +284,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 dimension.accept(this, null);
                 bldr.append("]");
             }
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            bldr.append(" Integer(0)");
         } else {
             newExpressionNode.type.accept(this, null);
             bldr.append("()");
@@ -379,5 +380,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else {
             return type.getName();
         }
+    }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        return null;
     }
 }

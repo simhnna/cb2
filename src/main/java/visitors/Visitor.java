@@ -45,4 +45,6 @@ public interface Visitor<R, P, E extends Throwable> {
     R visit(FileNode fileNode, P parameter) throws E;
 
     R visit(JavaMethod javaMethod, P parameter) throws E;
+
+    R visit(AssertedExpressionNode node, P parameter) throws E;
 }

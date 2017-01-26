@@ -93,7 +93,9 @@ public interface MINIGrammarConstants {
   /** RegularExpression Id. */
   int STRING = 48;
   /** RegularExpression Id. */
-  int BAD_TOKEN = 49;
+  int AT = 49;
+  /** RegularExpression Id. */
+  int BAD_TOKEN = 50;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -153,6 +155,7 @@ public interface MINIGrammarConstants {
     "<ID>",
     "<INT>",
     "<STRING>",
+    "\"@\"",
     "<BAD_TOKEN>",
   };
 

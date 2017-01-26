@@ -268,4 +268,12 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
         bldr.append(") := ").append(javaMethod.javaMethodName).append(";");
         return null;
     }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        bldr.append(" @ ");
+        node.assertedType.accept(this, null);
+        return null;
+    }
 }

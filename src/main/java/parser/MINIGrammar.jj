@@ -161,6 +161,7 @@ TOKEN : /* Reserved keywords and such */
     | [ "#"-"~" ]
     )*
     "\"" >
+| < AT : "@" >
 | < BAD_TOKEN : ~[ ] >
 }
 
@@ -574,6 +575,7 @@ ExpressionNode expression0 () :
   ExpressionNode current;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  TypeNode assertedType = null;
 }
 {
   current = atomicExpression()
@@ -588,6 +590,10 @@ ExpressionNode expression0 () :
 	  }
     }
   )*
+  (
+    name=< AT > assertedType=type()
+    { return new AssertedExpressionNode(current, assertedType, generatePosition(name)); }
+  )?
   {
     return current;
   }

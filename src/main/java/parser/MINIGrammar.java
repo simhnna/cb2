@@ -666,6 +666,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   ExpressionNode current;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  TypeNode assertedType = null;
     current = atomicExpression();
     label_13:
     while (true) {
@@ -693,6 +694,16 @@ public class MINIGrammar implements MINIGrammarConstants {
           } else {
                 current = new MemberExpressionNode(current, tokenify(name), generatePosition(name));
           }
+    }
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case AT:
+      name = jj_consume_token(AT);
+      assertedType = type();
+      {if (true) return new AssertedExpressionNode(current, assertedType, generatePosition(name));}
+      break;
+    default:
+      jj_la1[27] = jj_gen;
+      ;
     }
     {if (true) return current;}
     throw new Error("Missing return statement in function");
@@ -722,7 +733,7 @@ public class MINIGrammar implements MINIGrammarConstants {
           ;
           break;
         default:
-          jj_la1[27] = jj_gen;
+          jj_la1[28] = jj_gen;
           break label_14;
         }
         jj_consume_token(COMMA);
@@ -731,7 +742,7 @@ public class MINIGrammar implements MINIGrammarConstants {
       }
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[29] = jj_gen;
       ;
     }
     jj_consume_token(PARAN_CLOSE);
@@ -752,7 +763,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         arguments = argumentList();
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[30] = jj_gen;
         ;
       }
       // baseObject is null because it doesn't exist here
@@ -790,7 +801,7 @@ public class MINIGrammar implements MINIGrammarConstants {
                       expression.setParenthesis(); {if (true) return expression;}
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[31] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -822,7 +833,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         ;
         break;
       default:
-        jj_la1[31] = jj_gen;
+        jj_la1[32] = jj_gen;
         break label_15;
       }
       jj_consume_token(COMMA);
@@ -836,7 +847,7 @@ public class MINIGrammar implements MINIGrammarConstants {
                n.arguments.add(new MemberExpressionNode(null, tokenify(token), generatePosition(token)));
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[33] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -855,7 +866,7 @@ public class MINIGrammar implements MINIGrammarConstants {
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[33];
+  final private int[] jj_la1 = new int[34];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -863,10 +874,10 @@ public class MINIGrammar implements MINIGrammarConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x400,0x0,0x102000,0x40000,0x10000800,0x8000,0x80000,0x0,0x6be22800,0x10100000,0x6be22800,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000000,0xa0000000,0x0,0x0,0x60000000,0x60622000,0x40000,0x2000,0x80000,0x60622000,0x2000,0x622000,0x80000,0x0,};
+      jj_la1_0 = new int[] {0x400,0x0,0x102000,0x40000,0x10000800,0x8000,0x80000,0x0,0x6be22800,0x10100000,0x6be22800,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xa0000000,0xa0000000,0x0,0x0,0x60000000,0x60622000,0x40000,0x2000,0x0,0x80000,0x60622000,0x2000,0x622000,0x80000,0x0,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x4000,0x0,0x0,0x0,0x0,0x0,0x4000,0x1e000,0x0,0x1e000,0x0,0x800,0x400,0x200,0x18,0x18,0x1e0,0x1e0,0x0,0x0,0x7,0x7,0x0,0x1e000,0x0,0x0,0x0,0x1e000,0x0,0x1e000,0x0,0xc000,};
+      jj_la1_1 = new int[] {0x0,0x4000,0x0,0x0,0x0,0x0,0x0,0x4000,0x1e000,0x0,0x1e000,0x0,0x800,0x400,0x200,0x18,0x18,0x1e0,0x1e0,0x0,0x0,0x7,0x7,0x0,0x1e000,0x0,0x0,0x20000,0x0,0x1e000,0x0,0x1e000,0x0,0xc000,};
    }
 
   /** Constructor with InputStream. */
@@ -880,7 +891,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -894,7 +905,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -904,7 +915,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -914,7 +925,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -923,7 +934,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -932,7 +943,7 @@ public class MINIGrammar implements MINIGrammarConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -983,12 +994,12 @@ public class MINIGrammar implements MINIGrammarConstants {
   /** Generate ParseException. */
   public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[50];
+    boolean[] la1tokens = new boolean[51];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < 34; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1000,7 +1011,7 @@ public class MINIGrammar implements MINIGrammarConstants {
         }
       }
     }
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 51; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

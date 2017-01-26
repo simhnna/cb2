@@ -19,7 +19,8 @@ public class Main {
         FileNode classes;
         try {
             File sourceFile = new File("res" + File.separator + "example_code" + File.separator + "valid"
-                    + File.separator + "math_methods.m");
+                    + File.separator + "pretty_much_everything.m");
+
             classes = MINIGrammar.parse(sourceFile);
             NameAndTypeChecker checker = new NameAndTypeChecker();
             classes.accept(checker, null);

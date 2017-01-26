@@ -5,4 +5,7 @@ class Test {
     var meh := "whatever";
     return meh;
   }
+  void main(string[] args) {
+    
+  }
 }

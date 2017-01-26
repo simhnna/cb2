@@ -1,4 +1,7 @@
 class manyInts {
+  void main(string[] args) {
+    
+  }
   void assign() {
     var a := 0;
     a := 10000000;
