@@ -30,9 +30,6 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             names.put(element, "main");
             return;
         }
-
-
-
         if (currentChar > 'z') {
             currentChar = currentName.charAt(currentName.length() - 1);
             currentChar++;
@@ -281,7 +278,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 bldr.append("]");
             }
         } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
-            bldr.append(" Integer()");
+            bldr.append(" Integer(0)");
         } else {
             newExpressionNode.type.accept(this, null);
             bldr.append("()");
