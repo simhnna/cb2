@@ -81,6 +81,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
+        bldr.append("public ");
         fieldNode.type.accept(this, null);
         bldr.append(" ").append(names.get(fieldNode)).append(";");
         return null;
@@ -88,8 +89,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        bldr.append("public ");
         if(methodNode.isMainMethod()) {
-            bldr.append("public static ");
+            bldr.append("static ");
         }
         methodNode.returnType.accept(this, null);
         bldr.append(" ").append(names.get(methodNode)).append("(");
