@@ -20,7 +20,7 @@ class m {
 
 class me {
   void main(string[] args) {
-    while(args.size() > -1) {
+    while(args.size() < -1) {
       "hallo death".print();
     }
   }
