@@ -38,8 +38,4 @@ public class NameTable {
         }
         return entry;
     }
-
-    public void addName(CompositeType declaredType) {
-        names.put("this", new NameTableEntry(declaredType, declaredType));
-    }
 }

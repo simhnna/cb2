@@ -1,5 +1,5 @@
 class a {
   void foo() {
-    new<int>;
+    var x := "meh" ? 1 : 2;
   }
 }

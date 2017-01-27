@@ -1,5 +1,6 @@
 package components.interfaces;
 
+import components.TypeNode;
 import components.helpers.Position;
 import ir.Type;
 

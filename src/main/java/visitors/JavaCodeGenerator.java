@@ -30,9 +30,6 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
             names.put(element, "main");
             return;
         }
-
-
-
         if (currentChar > 'z') {
             currentChar = currentName.charAt(currentName.length() - 1);
             currentChar++;
@@ -84,6 +81,7 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(FieldNode fieldNode, Void parameter) {
+        bldr.append("public ");
         fieldNode.type.accept(this, null);
         bldr.append(" ").append(names.get(fieldNode)).append(";");
         return null;
@@ -91,8 +89,9 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(MethodDeclarationNode methodNode, Void parameter) {
+        bldr.append("public ");
         if(methodNode.isMainMethod()) {
-            bldr.append("public static ");
+            bldr.append("static ");
         }
         methodNode.returnType.accept(this, null);
         bldr.append(" ").append(names.get(methodNode)).append("(");
@@ -222,11 +221,16 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                     memberExpression.arguments.get(1).accept(this, null);
                 }
             } else {
-                if (memberExpression.baseObject != null) {
-                    memberExpression.baseObject.accept(this, null);
-                    bldr.append(".");
+
+                if (memberExpression.getResolvedMethod() instanceof JavaMethod) {
+                    bldr.append(((JavaMethod) memberExpression.getResolvedMethod()).javaMethodName).append("(");
+                } else {
+                    if (memberExpression.baseObject != null) {
+                        memberExpression.baseObject.accept(this, null);
+                        bldr.append(".");
+                    }
+                    bldr.append(names.get(memberExpression.getResolvedMethod())).append("(");
                 }
-                bldr.append(names.get(memberExpression.getResolvedMethod())).append("(");
                 for (int i = 0; i < memberExpression.arguments.size(); ++i) {
                     memberExpression.arguments.get(i).accept(this, null);
                     if (i != memberExpression.arguments.size() - 1) {
@@ -280,6 +284,8 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
                 dimension.accept(this, null);
                 bldr.append("]");
             }
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            bldr.append(" Integer(0)");
         } else {
             newExpressionNode.type.accept(this, null);
             bldr.append("()");
@@ -320,17 +326,13 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
 
     @Override
     public Void visit(TernaryExpressionNode ternaryExpressionNode, Void parameter) throws IllegalArgumentException {
-        if (ternaryExpressionNode.inParenthesis()) {
-            bldr.append('(');
-        }
+        bldr.append('(');
         ternaryExpressionNode.condition.accept(this, null);
         bldr.append(" ? ");
         ternaryExpressionNode.t_branch.accept(this, null);
         bldr.append(" : ");
         ternaryExpressionNode.f_branch.accept(this, null);
-        if (ternaryExpressionNode.inParenthesis()) {
-            bldr.append(')');
-        }
+        bldr.append(')');
         return null;
     }
 
@@ -355,6 +357,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         return null;
     }
 
+    @Override
+    public Void visit(JavaMethod javaMethod, Void parameter) throws IllegalArgumentException {
+        return null;
+    }
+
 
     private String getTypeRepresentation(Type type) {
         if (type == StringType.INSTANCE) {
@@ -373,5 +380,11 @@ public class JavaCodeGenerator implements Visitor<Void, Void, IllegalArgumentExc
         } else {
             return type.getName();
         }
+    }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 class A {
-  void foo() {
+  void main(string[] args) {
     5.print();
   }
 }

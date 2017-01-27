@@ -4,12 +4,6 @@ class Hello {
   }
 }
 
-class Helloo {
-  void main(string[] args) {
-    "...world!";
-  }
-}
-
 class Size {
   void main(string[] args) {
     "...world!".size().print();
@@ -18,15 +12,15 @@ class Size {
 
 class m {
   void main(string[] args) {
-    null<m>;
-    null<m[]>;
-    null<m[][]>;
+    var a := null<m>;
+    var b := null<m[]>;
+    var c := null<m[][]>;
   }
 }
 
 class me {
   void main(string[] args) {
-    while(args.size() > -1) {
+    while(args.size() < -1) {
       "hallo death".print();
     }
   }

@@ -1,14 +1,14 @@
 class A {
   void firstFunction() {
-    "whatever";
+    "whatever" @ string;
     var meh := true;
     meh := false;
   }
   int returnsConstant() {
-    return 1;
+    return 1 == 1 ? 1 : 2;
   }
   int fibonacci(int n) {
-    return n;
+    return (false ? n - 1 : n);
   }
   int returnArgument(int n) {
     (-n).print();
@@ -58,14 +58,16 @@ class A {
     return result;
   }
   void main(string[] args) {
-    args.set(1, "bla");
-    var test := args.get(1);
+    args := new <string[], 5>;
+    args.set(0, "bla");
+    var test := args.get(0);
     var a := new <A>;
     a.firstFunction();
     a.nonRecursiveFactorial(1).print();
     a.nonRecursiveFactorial(a.otherFactorial(2)).print();
     args.size().print();
     var car := new <Car>;
+    car.Car();
     var num := 1;
     var cars := new <Car[][], 1, num>;
     car.name.print();
@@ -76,6 +78,7 @@ class A {
       "Noooo!".print();
     }
     if (car.getName() == "whhhhaaat" && car.name == car.getName()) {
+      "yeeeeeessss";
     }
     (1 >= 2).print();
     (!true).print();
@@ -112,4 +115,5 @@ class Car {
   int uselessMethod(int a, int b, int c) {
     return 0;
   }
+  string getenv(string s) := java.lang.System.getenv;
 }

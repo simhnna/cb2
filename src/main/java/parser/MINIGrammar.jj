@@ -161,6 +161,7 @@ TOKEN : /* Reserved keywords and such */
     | [ "#"-"~" ]
     )*
     "\"" >
+| < AT : "@" >
 | < BAD_TOKEN : ~[ ] >
 }
 
@@ -205,7 +206,7 @@ ClassNode mini_class() :
 
 MemberNode classMember() :
 {
-  MethodDeclarationNode m;
+  MemberNode m;
   Token memberName;
   TypeNode type;
 }
@@ -224,16 +225,20 @@ MemberNode classMember() :
 }
 
 
-MethodDeclarationNode method(Token name, TypeNode type) :
+MemberNode method(Token name, TypeNode type) :
 {
   BlockNode body;
   ArrayList<NamedType> arguments;
+  String javaMethod;
 }
 {
-  arguments = signature() body = blockStatement()
+  arguments = signature()
+  (    body = blockStatement()
   {
     return new MethodDeclarationNode(tokenify(name), type, arguments, body, generatePosition(name));
   }
+  | < ASSIGNMENT > < ID > { javaMethod = token.image; } (< DOT > < ID > { javaMethod += "." + token.image; })* < SEMICOLON > { return new JavaMethod(tokenify(name), type, arguments, javaMethod, generatePosition(name)); }
+  )
 }
 
 TypeNode type() :
@@ -570,6 +575,7 @@ ExpressionNode expression0 () :
   ExpressionNode current;
   ArrayList<ExpressionNode> arguments = null;
   Token name;
+  TypeNode assertedType = null;
 }
 {
   current = atomicExpression()
@@ -584,6 +590,10 @@ ExpressionNode expression0 () :
 	  }
     }
   )*
+  (
+    name=< AT > assertedType=type()
+    { return new AssertedExpressionNode(current, assertedType, generatePosition(name)); }
+  )?
   {
     return current;
   }

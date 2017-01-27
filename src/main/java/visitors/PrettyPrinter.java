@@ -254,4 +254,26 @@ public class PrettyPrinter implements Visitor<Void, Void, IllegalArgumentExcepti
         }
         return null;
     }
+
+    @Override
+    public Void visit(JavaMethod javaMethod, Void parameter) throws IllegalArgumentException {
+        javaMethod.type.accept(this, null);
+        bldr.append(" ").append(javaMethod.getName()).append("(");
+        for (int i = 0; i < javaMethod.arguments.size(); i++) {
+            javaMethod.arguments.get(i).accept(this, null);
+            if (i + 1 != javaMethod.arguments.size()) {
+                bldr.append(", ");
+            }
+        }
+        bldr.append(") := ").append(javaMethod.javaMethodName).append(";");
+        return null;
+    }
+
+    @Override
+    public Void visit(AssertedExpressionNode node, Void parameter) throws IllegalArgumentException {
+        node.expression.accept(this, null);
+        bldr.append(" @ ");
+        node.assertedType.accept(this, null);
+        return null;
+    }
 }

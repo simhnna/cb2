@@ -1,5 +1,5 @@
 class A {
-  void test() {
+  void main(string[] args) {
     if (true) {
       var x := 5;
     }

@@ -6,4 +6,12 @@ class A {
       return new <int[], 20>;
     }
   }
+  void main(string[] args) {
+    var a := new <A>;
+    if (a.s.size() != 10) {
+      "err";
+    } else {
+      a.s.size();
+    }
+  }
 }

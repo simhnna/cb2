@@ -1,5 +1,6 @@
 class a {
   int member;
+  a self;
   void foo() {
     var foo := new<int[], 100>;
     "should be 100";
@@ -14,8 +15,20 @@ class a {
     member;
   }
 
+  int getSumPlusOne(int a, int b) {
+    return a + b + 1;
+  }
+
   int bar(int i) {
+    if (i < 0) {
+      return bar(0);
+    }
     return i - 1;
+  }
+
+  a returnThis() {
+    this;
+    return this;
   }
 }
 
@@ -54,9 +67,15 @@ class main {
     } else {
       "false";
     }
+    m.self := m;
+    if (m.self.member != m.member) {
+      "error";
+    }
     m.print();
     m.bar(1).print();
     m.bar(0);
+    "should be -1";
+    m.bar(-100);
     if (m.bar(0) != -1) {
       "false".print();
     }
@@ -134,5 +153,26 @@ class main {
       counter;
       counter := counter + 1;
     }
+    "should be true";
+    !false;
+    "should be false";
+    !true;
+
+    "should be 1";
+    true ? 1 : 2;
+    "should be 2";
+    false ? 1 : 2;
+
+    "should be 3";
+    m.getSumPlusOne(1, 1);
+
+    {
+    var a := 1;
+    var b := 2;
+    "should be 4";
+    m.getSumPlusOne(a, b);
+    }
+    "should be 9";
+    (1 + 2) * 3;
   }
 }

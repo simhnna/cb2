@@ -24,6 +24,8 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
 
     // Used to hold the current method to check for return types
     private MethodDeclarationNode currentMethod;
+    // Used to resolve 'this'
+    private CompositeType currentClass;
 
     @Override
     public Type visit(AssignmentStatementNode assignmentStatementNode, NameTable nameTable) throws TypeException {
@@ -117,8 +119,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     @Override
     public Type visit(ClassNode classNode, NameTable nameTable) throws TypeException {
         nameTable = new NameTable(nameTable, null);
-        nameTable.addName(CompositeType.getDeclaredType(classNode.name));
-
+        currentClass = CompositeType.getDeclaredType(classNode.name);
         for (MemberNode n: classNode.getChildren()) {
             n.accept(this, nameTable);
         }
@@ -145,7 +146,6 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
          *  We are however adding this field to the nameTable of the class
          */
         nameTable.addName(fieldNode, fieldNode.getType());
-
         return null;
     }
 
@@ -154,16 +154,13 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         Type type = ifNode.condition.accept(this, nameTable);
         if (type != BooleanType.INSTANCE) {
             throw new TypeException(ifNode.position.path, ifNode.position.line,
-                    "condition should be of type bool found " + type.getName() + " instead");
+                    "condition should be of type bool, found " + type.getName() + " instead");
         }
         ifNode.ifBlock.accept(this, nameTable);
         if (ifNode.elseBlock != null) {
             ifNode.elseBlock.accept(this, nameTable);
         }
-        if (ifNode.elseBlock == null || !ifNode.elseBlock.containsReturn()) {
-            // clear return in parent block
-            nameTable.owner.setContainsReturn(false);
-        }
+        nameTable.owner.setContainsReturn(ifNode.elseBlock != null && ifNode.elseBlock.containsReturn() && ifNode.ifBlock.containsReturn());
         return null;
     }
 
@@ -197,8 +194,12 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             if (newExpressionNode.arguments.size() != dimensions) {
                 throw new TypeException(newExpressionNode.position.path, newExpressionNode.position.line, "Expected " + dimensions + " arguments but found " + newExpressionNode.arguments.size() + " instead");
             }
+        } else if (newExpressionNode.type.type == IntegerType.INSTANCE) {
+            if (newExpressionNode.arguments.size() > 0) {
+                throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances of int doesn't take any parameters");
+            }
         } else {
-            throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances is only supported for self defined types and arrays");
+            throw new TypeException(newExpressionNode.type.position.path, newExpressionNode.type.position.line, "Creation of new instances is only supported for integers, self defined types and arrays");
         }
         for (ExpressionNode arg: newExpressionNode.arguments) {
             Type argType = arg.accept(this, nameTable);
@@ -218,8 +219,11 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
     public Type visit(LiteralNode primitiveType, NameTable nameTable) throws TypeException {
         if (primitiveType.type == null) {
             // type is null, when it's a _this_ literalNode
-            primitiveType.setResultingType(nameTable.lookup(primitiveType.token, inNonStaticMethod()).type);
-            return nameTable.lookup(primitiveType.token, inNonStaticMethod()).type;
+            if (!inNonStaticMethod()) {
+                throw new TypeException(primitiveType.position.path, primitiveType.position.line, "The use of 'this' is not allowed in a static method!");
+            }
+            primitiveType.setResultingType(currentClass);
+            return primitiveType.getResultingType();
         }
         primitiveType.setResultingType(primitiveType.type);
         return primitiveType.type;
@@ -282,7 +286,7 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
             }
             // lookup the class type for future
             if (inNonStaticMethod()) {
-                baseObject = nameTable.lookup("this", true).type;
+                baseObject = currentClass;
             } else {
                 // in a static method we can only access local variables. If we come here, there is something wrong
                 throw new TypeException(fieldMemberExpressionNode.position.path, fieldMemberExpressionNode.position.line, "The variable '" + fieldMemberExpressionNode.identifier + "' was not defined");
@@ -402,7 +406,29 @@ public class NameAndTypeChecker implements Visitor<Type, NameTable, TypeExceptio
         return null;
     }
 
+    @Override
+    public Type visit(JavaMethod javaMethod, NameTable nameTable) throws TypeException {
+        javaMethod.type.accept(this, nameTable);
+        nameTable = new NameTable(nameTable, null);
+        for (NamedType namedType: javaMethod.arguments) {
+            namedType.accept(this, nameTable);
+        }
+        if (javaMethod.getName().equals("main") && javaMethod.getReturnType() == VoidType.INSTANCE) {
+            throw new TypeException(javaMethod.position.path, javaMethod.position.line, "You have to provide a direct implementation of main");
+        }
+        return null;
+    }
+
     private boolean inNonStaticMethod() {
         return currentMethod == null || !currentMethod.name.equals("main");
+    }
+
+    @Override
+    public Type visit(AssertedExpressionNode node, NameTable parameter) throws TypeException {
+        if (node.expression.accept(this, parameter) != node.assertedType.accept(this, parameter)) {
+            throw new TypeException(node.position.path, node.position.line, "Expected to find type '" + node.assertedType.type + "' but found '" + node.expression.getResultingType() + "' instead");
+        }
+        node.setResultingType(node.expression.getResultingType());
+        return node.getResultingType();
     }
 }

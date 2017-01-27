@@ -1,5 +1,5 @@
-class Empty {
+class a {
   void main(string[] args) {
-    
+    this;
   }
 }
