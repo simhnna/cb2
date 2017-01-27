@@ -115,4 +115,5 @@ class Car {
   int uselessMethod(int a, int b, int c) {
     return 0;
   }
+  string getenv(string s) := java.lang.System.getenv;
 }
