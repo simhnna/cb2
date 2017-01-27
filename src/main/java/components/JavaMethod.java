@@ -24,7 +24,7 @@ public class JavaMethod extends MemberNode implements SpecialMethod {
 
     @Override
     public <R, P, E extends Throwable> R accept(Visitor<R, P, E> visitor, P parameter) throws E {
-        return null;
+        return visitor.visit(this, parameter);
     }
 
     @Override
